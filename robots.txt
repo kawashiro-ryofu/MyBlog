@@ -1,0 +1,8 @@
+User-agent:*
+Disallow:/archives/
+Disallow:/links/
+Disallow:/tags/
+Disallow:/categories/
+Disallow:/Kawashiros/
+Disallow:/Bangumi/
+Allow:/
