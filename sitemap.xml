@@ -16,14 +16,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/index.html</loc>
+    <loc>https://www.kawashiros.club/resources/bglist.json</loc>
     
     <lastmod>2021-02-05</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/resources/bglist.json</loc>
+    <loc>https://www.kawashiros.club/tags/index.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -72,14 +72,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/1381238d.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/4c9f8e59.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/4c9f8e59.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/1381238d.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -114,7 +114,7 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/e9e33d10.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/46134e8e.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -128,7 +128,7 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/9e01b7f0.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/e9e33d10.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -142,14 +142,7 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/46134e8e.html</loc>
-    
-    <lastmod>2021-02-05</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://www.kawashiros.club/p/2020/5585cfe.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/9e01b7f0.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -157,6 +150,13 @@
   
   <url>
     <loc>https://www.kawashiros.club/p/2020/d020fa4a.html</loc>
+    
+    <lastmod>2021-02-05</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.kawashiros.club/p/2020/5585cfe.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -191,14 +191,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/8e4e7ab9.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/cfe2793b.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/cfe2793b.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/8e4e7ab9.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -410,14 +410,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/Valine/</loc>
+    <loc>https://www.kawashiros.club/tags/Windows-Terminal/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/Windows-Terminal/</loc>
+    <loc>https://www.kawashiros.club/tags/Valine/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -550,13 +550,6 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kawashiros.club/tags/%E5%B0%91%E5%A5%B3%E7%BB%88%E6%9C%AB%E6%97%85%E8%A1%8C/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
@@ -571,7 +564,28 @@
   </url>
   
   <url>
+    <loc>https://www.kawashiros.club/tags/%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kawashiros.club/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kawashiros.club/tags/SAMBA/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kawashiros.club/tags/NAS/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -620,28 +634,7 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/SAMBA/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kawashiros.club/tags/NAS/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kawashiros.club/tags/Web/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kawashiros.club/tags/%E8%B8%A9%E5%9D%91/</loc>
+    <loc>https://www.kawashiros.club/tags/AJAX/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -662,14 +655,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/%E3%80%8A%E4%B8%80%E4%B9%9D%E5%85%AB%E5%9B%9B%E3%80%8B/</loc>
+    <loc>https://www.kawashiros.club/tags/Web/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/%E5%93%81%E4%B9%A6/</loc>
+    <loc>https://www.kawashiros.club/tags/%E8%B8%A9%E5%9D%91/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -684,6 +677,20 @@
   
   <url>
     <loc>https://www.kawashiros.club/tags/%E5%A4%B1%E8%B4%A5%E6%A1%88%E4%BE%8B/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kawashiros.club/tags/%E3%80%8A%E4%B8%80%E4%B9%9D%E5%85%AB%E5%9B%9B%E3%80%8B/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kawashiros.club/tags/%E5%93%81%E4%B9%A6/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -711,6 +718,13 @@
   </url>
   
   <url>
+    <loc>https://www.kawashiros.club/tags/%E6%9D%82%E6%96%87/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kawashiros.club/tags/%E5%BE%AE%E5%B0%8F%E8%AF%B4/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
@@ -725,21 +739,7 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/%E6%9D%82%E6%96%87/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kawashiros.club/tags/%E9%AB%98%E7%B2%BE%E5%BA%A6%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kawashiros.club/tags/AJAX/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -790,14 +790,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/categories/%E6%97%A5%E5%B8%B8/</loc>
+    <loc>https://www.kawashiros.club/categories/%E8%BD%AF%E4%BB%B6%E8%AF%95%E7%94%A8/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/categories/%E8%BD%AF%E4%BB%B6%E8%AF%95%E7%94%A8/</loc>
+    <loc>https://www.kawashiros.club/categories/%E6%97%A5%E5%B8%B8/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -825,13 +825,6 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/categories/%E9%9A%8F%E7%AC%94/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kawashiros.club/categories/%E7%9C%8B%E7%95%AA/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
@@ -839,7 +832,21 @@
   </url>
   
   <url>
+    <loc>https://www.kawashiros.club/categories/%E9%9A%8F%E7%AC%94/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.kawashiros.club/categories/%E5%B0%8F%E8%AF%B4/</loc>
+    <lastmod>2021-02-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kawashiros.club/categories/%E7%AC%94%E8%AE%B0/%E5%89%8D%E7%AB%AF/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -868,13 +875,6 @@
   
   <url>
     <loc>https://www.kawashiros.club/categories/%E9%9A%8F%E7%AC%94/%E6%84%9F%E6%83%B3/</loc>
-    <lastmod>2021-02-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.kawashiros.club/categories/%E7%AC%94%E8%AE%B0/%E5%89%8D%E7%AB%AF/</loc>
     <lastmod>2021-02-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
