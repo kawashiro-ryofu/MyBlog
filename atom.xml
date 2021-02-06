@@ -6,7 +6,7 @@
   <link href="https://www.kawashiros.club/atom.xml" rel="self"/>
   
   <link href="https://www.kawashiros.club/"/>
-  <updated>2021-02-05T16:51:02.608Z</updated>
+  <updated>2021-02-06T15:28:11.631Z</updated>
   <id>https://www.kawashiros.club/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Nmap的基本使用：扫描开放端口</title>
+    <link href="https://www.kawashiros.club/p/2021/d7839b7f.html"/>
+    <id>https://www.kawashiros.club/p/2021/d7839b7f.html</id>
+    <published>2021-02-06T15:27:24.000Z</published>
+    <updated>2021-02-06T15:28:11.631Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="何为Nmap"><a href="#何为Nmap" class="headerlink" title="何为Nmap"></a>何为Nmap</h1><p>简单地说，<a href="https://nmap.org">Nmap</a>是一款网络安全领域常用的网络探测工具。我们可以用它探测当前网络在线的主机及其开放的端口。</p><p>Nmap是网络安全工程师<span class="heimu" title="你知道的太多了">黑客</span>必须掌握的一个工具。</p><p>以下均在命令行中演示。</p><h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>分辩IP地址和域名。如果所给的是域名则会访问DNS服务器做域名解析。然后再发送ICMP数据包探测主机存活性。ICMP数据包常运用于PING。远程机器接收到数据包会响应一个数据包。Nmap解析这个返回的数据包得到机器的信息，其中就包括端口信息。</p><h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="最简单的使用"><a href="#最简单的使用" class="headerlink" title="最简单的使用"></a>最简单的使用</h2><p>下面是在Windows 10中的测试，使用nmap探测我这台土豆服务器开放的端口。在其他平台下大同小异。</p><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 22:22 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for server (192.168.0.204)</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Other addresses for server (not scanned): fe80::21a:a9ff:fe91:e101</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">21&#x2F;tcp   open  ftp</span><br><span class="line">22&#x2F;tcp   open  ssh</span><br><span class="line">80&#x2F;tcp   open  http</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn</span><br><span class="line">443&#x2F;tcp  open  https</span><br><span class="line">445&#x2F;tcp  open  microsoft-ds</span><br><span class="line">631&#x2F;tcp  open  ipp</span><br><span class="line">6566&#x2F;tcp open  sane-port</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 6.14 seconds</span><br></pre></td></tr></table></figure><p>从Nmap返回的结果来看，这台服务器开放了许多端口，其中包括21端口的<code>ftp</code>文件传输协议、80端口的<code>http</code>超文本传输协议、445端口的<code>microsoft-ds</code>微软共享文件夹、631端口的<code>ipp</code>打印机服务，以及一个<code>sane-port</code>，远程扫描仪端口。黑客可以通过监听数据包(通过WireShark)来获取<code>ftp</code>的密码和<code>http</code>传输报文。而<code>microsoft-ds</code>的445端口很脆弱，非常容易被攻陷。曾经的Bad Rabbit勒索病毒就是通过爆破445端口来攻击。</p><p><span class="heimu" title="你知道的太多了">我这台服务器架设在内网，所以问题不大。</span></p><h2 id="指定DNS扫描域名"><a href="#指定DNS扫描域名" class="headerlink" title="指定DNS扫描域名"></a>指定DNS扫描域名</h2><p>我们也可以设置指定的DNS服务器来探测端口，只需要设置<code>--dns-servers</code>参数。如下，使用<code>8.8.8.8</code>作为指定的DNS服务器，扫描<code>scanme.nmap.org</code>。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap scanme.nmap.org --dns-servers 8.8.8.8</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.18s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 84.31 seconds</span><br></pre></td></tr></table></figure><h2 id="“穿墙”"><a href="#“穿墙”" class="headerlink" title="“穿墙”"></a>“穿墙”</h2><p>使用<code>-Pn</code>参数来停止探测之前的ICMP请求，以突破防火墙的安全机制。仅限已经知道主机存活或防火墙开启的机器。<span class="heimu" title="你知道的太多了">加入这个参数貌似会让nmap遍历远程机器的每一个端口，所以会很慢。</span></p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -Pn scanme.nmap.org</span><br><span class="line">Host discovery disabled (-Pn). All addresses will be marked &#39;up&#39; and scan times will be slower.</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.17s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 78.05 seconds</span><br></pre></td></tr></table></figure><p><span class="heimu" title="你知道的太多了">和之前的有区别吗？莫非这个靶子莫得防火墙？</span></p><h2 id="探测全部端口"><a href="#探测全部端口" class="headerlink" title="探测全部端口"></a>探测全部端口</h2><p>以上也仅仅探测了Nmap默认的扫描端口范围。</p><p>使用<code>-p m-n</code>指定探测m-n端口范围。</p><p>下面还是使用我自己的土豆服务器做靶机。</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -p 0-65535 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn</span><br><span class="line">Nmap done: 1 IP address (0 hosts up) scanned in 7.14 seconds</span><br><span class="line">PS C:\Users\bkryofu&gt; nmap  192.168.0.204 -p 0-65535</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 65527 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">21&#x2F;tcp    open  ftp</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">139&#x2F;tcp   open  netbios-ssn</span><br><span class="line">443&#x2F;tcp   open  https</span><br><span class="line">445&#x2F;tcp   open  microsoft-ds</span><br><span class="line">631&#x2F;tcp   open  ipp</span><br><span class="line">6566&#x2F;tcp  open  sane-port</span><br><span class="line">31416&#x2F;tcp open  boinc</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 9.45 seconds</span><br></pre></td></tr></table></figure><p>可以看到，输出结果和最开始的不同，多出了一个31416端口的<code>boinc</code>。</p><h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul><li><a href="https://blog.csdn.net/weixin_42596275/article/details/105490962">Nmap之<em>_</em>列举远程机器开发的端口_LiQuan-CSDN博客</a></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;何为Nmap&quot;&gt;&lt;a href=&quot;#何为Nmap&quot; class=&quot;headerlink&quot; title=&quot;何为Nmap&quot;&gt;&lt;/a&gt;何为Nmap&lt;/h1&gt;&lt;p&gt;简单地说，&lt;a href=&quot;https://nmap.org&quot;&gt;Nmap&lt;/a&gt;是一款网络安全领域常用的网络</summary>
+      
+    
+    
+    
+    <category term="笔记" scheme="https://www.kawashiros.club/categories/%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="Nmap" scheme="https://www.kawashiros.club/tags/Nmap/"/>
+    
+    <category term="网络安全" scheme="https://www.kawashiros.club/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>JavaScript解析与生成JSON</title>
@@ -556,33 +582,6 @@
     <category term="PHP" scheme="https://www.kawashiros.club/tags/PHP/"/>
     
     <category term="MySQL" scheme="https://www.kawashiros.club/tags/MySQL/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Valine无法加载评论</title>
-    <link href="https://www.kawashiros.club/p/2020/8e4e7ab9.html"/>
-    <id>https://www.kawashiros.club/p/2020/8e4e7ab9.html</id>
-    <published>2020-09-23T18:02:22.000Z</published>
-    <updated>2021-02-05T15:07:10.805Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p><p>最近事情比较多，也就很少更新博客，消息也很少看。但今天比较空闲，也就上来看看博客的数据。不经意间发现Valine评论全没了。</p><p>完了，一天没看着就出岔子了。于是我赶紧上LeanCloud看看情况。</p><p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/5146f08684b69918.jpg" alt="原先的评论都在"></p><p>看到这里，我松了口气。不过评论不显示的问题还是要解决。</p><p>我试着更改valine.min.js的CDN，关闭hexo-neat，都不管用。看样子不是我的服务器的问题。最后打开F12，在网络选项卡中发现us.avoscloud.com的请求失败。</p><p>命令行中ping了一下，连接超时。我怀疑这个被GFW河蟹了。</p><p>于是又到站长之家找PING工具测试，结果如下：</p><p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/dd514c931ee8baae.jpg" alt="国内统统访问不了"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/51a01ffac5781cdf.jpg" alt="国外亦是如此"></p><p>大概是那边的服务器宕机下线了……</p><p><img src= "/resources/loading.gif" data-lazy-src="https://www.freeiconspng.com/uploads/to-be-continued-meme-picture-4.jpg" alt="标准结局"></p><h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>查找必应上没有,但百度搜到了解决方案.所以在网上找资源不能只吊死在一个搜索引擎上.</p><p><a href="https://blog.csdn.net/qq_35977139/article/details/108768439">解决方案</a></p><p>现在评论恢复了,大家畅所欲言吧.</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;Day-1&quot;&gt;&lt;a href=&quot;#Day-1&quot; class=&quot;headerlink&quot; title=&quot;Day 1&quot;&gt;&lt;/a&gt;Day 1&lt;/h1&gt;&lt;p&gt;很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。&lt;/p&gt;
-&lt;p&gt;最近事</summary>
-      
-    
-    
-    
-    <category term="日常" scheme="https://www.kawashiros.club/categories/%E6%97%A5%E5%B8%B8/"/>
-    
-    
-    <category term="博客" scheme="https://www.kawashiros.club/tags/%E5%8D%9A%E5%AE%A2/"/>
-    
-    <category term="Valine" scheme="https://www.kawashiros.club/tags/Valine/"/>
     
   </entry>
   

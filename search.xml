@@ -2109,4 +2109,38 @@ sys.setrecursionlimit(5000)
         <tag>Hexo</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Nmap的基本使用：扫描开放端口</title>
+    <url>/p/2021/d7839b7f.html</url>
+    <content><![CDATA[<h1 id="何为Nmap"><a href="#何为Nmap" class="headerlink" title="何为Nmap"></a>何为Nmap</h1><p>简单地说，<a href="https://nmap.org">Nmap</a>是一款网络安全领域常用的网络探测工具。我们可以用它探测当前网络在线的主机及其开放的端口。</p>
+<p>Nmap是网络安全工程师<span class="heimu" title="你知道的太多了">黑客</span>必须掌握的一个工具。</p>
+<p>以下均在命令行中演示。</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>分辩IP地址和域名。如果所给的是域名则会访问DNS服务器做域名解析。然后再发送ICMP数据包探测主机存活性。ICMP数据包常运用于PING。远程机器接收到数据包会响应一个数据包。Nmap解析这个返回的数据包得到机器的信息，其中就包括端口信息。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="最简单的使用"><a href="#最简单的使用" class="headerlink" title="最简单的使用"></a>最简单的使用</h2><p>下面是在Windows 10中的测试，使用nmap探测我这台土豆服务器开放的端口。在其他平台下大同小异。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 22:22 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for server (192.168.0.204)</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Other addresses for server (not scanned): fe80::21a:a9ff:fe91:e101</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">21&#x2F;tcp   open  ftp</span><br><span class="line">22&#x2F;tcp   open  ssh</span><br><span class="line">80&#x2F;tcp   open  http</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn</span><br><span class="line">443&#x2F;tcp  open  https</span><br><span class="line">445&#x2F;tcp  open  microsoft-ds</span><br><span class="line">631&#x2F;tcp  open  ipp</span><br><span class="line">6566&#x2F;tcp open  sane-port</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 6.14 seconds</span><br></pre></td></tr></table></figure>
+<p>从Nmap返回的结果来看，这台服务器开放了许多端口，其中包括21端口的<code>ftp</code>文件传输协议、80端口的<code>http</code>超文本传输协议、445端口的<code>microsoft-ds</code>微软共享文件夹、631端口的<code>ipp</code>打印机服务，以及一个<code>sane-port</code>，远程扫描仪端口。黑客可以通过监听数据包(通过WireShark)来获取<code>ftp</code>的密码和<code>http</code>传输报文。而<code>microsoft-ds</code>的445端口很脆弱，非常容易被攻陷。曾经的Bad Rabbit勒索病毒就是通过爆破445端口来攻击。</p>
+<p><span class="heimu" title="你知道的太多了">我这台服务器架设在内网，所以问题不大。</span></p>
+<h2 id="指定DNS扫描域名"><a href="#指定DNS扫描域名" class="headerlink" title="指定DNS扫描域名"></a>指定DNS扫描域名</h2><p>我们也可以设置指定的DNS服务器来探测端口，只需要设置<code>--dns-servers</code>参数。如下，使用<code>8.8.8.8</code>作为指定的DNS服务器，扫描<code>scanme.nmap.org</code>。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap scanme.nmap.org --dns-servers 8.8.8.8</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.18s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 84.31 seconds</span><br></pre></td></tr></table></figure>
+<h2 id="“穿墙”"><a href="#“穿墙”" class="headerlink" title="“穿墙”"></a>“穿墙”</h2><p>使用<code>-Pn</code>参数来停止探测之前的ICMP请求，以突破防火墙的安全机制。仅限已经知道主机存活或防火墙开启的机器。<span class="heimu" title="你知道的太多了">加入这个参数貌似会让nmap遍历远程机器的每一个端口，所以会很慢。</span></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -Pn scanme.nmap.org</span><br><span class="line">Host discovery disabled (-Pn). All addresses will be marked &#39;up&#39; and scan times will be slower.</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.17s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 78.05 seconds</span><br></pre></td></tr></table></figure>
+<p><span class="heimu" title="你知道的太多了">和之前的有区别吗？莫非这个靶子莫得防火墙？</span></p>
+<h2 id="探测全部端口"><a href="#探测全部端口" class="headerlink" title="探测全部端口"></a>探测全部端口</h2><p>以上也仅仅探测了Nmap默认的扫描端口范围。</p>
+<p>使用<code>-p m-n</code>指定探测m-n端口范围。</p>
+<p>下面还是使用我自己的土豆服务器做靶机。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -p 0-65535 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn</span><br><span class="line">Nmap done: 1 IP address (0 hosts up) scanned in 7.14 seconds</span><br><span class="line">PS C:\Users\bkryofu&gt; nmap  192.168.0.204 -p 0-65535</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 65527 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">21&#x2F;tcp    open  ftp</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">139&#x2F;tcp   open  netbios-ssn</span><br><span class="line">443&#x2F;tcp   open  https</span><br><span class="line">445&#x2F;tcp   open  microsoft-ds</span><br><span class="line">631&#x2F;tcp   open  ipp</span><br><span class="line">6566&#x2F;tcp  open  sane-port</span><br><span class="line">31416&#x2F;tcp open  boinc</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 9.45 seconds</span><br></pre></td></tr></table></figure>
+<p>可以看到，输出结果和最开始的不同，多出了一个31416端口的<code>boinc</code>。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/weixin_42596275/article/details/105490962">Nmap之<em>_</em>列举远程机器开发的端口_LiQuan-CSDN博客</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
+      </tags>
+  </entry>
 </search>
