@@ -2134,6 +2134,9 @@ sys.setrecursionlimit(5000)
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
 <li><a href="https://blog.csdn.net/weixin_42596275/article/details/105490962">Nmap之<em>_</em>列举远程机器开发的端口_LiQuan-CSDN博客</a></li>
 </ul>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>憨憨地在省图书馆测试扫描了以下WLAN登录的服务器，挺有意思的。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/d7839b7f/1.webp" alt="卧槽，NB啊！"></p>
+<p>讲真挺想试试抓包的，可惜这台机器上没有安装WireShark。<span class="heimu" title="你知道的太多了">就算装了我也不会用。</span></p>
 ]]></content>
       <categories>
         <category>笔记</category>
