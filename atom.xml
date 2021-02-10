@@ -6,7 +6,7 @@
   <link href="https://www.kawashiros.club/atom.xml" rel="self"/>
   
   <link href="https://www.kawashiros.club/"/>
-  <updated>2021-02-07T18:54:52.413Z</updated>
+  <updated>2021-02-10T09:15:16.396Z</updated>
   <id>https://www.kawashiros.club/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Nmap的基本使用：主机发现</title>
+    <link href="https://www.kawashiros.club/p/2021/523f63fa.html"/>
+    <id>https://www.kawashiros.club/p/2021/523f63fa.html</id>
+    <published>2021-02-09T08:45:23.000Z</published>
+    <updated>2021-02-10T09:15:16.396Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h1><p>CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。</p><p>如<code>192.168.0.1/24</code>等同于在<code>192.168.0.1</code>到<code>192.168.0.255</code>之间的所有IP地址。</p><h1 id="Nmap主机发现"><a href="#Nmap主机发现" class="headerlink" title="Nmap主机发现"></a>Nmap主机发现</h1><p>通过<code>nmap -sP [CIDR]</code>对该网络中所有主机进行Ping扫描，以探测主机存活性。</p><p>扫描过程中使用TCP、SYN扫描，ICMP探测主机存活。</p><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap <span class="literal">-sP</span> <span class="number">192.168</span>.<span class="number">0.1</span>/<span class="number">24</span></span><br></pre></td></tr></table></figure><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sP 192.168.0.1&#x2F;24</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-09 21:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.1</span><br><span class="line">Host is up (0.0019s latency).</span><br><span class="line">MAC Address: 34:71:46:AE:41:A7 (Huawei Device)</span><br><span class="line">Nmap scan report for 192.168.0.103</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: 18:BC:5A:E0:DA:AA (Zhejiang Tmall Technology)</span><br><span class="line">Nmap scan report for 192.168.0.104</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: B8:24:F0:00:88:15 (Soyo Technology Development)</span><br><span class="line">Nmap scan report for 192.168.0.105</span><br><span class="line">Host is up (0.11s latency).</span><br><span class="line">MAC Address: 34:EA:34:EE:4D:7C (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.113</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line">MAC Address: 1C:CC:D6:88:27:98 (Xiaomi Communications)</span><br><span class="line">Nmap scan report for 192.168.0.116</span><br><span class="line">Host is up (0.49s latency).</span><br><span class="line">MAC Address: 34:EA:34:D5:E9:3F (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.132</span><br><span class="line">Host is up (0.084s latency).</span><br><span class="line">MAC Address: AA:FB:CD:5B:44:C3 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.147</span><br><span class="line">Host is up (0.12s latency).</span><br><span class="line">MAC Address: 9C:A5:C0:53:02:56 (vivo Mobile Communication)</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Nmap scan report for 192.168.0.250</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: E4:F3:F5:7B:2A:1E (Shenzhen Mercury Communication Technologies)</span><br><span class="line">Nmap scan report for 192.168.0.251</span><br><span class="line">Host is up (0.085s latency).</span><br><span class="line">MAC Address: 8E:F2:28:0A:71:66 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.109</span><br><span class="line">Host is up.</span><br><span class="line">Nmap scan report for 192.168.0.118</span><br><span class="line">Host is up.</span><br><span class="line">Nmap done: 256 IP addresses (13 hosts up) scanned in 69.44 seconds</span><br></pre></td></tr></table></figure><p>输出结果第一行是<code>Nmap scan report for [IP]</code>，第二行表示此机器在线，第三行是MAC地址和设备生产厂家。</p><p>使用命令<code>nmap -sn [CIDR]</code>也可以达到相同效果。</p><h1 id="结果输出"><a href="#结果输出" class="headerlink" title="结果输出"></a>结果输出</h1><ul><li><code>-oN [文件名]</code>：将结果保存为普通文本；</li><li><code>-oX [文件名]</code>：将结果保存为外部XML；</li></ul><p>具体参考<code>nmap -h</code>输出的OUTPUT条目。 </p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h1 id=&quot;CIDR&quot;&gt;&lt;a href=&quot;#CIDR&quot; class=&quot;headerlink&quot; title=&quot;CIDR&quot;&gt;&lt;/a&gt;CIDR&lt;/h1&gt;&lt;p&gt;CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。&lt;/p</summary>
+      
+    
+    
+    
+    <category term="笔记" scheme="https://www.kawashiros.club/categories/%E7%AC%94%E8%AE%B0/"/>
+    
+    
+    <category term="Nmap" scheme="https://www.kawashiros.club/tags/Nmap/"/>
+    
+    <category term="网络安全" scheme="https://www.kawashiros.club/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>Nmap的基本使用：识别服务指纹</title>
@@ -538,42 +564,6 @@
     <category term="诗&amp;远方" scheme="https://www.kawashiros.club/tags/%E8%AF%97-%E8%BF%9C%E6%96%B9/"/>
     
     <category term="中二文" scheme="https://www.kawashiros.club/tags/%E4%B8%AD%E4%BA%8C%E6%96%87/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>OSI七层协议模型、TCP/IP四层模型学习笔记</title>
-    <link href="https://www.kawashiros.club/p/2020/c44c6cb2.html"/>
-    <id>https://www.kawashiros.club/p/2020/c44c6cb2.html</id>
-    <published>2020-10-08T12:59:43.000Z</published>
-    <updated>2021-02-05T15:07:10.795Z</updated>
-    
-    <content type="html"><![CDATA[<div id="post_detail"><!--done--><div id="topics">    <div class="post">        <h1 class="postTitle"><a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/Robin-YB/p/6668762.html">    <span>OSI七层协议模型、TCP/IP四层模型学习笔记</span></a><div id="cnblogs_post_body" class="blogpost-body">    <p><strong>1. OSI七层和TCP/IP四层的关系</strong></p><p>1.1&nbsp;OSI引入了服务、接口、协议、分层的概念，TCP/IP借鉴了OSI的这些概念建立TCP/IP模型。</p><p>1.2&nbsp;OSI先有模型，后有协议，先有标准，后进行实践；而TCP/IP则相反，先有协议和应用再提出了模型，且是参照的OSI模型。</p><p>1.3&nbsp;OSI是一种理论下的模型，而TCP/IP已被广泛使用，成为网络互联事实上的标准。</p><p>TCP：transmission control protocol 传输控制协议</p><p>UDP：user data protocol 用户数据报协议</p><p>&nbsp;</p><table border="1" cellspacing="0" cellpadding="0"><tbody><tr><td valign="bottom"><p align="center">OSI七层网络模型</p></td><td valign="bottom"><p align="center">TCP/IP四层概念模型 &nbsp;</p></td><td valign="bottom"><p align="center">对应网络协议</p></td></tr><tr><td valign="bottom"><p>应用层（Application）</p></td><td rowspan="3"><p>应用层</p></td><td valign="bottom"><p>HTTP、TFTP,&nbsp;FTP, NFS, WAIS、SMTP</p></td></tr><tr><td valign="bottom"><p>表示层（Presentation）</p></td><td valign="bottom"><p>Telnet, Rlogin, SNMP, Gopher</p></td></tr><tr><td valign="bottom"><p>会话层（Session）</p></td><td valign="bottom"><p>SMTP, DNS</p></td></tr><tr><td valign="bottom"><p>传输层（Transport）</p></td><td><p>传输层</p></td><td valign="bottom"><p>TCP, UDP</p></td></tr><tr><td valign="bottom"><p>网络层（Network）</p></td><td><p>网络层</p></td><td valign="bottom"><p>IP, ICMP, ARP, RARP, AKP, UUCP</p></td></tr><tr><td valign="bottom"><p>数据链路层（Data Link）</p></td><td rowspan="2"><p>数据链路层</p></td><td valign="bottom"><p>FDDI, Ethernet, Arpanet, PDN, SLIP, PPP</p></td></tr><tr><td valign="bottom"><p>物理层（Physical）</p></td><td valign="bottom"><p>IEEE 802.1A, IEEE 802.2到IEEE 802.11</p></td></tr></tbody></table><p>&nbsp;</p><div>&nbsp;</div><p><strong>&nbsp;</strong></p><p><strong>2. OSI七层协议模型</strong></p><p>七层结构记忆方法：应、表、会、传、网、数、物</p><p>应用层协议需要掌握的是：HTTP（Hyper text transfer&nbsp;protocol）、FTP（file transfer&nbsp;protocol）、SMTP（simple mail transfer rotocol）、POP3（post office protocol 3）、IMAP4（Internet mail access protocol）</p><p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160731161720376" alt="" align="middle"></p><p>&nbsp;</p><p>3. TCP/IP四层模型</p><p>3.1 应用层：对应OSI中的应用层、表示层、会话层</p><p>3.2 物理链路层：对应OSI中的数据链路层、物理层（也有叫网络接口层）</p><p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160731161739907" alt="" align="middle"></p><p>3.3 数据包说明：</p><p>IP层传输单位是IP分组，属于点到点的传输；TCP层传输单位是TCP段，属于端到端的传输</p><p>&nbsp;</p><p><img src= "/resources/loading.gif" data-lazy-src="http://hi.csdn.net/attachment/201107/4/0_1309782130K66A.gif" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160802112022872" alt="" align="middle"></p><p>&nbsp;</p></div><hr><p>转载自<a href="https://www.cnblogs.com/Robin-YB/p/6668762.html">https://www.cnblogs.com/Robin-YB/p/6668762.html</a> </p><p>文章版权归原作者( <a href="https://home.cnblogs.com/u/Robin-YB/">博客园@好就分享</a> )所有</p><p>转载为学习用途</p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;div id=&quot;post_detail&quot;&gt;
-&lt;!--done--&gt;
-&lt;div id=&quot;topics&quot;&gt;
-    &lt;div class=&quot;post&quot;&gt;
-        &lt;h1 class=&quot;postTitle&quot;&gt;
-
-&lt;a id=&quot;cb_post_title_url&quot; class=</summary>
-      
-    
-    
-    
-    <category term="转载" scheme="https://www.kawashiros.club/categories/%E8%BD%AC%E8%BD%BD/"/>
-    
-    <category term="日常宅技术" scheme="https://www.kawashiros.club/categories/%E8%BD%AC%E8%BD%BD/%E6%97%A5%E5%B8%B8%E5%AE%85%E6%8A%80%E6%9C%AF/"/>
-    
-    
-    <category term="网络架构" scheme="https://www.kawashiros.club/tags/%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84/"/>
-    
-    <category term="OSI" scheme="https://www.kawashiros.club/tags/OSI/"/>
-    
-    <category term="TCP/IP" scheme="https://www.kawashiros.club/tags/TCP-IP/"/>
     
   </entry>
   
