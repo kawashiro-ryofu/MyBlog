@@ -252,6 +252,108 @@
       </tags>
   </entry>
   <entry>
+    <title>Nmap的基本使用：扫描开放端口</title>
+    <url>/p/2021/d7839b7f.html</url>
+    <content><![CDATA[<h1 id="何为Nmap"><a href="#何为Nmap" class="headerlink" title="何为Nmap"></a>何为Nmap</h1><p>简单地说，<a href="https://nmap.org">Nmap</a>是一款网络安全领域常用的网络探测工具。我们可以用它探测当前网络在线的主机及其开放的端口。</p>
+<p>Nmap是网络安全工程师<span class="heimu" title="你知道的太多了">黑客</span>必须掌握的一个工具。</p>
+<p>以下均在命令行中演示。</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>分辩IP地址和域名。如果所给的是域名则会访问DNS服务器做域名解析。然后再发送ICMP数据包探测主机存活性。ICMP数据包常运用于PING。远程机器接收到数据包会响应一个数据包。Nmap解析这个返回的数据包得到机器的信息，其中就包括端口信息。</p>
+<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="最简单的使用"><a href="#最简单的使用" class="headerlink" title="最简单的使用"></a>最简单的使用</h2><p>下面是在Windows 10中的测试，使用nmap探测我这台土豆服务器开放的端口。在其他平台下大同小异。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 22:22 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for server (192.168.0.204)</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Other addresses for server (not scanned): fe80::21a:a9ff:fe91:e101</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">21&#x2F;tcp   open  ftp</span><br><span class="line">22&#x2F;tcp   open  ssh</span><br><span class="line">80&#x2F;tcp   open  http</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn</span><br><span class="line">443&#x2F;tcp  open  https</span><br><span class="line">445&#x2F;tcp  open  microsoft-ds</span><br><span class="line">631&#x2F;tcp  open  ipp</span><br><span class="line">6566&#x2F;tcp open  sane-port</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 6.14 seconds</span><br></pre></td></tr></table></figure>
+<p>从Nmap返回的结果来看，这台服务器开放了许多端口，其中包括21端口的<code>ftp</code>文件传输协议、80端口的<code>http</code>超文本传输协议、445端口的<code>microsoft-ds</code>微软共享文件夹、631端口的<code>ipp</code>打印机服务，以及一个<code>sane-port</code>，远程扫描仪端口。黑客可以通过监听数据包(通过WireShark)来获取<code>ftp</code>的密码和<code>http</code>传输报文。而<code>microsoft-ds</code>的445端口很脆弱，非常容易被攻陷。曾经的Bad Rabbit勒索病毒就是通过爆破445端口来攻击。</p>
+<p><span class="heimu" title="你知道的太多了">我这台服务器架设在内网，所以问题不大。</span></p>
+<h2 id="指定DNS扫描域名"><a href="#指定DNS扫描域名" class="headerlink" title="指定DNS扫描域名"></a>指定DNS扫描域名</h2><p>我们也可以设置指定的DNS服务器来探测端口，只需要设置<code>--dns-servers</code>参数。如下，使用<code>8.8.8.8</code>作为指定的DNS服务器，扫描<code>scanme.nmap.org</code>。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap scanme.nmap.org --dns-servers 8.8.8.8</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.18s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 84.31 seconds</span><br></pre></td></tr></table></figure>
+<h2 id="“穿墙”"><a href="#“穿墙”" class="headerlink" title="“穿墙”"></a>“穿墙”</h2><p>使用<code>-Pn</code>参数来停止探测之前的ICMP请求，以突破防火墙的安全机制。仅限已经知道主机存活或防火墙开启的机器。<span class="heimu" title="你知道的太多了">加入这个参数貌似会让nmap遍历远程机器的每一个端口，所以会很慢。</span></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -Pn scanme.nmap.org</span><br><span class="line">Host discovery disabled (-Pn). All addresses will be marked &#39;up&#39; and scan times will be slower.</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.17s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 78.05 seconds</span><br></pre></td></tr></table></figure>
+<p><span class="heimu" title="你知道的太多了">和之前的有区别吗？莫非这个靶子莫得防火墙？</span></p>
+<h2 id="探测全部端口"><a href="#探测全部端口" class="headerlink" title="探测全部端口"></a>探测全部端口</h2><p>以上也仅仅探测了Nmap默认的扫描端口范围。</p>
+<p>使用<code>-p m-n</code>指定探测m-n端口范围。</p>
+<p>下面还是使用我自己的土豆服务器做靶机。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -p 0-65535 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn</span><br><span class="line">Nmap done: 1 IP address (0 hosts up) scanned in 7.14 seconds</span><br><span class="line">PS C:\Users\bkryofu&gt; nmap  192.168.0.204 -p 0-65535</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 65527 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">21&#x2F;tcp    open  ftp</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">139&#x2F;tcp   open  netbios-ssn</span><br><span class="line">443&#x2F;tcp   open  https</span><br><span class="line">445&#x2F;tcp   open  microsoft-ds</span><br><span class="line">631&#x2F;tcp   open  ipp</span><br><span class="line">6566&#x2F;tcp  open  sane-port</span><br><span class="line">31416&#x2F;tcp open  boinc</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 9.45 seconds</span><br></pre></td></tr></table></figure>
+<p>可以看到，输出结果和最开始的不同，多出了一个31416端口的<code>boinc</code>。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/weixin_42596275/article/details/105490962">Nmap之<em>_</em>列举远程机器开发的端口_LiQuan-CSDN博客</a></li>
+</ul>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>憨憨地在省图书馆测试扫描了以下WLAN登录的服务器，挺有意思的。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/d7839b7f/1.webp" alt="卧槽，NB啊！"></p>
+<p>讲真挺想试试抓包的，可惜这台机器上没有安装WireShark。<span class="heimu" title="你知道的太多了">就算装了我也不会用。</span></p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nmap的基本使用：识别服务指纹</title>
+    <url>/p/2021/1a01b954.html</url>
+    <content><![CDATA[<h1 id="服务指纹"><a href="#服务指纹" class="headerlink" title="服务指纹"></a>服务指纹</h1><p>服务指纹信息包括服务端口、服务名和版本等。通过nmap的服务指纹分析，我们可以得到更有价值的信息，但更加耗时，且容易被察觉（因为这会产生更多的数据流量）。</p>
+<h1 id="Nmap识别服务指纹"><a href="#Nmap识别服务指纹" class="headerlink" title="Nmap识别服务指纹"></a>Nmap识别服务指纹</h1><p>通过<code>-sV</code>参数，获取远程机器所启用的服务。下面还是使用之前的靶机。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sV</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sV 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 01:58 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">80&#x2F;tcp   open  http        Apache httpd 2.4.38</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">443&#x2F;tcp  open  ssl&#x2F;http    Apache httpd 2.4.38</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Service Info: Hosts: server.kawashiros.club, SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 18.14 seconds</span><br></pre></td></tr></table></figure>
+<p>执行该命令后，nmap不仅返回了靶机开放的端口，还识别出了开放对应端口的服务（VERSION列）。通过这些获取服务的指纹。</p>
+<h1 id="Nmap的侵略性探测"><a href="#Nmap的侵略性探测" class="headerlink" title="Nmap的侵略性探测"></a>Nmap的侵略性探测</h1><h2 id="（一）"><a href="#（一）" class="headerlink" title="（一）"></a>（一）</h2><p>使用命令<code>nmap -A -v -T4 [IP]</code>来探测目标机器的操作系统、服务等信息。</p>
+<ul>
+<li><code>-A</code>：使用侵略性策略探测；</li>
+<li><code>-v</code>：持续输出返回的解析；</li>
+<li><code>-T4</code>：速度。可调节最低为<code>T1</code>，最高为<code>T5</code>。</li>
+</ul>
+<p>还是使用刚刚的靶机测试。<span class="heimu" title="你知道的太多了">这里我把Apache2关了，因为<span class="heimu" title="鼠标也划不开的黑幕">⬛⬛⬛⬛⬛⬛⬛⬛</span>&lt;/span&gt;</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-A</span> <span class="literal">-v</span> <span class="literal">-T4</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -A -v -T4 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:23 ?D1ú±ê×?ê±??</span><br><span class="line">NSE: Loaded 153 scripts for scanning.</span><br><span class="line">NSE: Script Pre-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating ARP Ping Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1 port]</span><br><span class="line">Completed ARP Ping Scan at 02:23, 0.42s elapsed (1 total hosts)</span><br><span class="line">Initiating Parallel DNS resolution of 1 host. at 02:23</span><br><span class="line">Completed Parallel DNS resolution of 1 host. at 02:23, 0.02s elapsed</span><br><span class="line">Initiating SYN Stealth Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1000 ports]</span><br><span class="line">Discovered open port 445&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 22&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 21&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 139&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 631&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 6566&#x2F;tcp on 192.168.0.204</span><br><span class="line">Completed SYN Stealth Scan at 02:23, 0.10s elapsed (1000 total ports)</span><br><span class="line">Initiating Service scan at 02:23</span><br><span class="line">Scanning 6 services on 192.168.0.204</span><br><span class="line">Completed Service scan at 02:23, 11.04s elapsed (6 services on 1 host)</span><br><span class="line">Initiating OS detection (try #1) against 192.168.0.204</span><br><span class="line">NSE: Script scanning 192.168.0.204.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 22.27s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.14s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00063s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|   Supported Methods: GET HEAD OPTIONS POST PUT</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6, Linux 5.0 - 5.3</span><br><span class="line">Uptime guess: 45.082 days (since Fri Dec 25 00:25:36 2020)</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">TCP Sequence Prediction: Difficulty&#x3D;251 (Good luck!)</span><br><span class="line">IP ID Sequence Generation: All zeros</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: 0s</span><br><span class="line">| nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| Names:</span><br><span class="line">|   SERVER&lt;00&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;03&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;20&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   \x01\x02__MSBROWSE__\x02&lt;01&gt;  Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;1d&gt;        Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|_  WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:23:20+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:23:20</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">TRACEROUTE</span><br><span class="line">HOP RTT     ADDRESS</span><br><span class="line">1   0.63 ms 192.168.0.204</span><br><span class="line"></span><br><span class="line">NSE: Script Post-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Read data files from: C:\Program Files (x86)\Nmap</span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 40.91 seconds</span><br><span class="line">           Raw packets sent: 1023 (45.806KB) | Rcvd: 1019 (41.502KB)</span><br></pre></td></tr></table></figure>
+<p>在这里，nmap为我们输出了更为详细的信息。包括靶机的内核版本、估算的靶机运行时长、服务的详细信息等。<del>可以说查到连内裤都不剩。</del></p>
+<h2 id="（二）"><a href="#（二）" class="headerlink" title="（二）"></a>（二）</h2><p>使用<code>nmap -sC -sV -O [IP]</code>也可以探测目标机器的操作系统、服务等信息。</p>
+<ul>
+<li><code>-sC</code>：使用Nmap脚本进行探测；</li>
+<li><code>-sV</code>：探测目标机器上的服务指纹信息；</li>
+<li><code>-O</code>：探测目标机器上的操作系统信息。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sC</span> <span class="literal">-sV</span> <span class="literal">-O</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sC -sV -O 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.0014s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: -1s</span><br><span class="line">|_nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:37:15+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:37:15</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 43.31 seconds</span><br></pre></td></tr></table></figure>
+<p>和<code>nmap -A -v -T4</code>返回的结果没有多大区别。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/suyebiubiu/article/details/108595095">Nmap-03:Nmap识别目标机器上服务的指纹_敲代码的乔帮主-CSDN博客</a></li>
+<li><a href="https://blog.csdn.net/asdushf/article/details/111872759">服务指纹分析_asdushf的博客-CSDN博客</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nmap的基本使用：主机发现</title>
+    <url>/p/2021/523f63fa.html</url>
+    <content><![CDATA[<h1 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h1><p>CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。</p>
+<p>如<code>192.168.0.1/24</code>等同于在<code>192.168.0.1</code>到<code>192.168.0.255</code>之间的所有IP地址。</p>
+<h1 id="Nmap主机发现"><a href="#Nmap主机发现" class="headerlink" title="Nmap主机发现"></a>Nmap主机发现</h1><p>通过<code>nmap -sP [CIDR]</code>对该网络中所有主机进行Ping扫描，以探测主机存活性。</p>
+<p>扫描过程中使用TCP、SYN扫描，ICMP探测主机存活。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sP</span> <span class="number">192.168</span>.<span class="number">0.1</span>/<span class="number">24</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sP 192.168.0.1&#x2F;24</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-09 21:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.1</span><br><span class="line">Host is up (0.0019s latency).</span><br><span class="line">MAC Address: 34:71:46:AE:41:A7 (Huawei Device)</span><br><span class="line">Nmap scan report for 192.168.0.103</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: 18:BC:5A:E0:DA:AA (Zhejiang Tmall Technology)</span><br><span class="line">Nmap scan report for 192.168.0.104</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: B8:24:F0:00:88:15 (Soyo Technology Development)</span><br><span class="line">Nmap scan report for 192.168.0.105</span><br><span class="line">Host is up (0.11s latency).</span><br><span class="line">MAC Address: 34:EA:34:EE:4D:7C (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.113</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line">MAC Address: 1C:CC:D6:88:27:98 (Xiaomi Communications)</span><br><span class="line">Nmap scan report for 192.168.0.116</span><br><span class="line">Host is up (0.49s latency).</span><br><span class="line">MAC Address: 34:EA:34:D5:E9:3F (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.132</span><br><span class="line">Host is up (0.084s latency).</span><br><span class="line">MAC Address: AA:FB:CD:5B:44:C3 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.147</span><br><span class="line">Host is up (0.12s latency).</span><br><span class="line">MAC Address: 9C:A5:C0:53:02:56 (vivo Mobile Communication)</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Nmap scan report for 192.168.0.250</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: E4:F3:F5:7B:2A:1E (Shenzhen Mercury Communication Technologies)</span><br><span class="line">Nmap scan report for 192.168.0.251</span><br><span class="line">Host is up (0.085s latency).</span><br><span class="line">MAC Address: 8E:F2:28:0A:71:66 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.109</span><br><span class="line">Host is up.</span><br><span class="line">Nmap scan report for 192.168.0.118</span><br><span class="line">Host is up.</span><br><span class="line">Nmap done: 256 IP addresses (13 hosts up) scanned in 69.44 seconds</span><br></pre></td></tr></table></figure>
+<p>输出结果第一行是<code>Nmap scan report for [IP]</code>，第二行表示此机器在线，第三行是MAC地址和设备生产厂家。</p>
+<p>使用命令<code>nmap -sn [CIDR]</code>也可以达到相同效果。</p>
+<h1 id="结果输出"><a href="#结果输出" class="headerlink" title="结果输出"></a>结果输出</h1><ul>
+<li><code>-oN [文件名]</code>：将结果保存为普通文本；</li>
+<li><code>-oX [文件名]</code>：将结果保存为外部XML；</li>
+</ul>
+<p>具体参考<code>nmap -h</code>输出的OUTPUT条目。 </p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>OSI七层协议模型、TCP/IP四层模型学习笔记</title>
     <url>/p/2020/c44c6cb2.html</url>
     <content><![CDATA[<div id="post_detail">
@@ -526,19 +628,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>Sunset</title>
-    <url>/p/2020/c846c8bb.html</url>
-    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/5cb2559ab0565b1d.webp" alt="0"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/87c62b5bde9cca15.webp" alt="1"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/49eb83c7d0e0c83a.webp" alt="2"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/7056adb0dba4d66e.webp" alt="3"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/0279d2aec8fae6d1.webp" alt="4"></p>
-]]></content>
-      <categories>
-        <category>摄影</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Windows Terminal使用体验</title>
     <url>/p/2020/cfe2793b.html</url>
     <content><![CDATA[<p>Windows Terminal早就不是什么新奇的东西了，在Microsoft Store直接可以找到。有很多新特性。替代Windows原生的Command Prompt再合适不过。我从年初开始，使用至今。</p>
@@ -585,6 +674,19 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>Sunset</title>
+    <url>/p/2020/c846c8bb.html</url>
+    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/5cb2559ab0565b1d.webp" alt="0"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/87c62b5bde9cca15.webp" alt="1"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/49eb83c7d0e0c83a.webp" alt="2"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/7056adb0dba4d66e.webp" alt="3"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/0279d2aec8fae6d1.webp" alt="4"></p>
+]]></content>
+      <categories>
+        <category>摄影</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Valine无法加载评论</title>
     <url>/p/2020/8e4e7ab9.html</url>
     <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
@@ -609,86 +711,6 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>博客</tag>
         <tag>Valine</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>一次配置Emlog</title>
-    <url>/p/2020/77a00aad.html</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
-<p>环境:</p>
-<blockquote>
-<p>OS: debian 10 i386架构</p>
-</blockquote>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
-<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
-<p>以管理员账户登录:<code>mysql -u root -p</code></p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
-<p>退出,登录这个新帐户.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
-<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
-<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
-<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
-
-<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
-<p>顺利的话,你就配置成功了.博客可以显示了.</p>
-<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
-<p>(我用的是PHP 7.4)</p>
-<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
-<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-        <category>闲的蛋疼</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>运维</tag>
-        <tag>Emlog</tag>
-        <tag>PHP</tag>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>不科学地理解C/C++里的指针</title>
-    <url>/p/2020/c1f99cd3.html</url>
-    <content><![CDATA[<h6 id="仅个人理解，如有错误，感谢指正"><a href="#仅个人理解，如有错误，感谢指正" class="headerlink" title="仅个人理解，如有错误，感谢指正"></a>仅个人理解，如有错误，感谢指正</h6><h1 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h1><p>RAM</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://5b0988e595225.cdn.sohucs.com/images/20180122/d2e10420a2c34210a000d69f8e684cc0.jpeg" alt="R.A.M"></p>
-<p>不对，不是她，而是这个。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://tse4-mm.cn.bing.net/th/id/OIP.PtJg0y4BHeaDqxRShlKKmAHaFj?pid=Api&amp;rs=1" alt="内存条"></p>
-<p>RAM，<strong>随机</strong>存取存储器，也就是我们平常所说的<strong>内存条</strong>的那个内存（以下全部简称内存）。它的作用是存储程序运行中产生的变量。</p>
-<p>之所以要专门设计出内存条来存储数据，而非通过硬盘，是因为<strong>硬盘实在是太慢了</strong>。CPU运算速度快，但缓存储存量极小。硬盘容量大，但速度慢。运行程序需要较大的储存容量和较快的速度，于是内存就诞生了。</p>
-<p><strong>每个变量都会分配到一个内存地址，数组则是首个元素的内存地址</strong>。在现代的操作系统中大多都可以把部分内存中的数据分配到硬盘，所以不用担心RAM可用容量不足了。</p>
-<h1 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h1><p><strong>指针变量</strong>，简称指针，<strong>指向内存地址的变量</strong>。举个例子：快捷方式。快捷方式指向文件所在的位置，指针指向变量在内存中的位置。</p>
-<h2 id="声明指针"><a href="#声明指针" class="headerlink" title="声明指针"></a>声明指针</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 233;&#x2F;&#x2F;这声明了一个简单的整型变量</span><br></pre></td></tr></table></figure>
-<p>假设此时，a在内存中的地址是666，那么<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; &amp;a;</span><br><span class="line">&#x2F;&#x2F;这声明了一个指针型变量，指向的是整形变量a的地址并为它赋值a的地址。</span><br></pre></td></tr></table></figure><br>也就是说，<code>*p</code>为<code>a</code>的值233，<code>p</code>为<code>a</code>的地址666。</p>
-<p><strong>就好比快捷方式的位置在你的桌面上，快捷方式指向的是某个程序，你双击快捷方式就运行了这个程序。</strong></p>
-<p><strong>注意</strong>，虽然指针变量的声明与普通变量的声明极其相似，但千万不要声明之后就丢下不管了。不然程序会<strong>当场暴毙</strong>。如果实在要声明一个没有赋值的指针变量，你可以这样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; NULL;</span><br></pre></td></tr></table></figure></p>
-<p><strong>NULL是一个空指针常量。</strong></p>
-<h1 id="内存四区"><a href="#内存四区" class="headerlink" title="内存四区"></a>内存四区</h1><p>前面提到，内存存储程序运行中产生的变量。那么，一个C/C++编译的程序所占用的内存分为以下四类：<strong>栈区</strong>、<strong>堆区</strong>、<strong>全局区</strong>、<strong>代码区</strong>。</p>
-<h3 id="1-栈区"><a href="#1-栈区" class="headerlink" title="1. 栈区"></a>1. 栈区</h3><p>由编译器自动分配，专门存放局部变量。在函数执行完成内存会自动释放。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;<span class="comment">//局部变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="2-堆区"><a href="#2-堆区" class="headerlink" title="2. 堆区"></a>2. 堆区</h3><p>由程序员手动分配(<code>malloc函数</code>)、释放(<code>free函数</code>)。当进程结束，也会被操作系统回收。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">4</span>);<span class="comment">//为指针p指向的内存地址向后分配4个字节</span></span><br><span class="line">    <span class="comment">//这里要将(void *)转换成(int *)</span></span><br><span class="line">    *p = <span class="number">233</span>;<span class="comment">//为指针变量p所指向的内存地址赋值4</span></span><br><span class="line">    <span class="comment">//此时*运算符是解引用运算符，而之前的(int *)是声明这是个指针变量</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p指针变量的值：%d \t p指针变量指向的地址%d&quot;</span>,*p,p);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>执行结果：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p指针变量的值：233    p指针变量指向的地址8524730</span><br></pre></td></tr></table></figure><br>p指针变量指向的内存地址随机。</p>
-<h3 id="3-数据区"><a href="#3-数据区" class="headerlink" title="3. 数据区"></a>3. 数据区</h3><p>往下分还可以分：</p>
-<ol>
-<li>常量区：存放常量（多为字符串常量）</li>
-<li>全局区：存放全局变量和静态变量<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> global = <span class="number">233</span>;<span class="comment">//全局变量</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> c = <span class="number">666</span>;<span class="comment">//加入const关键字声明静态变量  </span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;global=%d \t c=%d&quot;</span>,global,c);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>C++中则是常量和全局变量、静态变量都占用于数据区，没有区分开。</p>
-<h3 id="4-代码区"><a href="#4-代码区" class="headerlink" title="4.代码区"></a>4.代码区</h3><p>存放函数体等，基本上不怎么用到。</p>
-<hr>
-<p>相信介绍到这里，指针比较基本的概念你应该学废了（笑）。似乎也不是很难的样子。</p>
-<h4 id="lt-lt-To-Be-Continued-如果你催我就更"><a href="#lt-lt-To-Be-Continued-如果你催我就更" class="headerlink" title="&lt;&lt;=To Be Continued /|/  如果你催我就更"></a>&lt;&lt;=To Be Continued /|/  <del>如果你催我就更</del></h4>]]></content>
-      <categories>
-        <category>芝士就是力量</category>
-      </categories>
-      <tags>
-        <tag>C/C++</tag>
-        <tag>指针</tag>
-        <tag>经验分享</tag>
       </tags>
   </entry>
   <entry>
@@ -842,6 +864,45 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>一次配置Emlog</title>
+    <url>/p/2020/77a00aad.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
+<p>环境:</p>
+<blockquote>
+<p>OS: debian 10 i386架构</p>
+</blockquote>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
+<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
+<p>以管理员账户登录:<code>mysql -u root -p</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
+<p>退出,登录这个新帐户.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
+<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
+<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
+
+<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
+<p>顺利的话,你就配置成功了.博客可以显示了.</p>
+<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
+<p>(我用的是PHP 7.4)</p>
+<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
+<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+        <category>闲的蛋疼</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>运维</tag>
+        <tag>Emlog</tag>
+        <tag>PHP</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>叶的自述</title>
     <url>/p/2020/84968ea5.html</url>
     <content><![CDATA[<h1 id="叶的自述"><a href="#叶的自述" class="headerlink" title="叶的自述"></a>叶的自述</h1><p>风轻轻地拂过，<br>将我带下树梢。</p>
@@ -855,6 +916,47 @@ sys.setrecursionlimit(5000)
         <tag>随笔</tag>
         <tag>诗&amp;远方</tag>
         <tag>中二文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>不科学地理解C/C++里的指针</title>
+    <url>/p/2020/c1f99cd3.html</url>
+    <content><![CDATA[<h6 id="仅个人理解，如有错误，感谢指正"><a href="#仅个人理解，如有错误，感谢指正" class="headerlink" title="仅个人理解，如有错误，感谢指正"></a>仅个人理解，如有错误，感谢指正</h6><h1 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h1><p>RAM</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://5b0988e595225.cdn.sohucs.com/images/20180122/d2e10420a2c34210a000d69f8e684cc0.jpeg" alt="R.A.M"></p>
+<p>不对，不是她，而是这个。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://tse4-mm.cn.bing.net/th/id/OIP.PtJg0y4BHeaDqxRShlKKmAHaFj?pid=Api&amp;rs=1" alt="内存条"></p>
+<p>RAM，<strong>随机</strong>存取存储器，也就是我们平常所说的<strong>内存条</strong>的那个内存（以下全部简称内存）。它的作用是存储程序运行中产生的变量。</p>
+<p>之所以要专门设计出内存条来存储数据，而非通过硬盘，是因为<strong>硬盘实在是太慢了</strong>。CPU运算速度快，但缓存储存量极小。硬盘容量大，但速度慢。运行程序需要较大的储存容量和较快的速度，于是内存就诞生了。</p>
+<p><strong>每个变量都会分配到一个内存地址，数组则是首个元素的内存地址</strong>。在现代的操作系统中大多都可以把部分内存中的数据分配到硬盘，所以不用担心RAM可用容量不足了。</p>
+<h1 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h1><p><strong>指针变量</strong>，简称指针，<strong>指向内存地址的变量</strong>。举个例子：快捷方式。快捷方式指向文件所在的位置，指针指向变量在内存中的位置。</p>
+<h2 id="声明指针"><a href="#声明指针" class="headerlink" title="声明指针"></a>声明指针</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 233;&#x2F;&#x2F;这声明了一个简单的整型变量</span><br></pre></td></tr></table></figure>
+<p>假设此时，a在内存中的地址是666，那么<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; &amp;a;</span><br><span class="line">&#x2F;&#x2F;这声明了一个指针型变量，指向的是整形变量a的地址并为它赋值a的地址。</span><br></pre></td></tr></table></figure><br>也就是说，<code>*p</code>为<code>a</code>的值233，<code>p</code>为<code>a</code>的地址666。</p>
+<p><strong>就好比快捷方式的位置在你的桌面上，快捷方式指向的是某个程序，你双击快捷方式就运行了这个程序。</strong></p>
+<p><strong>注意</strong>，虽然指针变量的声明与普通变量的声明极其相似，但千万不要声明之后就丢下不管了。不然程序会<strong>当场暴毙</strong>。如果实在要声明一个没有赋值的指针变量，你可以这样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; NULL;</span><br></pre></td></tr></table></figure></p>
+<p><strong>NULL是一个空指针常量。</strong></p>
+<h1 id="内存四区"><a href="#内存四区" class="headerlink" title="内存四区"></a>内存四区</h1><p>前面提到，内存存储程序运行中产生的变量。那么，一个C/C++编译的程序所占用的内存分为以下四类：<strong>栈区</strong>、<strong>堆区</strong>、<strong>全局区</strong>、<strong>代码区</strong>。</p>
+<h3 id="1-栈区"><a href="#1-栈区" class="headerlink" title="1. 栈区"></a>1. 栈区</h3><p>由编译器自动分配，专门存放局部变量。在函数执行完成内存会自动释放。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;<span class="comment">//局部变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-堆区"><a href="#2-堆区" class="headerlink" title="2. 堆区"></a>2. 堆区</h3><p>由程序员手动分配(<code>malloc函数</code>)、释放(<code>free函数</code>)。当进程结束，也会被操作系统回收。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">4</span>);<span class="comment">//为指针p指向的内存地址向后分配4个字节</span></span><br><span class="line">    <span class="comment">//这里要将(void *)转换成(int *)</span></span><br><span class="line">    *p = <span class="number">233</span>;<span class="comment">//为指针变量p所指向的内存地址赋值4</span></span><br><span class="line">    <span class="comment">//此时*运算符是解引用运算符，而之前的(int *)是声明这是个指针变量</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p指针变量的值：%d \t p指针变量指向的地址%d&quot;</span>,*p,p);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p指针变量的值：233    p指针变量指向的地址8524730</span><br></pre></td></tr></table></figure><br>p指针变量指向的内存地址随机。</p>
+<h3 id="3-数据区"><a href="#3-数据区" class="headerlink" title="3. 数据区"></a>3. 数据区</h3><p>往下分还可以分：</p>
+<ol>
+<li>常量区：存放常量（多为字符串常量）</li>
+<li>全局区：存放全局变量和静态变量<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> global = <span class="number">233</span>;<span class="comment">//全局变量</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> c = <span class="number">666</span>;<span class="comment">//加入const关键字声明静态变量  </span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;global=%d \t c=%d&quot;</span>,global,c);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>C++中则是常量和全局变量、静态变量都占用于数据区，没有区分开。</p>
+<h3 id="4-代码区"><a href="#4-代码区" class="headerlink" title="4.代码区"></a>4.代码区</h3><p>存放函数体等，基本上不怎么用到。</p>
+<hr>
+<p>相信介绍到这里，指针比较基本的概念你应该学废了（笑）。似乎也不是很难的样子。</p>
+<h4 id="lt-lt-To-Be-Continued-如果你催我就更"><a href="#lt-lt-To-Be-Continued-如果你催我就更" class="headerlink" title="&lt;&lt;=To Be Continued /|/  如果你催我就更"></a>&lt;&lt;=To Be Continued /|/  <del>如果你催我就更</del></h4>]]></content>
+      <categories>
+        <category>芝士就是力量</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>指针</tag>
+        <tag>经验分享</tag>
       </tags>
   </entry>
   <entry>
@@ -1652,6 +1754,40 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
+    <url>/p/2020/9e01b7f0.html</url>
+    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
+<p>在阅读本文之前，建议先阅读《1984》原著。</p>
+</div>
+<div class="note info modern"><p>电幕之下，请高呼：</p>
+<font size=14>我爱老大哥！</font>
+</div>
+<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
+<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
+<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
+<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
+<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
+<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
+<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
+<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
+<p>愚蠢像智慧一样必要，也同样难以学到。</p>
+<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
+<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
+<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
+<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>……</p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>感想</category>
+      </categories>
+      <tags>
+        <tag>《一九八四》</tag>
+        <tag>品书</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>记一次失败部署树莓派双屏桌面</title>
     <url>/p/2020/5605bcd6.html</url>
     <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p><span class="heimu" title="你知道的太多了">想要利用多余的一个屏幕。</span></p>
@@ -1693,40 +1829,6 @@ sys.setrecursionlimit(5000)
         <tag>树莓派</tag>
         <tag>桌面</tag>
         <tag>失败案例</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
-    <url>/p/2020/9e01b7f0.html</url>
-    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
-<p>在阅读本文之前，建议先阅读《1984》原著。</p>
-</div>
-<div class="note info modern"><p>电幕之下，请高呼：</p>
-<font size=14>我爱老大哥！</font>
-</div>
-<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
-<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
-<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
-<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
-<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
-<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
-<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
-<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
-<p>愚蠢像智慧一样必要，也同样难以学到。</p>
-<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
-<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
-<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
-<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>……</p>
-]]></content>
-      <categories>
-        <category>随笔</category>
-        <category>感想</category>
-      </categories>
-      <tags>
-        <tag>《一九八四》</tag>
-        <tag>品书</tag>
       </tags>
   </entry>
   <entry>
@@ -2031,8 +2133,8 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>GNU/Linux</tag>
         <tag>运维</tag>
-        <tag>MySQL</tag>
         <tag>站长</tag>
+        <tag>MySQL</tag>
         <tag>Web</tag>
         <tag>翻译</tag>
       </tags>
@@ -2066,9 +2168,9 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>GNU/Linux</tag>
         <tag>运维</tag>
+        <tag>站长</tag>
         <tag>PHP</tag>
         <tag>MySQL</tag>
-        <tag>站长</tag>
         <tag>Web</tag>
         <tag>翻译</tag>
       </tags>
@@ -2107,108 +2209,6 @@ sys.setrecursionlimit(5000)
         <tag>站长</tag>
         <tag>Web</tag>
         <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nmap的基本使用：扫描开放端口</title>
-    <url>/p/2021/d7839b7f.html</url>
-    <content><![CDATA[<h1 id="何为Nmap"><a href="#何为Nmap" class="headerlink" title="何为Nmap"></a>何为Nmap</h1><p>简单地说，<a href="https://nmap.org">Nmap</a>是一款网络安全领域常用的网络探测工具。我们可以用它探测当前网络在线的主机及其开放的端口。</p>
-<p>Nmap是网络安全工程师<span class="heimu" title="你知道的太多了">黑客</span>必须掌握的一个工具。</p>
-<p>以下均在命令行中演示。</p>
-<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>分辩IP地址和域名。如果所给的是域名则会访问DNS服务器做域名解析。然后再发送ICMP数据包探测主机存活性。ICMP数据包常运用于PING。远程机器接收到数据包会响应一个数据包。Nmap解析这个返回的数据包得到机器的信息，其中就包括端口信息。</p>
-<h1 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h1><h2 id="最简单的使用"><a href="#最简单的使用" class="headerlink" title="最简单的使用"></a>最简单的使用</h2><p>下面是在Windows 10中的测试，使用nmap探测我这台土豆服务器开放的端口。在其他平台下大同小异。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 22:22 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for server (192.168.0.204)</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Other addresses for server (not scanned): fe80::21a:a9ff:fe91:e101</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE</span><br><span class="line">21&#x2F;tcp   open  ftp</span><br><span class="line">22&#x2F;tcp   open  ssh</span><br><span class="line">80&#x2F;tcp   open  http</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn</span><br><span class="line">443&#x2F;tcp  open  https</span><br><span class="line">445&#x2F;tcp  open  microsoft-ds</span><br><span class="line">631&#x2F;tcp  open  ipp</span><br><span class="line">6566&#x2F;tcp open  sane-port</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 6.14 seconds</span><br></pre></td></tr></table></figure>
-<p>从Nmap返回的结果来看，这台服务器开放了许多端口，其中包括21端口的<code>ftp</code>文件传输协议、80端口的<code>http</code>超文本传输协议、445端口的<code>microsoft-ds</code>微软共享文件夹、631端口的<code>ipp</code>打印机服务，以及一个<code>sane-port</code>，远程扫描仪端口。黑客可以通过监听数据包(通过WireShark)来获取<code>ftp</code>的密码和<code>http</code>传输报文。而<code>microsoft-ds</code>的445端口很脆弱，非常容易被攻陷。曾经的Bad Rabbit勒索病毒就是通过爆破445端口来攻击。</p>
-<p><span class="heimu" title="你知道的太多了">我这台服务器架设在内网，所以问题不大。</span></p>
-<h2 id="指定DNS扫描域名"><a href="#指定DNS扫描域名" class="headerlink" title="指定DNS扫描域名"></a>指定DNS扫描域名</h2><p>我们也可以设置指定的DNS服务器来探测端口，只需要设置<code>--dns-servers</code>参数。如下，使用<code>8.8.8.8</code>作为指定的DNS服务器，扫描<code>scanme.nmap.org</code>。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap scanme.nmap.org --dns-servers 8.8.8.8</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.18s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 84.31 seconds</span><br></pre></td></tr></table></figure>
-<h2 id="“穿墙”"><a href="#“穿墙”" class="headerlink" title="“穿墙”"></a>“穿墙”</h2><p>使用<code>-Pn</code>参数来停止探测之前的ICMP请求，以突破防火墙的安全机制。仅限已经知道主机存活或防火墙开启的机器。<span class="heimu" title="你知道的太多了">加入这个参数貌似会让nmap遍历远程机器的每一个端口，所以会很慢。</span></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -Pn scanme.nmap.org</span><br><span class="line">Host discovery disabled (-Pn). All addresses will be marked &#39;up&#39; and scan times will be slower.</span><br><span class="line">Nmap scan report for scanme.nmap.org (45.33.32.156)</span><br><span class="line">Host is up (0.17s latency).</span><br><span class="line">Not shown: 996 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">9929&#x2F;tcp  open  nping-echo</span><br><span class="line">31337&#x2F;tcp open  Elite</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 78.05 seconds</span><br></pre></td></tr></table></figure>
-<p><span class="heimu" title="你知道的太多了">和之前的有区别吗？莫非这个靶子莫得防火墙？</span></p>
-<h2 id="探测全部端口"><a href="#探测全部端口" class="headerlink" title="探测全部端口"></a>探测全部端口</h2><p>以上也仅仅探测了Nmap默认的扫描端口范围。</p>
-<p>使用<code>-p m-n</code>指定探测m-n端口范围。</p>
-<p>下面还是使用我自己的土豆服务器做靶机。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -p 0-65535 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Note: Host seems down. If it is really up, but blocking our ping probes, try -Pn</span><br><span class="line">Nmap done: 1 IP address (0 hosts up) scanned in 7.14 seconds</span><br><span class="line">PS C:\Users\bkryofu&gt; nmap  192.168.0.204 -p 0-65535</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-06 23:20 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 65527 closed ports</span><br><span class="line">PORT      STATE SERVICE</span><br><span class="line">21&#x2F;tcp    open  ftp</span><br><span class="line">22&#x2F;tcp    open  ssh</span><br><span class="line">80&#x2F;tcp    open  http</span><br><span class="line">139&#x2F;tcp   open  netbios-ssn</span><br><span class="line">443&#x2F;tcp   open  https</span><br><span class="line">445&#x2F;tcp   open  microsoft-ds</span><br><span class="line">631&#x2F;tcp   open  ipp</span><br><span class="line">6566&#x2F;tcp  open  sane-port</span><br><span class="line">31416&#x2F;tcp open  boinc</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line"></span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 9.45 seconds</span><br></pre></td></tr></table></figure>
-<p>可以看到，输出结果和最开始的不同，多出了一个31416端口的<code>boinc</code>。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://blog.csdn.net/weixin_42596275/article/details/105490962">Nmap之<em>_</em>列举远程机器开发的端口_LiQuan-CSDN博客</a></li>
-</ul>
-<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>憨憨地在省图书馆测试扫描了以下WLAN登录的服务器，挺有意思的。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/d7839b7f/1.webp" alt="卧槽，NB啊！"></p>
-<p>讲真挺想试试抓包的，可惜这台机器上没有安装WireShark。<span class="heimu" title="你知道的太多了">就算装了我也不会用。</span></p>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>Nmap</tag>
-        <tag>网络安全</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nmap的基本使用：识别服务指纹</title>
-    <url>/p/2021/1a01b954.html</url>
-    <content><![CDATA[<h1 id="服务指纹"><a href="#服务指纹" class="headerlink" title="服务指纹"></a>服务指纹</h1><p>服务指纹信息包括服务端口、服务名和版本等。通过nmap的服务指纹分析，我们可以得到更有价值的信息，但更加耗时，且容易被察觉（因为这会产生更多的数据流量）。</p>
-<h1 id="Nmap识别服务指纹"><a href="#Nmap识别服务指纹" class="headerlink" title="Nmap识别服务指纹"></a>Nmap识别服务指纹</h1><p>通过<code>-sV</code>参数，获取远程机器所启用的服务。下面还是使用之前的靶机。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sV</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sV 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 01:58 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">80&#x2F;tcp   open  http        Apache httpd 2.4.38</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">443&#x2F;tcp  open  ssl&#x2F;http    Apache httpd 2.4.38</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Service Info: Hosts: server.kawashiros.club, SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 18.14 seconds</span><br></pre></td></tr></table></figure>
-<p>执行该命令后，nmap不仅返回了靶机开放的端口，还识别出了开放对应端口的服务（VERSION列）。通过这些获取服务的指纹。</p>
-<h1 id="Nmap的侵略性探测"><a href="#Nmap的侵略性探测" class="headerlink" title="Nmap的侵略性探测"></a>Nmap的侵略性探测</h1><h2 id="（一）"><a href="#（一）" class="headerlink" title="（一）"></a>（一）</h2><p>使用命令<code>nmap -A -v -T4 [IP]</code>来探测目标机器的操作系统、服务等信息。</p>
-<ul>
-<li><code>-A</code>：使用侵略性策略探测；</li>
-<li><code>-v</code>：持续输出返回的解析；</li>
-<li><code>-T4</code>：速度。可调节最低为<code>T1</code>，最高为<code>T5</code>。</li>
-</ul>
-<p>还是使用刚刚的靶机测试。<span class="heimu" title="你知道的太多了">这里我把Apache2关了，因为<span class="heimu" title="鼠标也划不开的黑幕">⬛⬛⬛⬛⬛⬛⬛⬛</span>&lt;/span&gt;</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-A</span> <span class="literal">-v</span> <span class="literal">-T4</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -A -v -T4 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:23 ?D1ú±ê×?ê±??</span><br><span class="line">NSE: Loaded 153 scripts for scanning.</span><br><span class="line">NSE: Script Pre-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating ARP Ping Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1 port]</span><br><span class="line">Completed ARP Ping Scan at 02:23, 0.42s elapsed (1 total hosts)</span><br><span class="line">Initiating Parallel DNS resolution of 1 host. at 02:23</span><br><span class="line">Completed Parallel DNS resolution of 1 host. at 02:23, 0.02s elapsed</span><br><span class="line">Initiating SYN Stealth Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1000 ports]</span><br><span class="line">Discovered open port 445&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 22&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 21&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 139&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 631&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 6566&#x2F;tcp on 192.168.0.204</span><br><span class="line">Completed SYN Stealth Scan at 02:23, 0.10s elapsed (1000 total ports)</span><br><span class="line">Initiating Service scan at 02:23</span><br><span class="line">Scanning 6 services on 192.168.0.204</span><br><span class="line">Completed Service scan at 02:23, 11.04s elapsed (6 services on 1 host)</span><br><span class="line">Initiating OS detection (try #1) against 192.168.0.204</span><br><span class="line">NSE: Script scanning 192.168.0.204.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 22.27s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.14s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00063s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|   Supported Methods: GET HEAD OPTIONS POST PUT</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6, Linux 5.0 - 5.3</span><br><span class="line">Uptime guess: 45.082 days (since Fri Dec 25 00:25:36 2020)</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">TCP Sequence Prediction: Difficulty&#x3D;251 (Good luck!)</span><br><span class="line">IP ID Sequence Generation: All zeros</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: 0s</span><br><span class="line">| nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| Names:</span><br><span class="line">|   SERVER&lt;00&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;03&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;20&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   \x01\x02__MSBROWSE__\x02&lt;01&gt;  Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;1d&gt;        Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|_  WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:23:20+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:23:20</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">TRACEROUTE</span><br><span class="line">HOP RTT     ADDRESS</span><br><span class="line">1   0.63 ms 192.168.0.204</span><br><span class="line"></span><br><span class="line">NSE: Script Post-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Read data files from: C:\Program Files (x86)\Nmap</span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 40.91 seconds</span><br><span class="line">           Raw packets sent: 1023 (45.806KB) | Rcvd: 1019 (41.502KB)</span><br></pre></td></tr></table></figure>
-<p>在这里，nmap为我们输出了更为详细的信息。包括靶机的内核版本、估算的靶机运行时长、服务的详细信息等。<del>可以说查到连内裤都不剩。</del></p>
-<h2 id="（二）"><a href="#（二）" class="headerlink" title="（二）"></a>（二）</h2><p>使用<code>nmap -sC -sV -O [IP]</code>也可以探测目标机器的操作系统、服务等信息。</p>
-<ul>
-<li><code>-sC</code>：使用Nmap脚本进行探测；</li>
-<li><code>-sV</code>：探测目标机器上的服务指纹信息；</li>
-<li><code>-O</code>：探测目标机器上的操作系统信息。</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sC</span> <span class="literal">-sV</span> <span class="literal">-O</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sC -sV -O 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.0014s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: -1s</span><br><span class="line">|_nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:37:15+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:37:15</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 43.31 seconds</span><br></pre></td></tr></table></figure>
-<p>和<code>nmap -A -v -T4</code>返回的结果没有多大区别。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://blog.csdn.net/suyebiubiu/article/details/108595095">Nmap-03:Nmap识别目标机器上服务的指纹_敲代码的乔帮主-CSDN博客</a></li>
-<li><a href="https://blog.csdn.net/asdushf/article/details/111872759">服务指纹分析_asdushf的博客-CSDN博客</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>Nmap</tag>
-        <tag>网络安全</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nmap的基本使用：主机发现</title>
-    <url>/p/2021/523f63fa.html</url>
-    <content><![CDATA[<h1 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h1><p>CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。</p>
-<p>如<code>192.168.0.1/24</code>等同于在<code>192.168.0.1</code>到<code>192.168.0.255</code>之间的所有IP地址。</p>
-<h1 id="Nmap主机发现"><a href="#Nmap主机发现" class="headerlink" title="Nmap主机发现"></a>Nmap主机发现</h1><p>通过<code>nmap -sP [CIDR]</code>对该网络中所有主机进行Ping扫描，以探测主机存活性。</p>
-<p>扫描过程中使用TCP、SYN扫描，ICMP探测主机存活。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sP</span> <span class="number">192.168</span>.<span class="number">0.1</span>/<span class="number">24</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sP 192.168.0.1&#x2F;24</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-09 21:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.1</span><br><span class="line">Host is up (0.0019s latency).</span><br><span class="line">MAC Address: 34:71:46:AE:41:A7 (Huawei Device)</span><br><span class="line">Nmap scan report for 192.168.0.103</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: 18:BC:5A:E0:DA:AA (Zhejiang Tmall Technology)</span><br><span class="line">Nmap scan report for 192.168.0.104</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: B8:24:F0:00:88:15 (Soyo Technology Development)</span><br><span class="line">Nmap scan report for 192.168.0.105</span><br><span class="line">Host is up (0.11s latency).</span><br><span class="line">MAC Address: 34:EA:34:EE:4D:7C (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.113</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line">MAC Address: 1C:CC:D6:88:27:98 (Xiaomi Communications)</span><br><span class="line">Nmap scan report for 192.168.0.116</span><br><span class="line">Host is up (0.49s latency).</span><br><span class="line">MAC Address: 34:EA:34:D5:E9:3F (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.132</span><br><span class="line">Host is up (0.084s latency).</span><br><span class="line">MAC Address: AA:FB:CD:5B:44:C3 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.147</span><br><span class="line">Host is up (0.12s latency).</span><br><span class="line">MAC Address: 9C:A5:C0:53:02:56 (vivo Mobile Communication)</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Nmap scan report for 192.168.0.250</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: E4:F3:F5:7B:2A:1E (Shenzhen Mercury Communication Technologies)</span><br><span class="line">Nmap scan report for 192.168.0.251</span><br><span class="line">Host is up (0.085s latency).</span><br><span class="line">MAC Address: 8E:F2:28:0A:71:66 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.109</span><br><span class="line">Host is up.</span><br><span class="line">Nmap scan report for 192.168.0.118</span><br><span class="line">Host is up.</span><br><span class="line">Nmap done: 256 IP addresses (13 hosts up) scanned in 69.44 seconds</span><br></pre></td></tr></table></figure>
-<p>输出结果第一行是<code>Nmap scan report for [IP]</code>，第二行表示此机器在线，第三行是MAC地址和设备生产厂家。</p>
-<p>使用命令<code>nmap -sn [CIDR]</code>也可以达到相同效果。</p>
-<h1 id="结果输出"><a href="#结果输出" class="headerlink" title="结果输出"></a>结果输出</h1><ul>
-<li><code>-oN [文件名]</code>：将结果保存为普通文本；</li>
-<li><code>-oX [文件名]</code>：将结果保存为外部XML；</li>
-</ul>
-<p>具体参考<code>nmap -h</code>输出的OUTPUT条目。 </p>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>Nmap</tag>
-        <tag>网络安全</tag>
       </tags>
   </entry>
 </search>
