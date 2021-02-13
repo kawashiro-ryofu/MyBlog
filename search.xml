@@ -98,7 +98,7 @@
 <h1 id="配置SANE"><a href="#配置SANE" class="headerlink" title="配置SANE"></a>配置SANE</h1><p>向<code>/etc/default/saned</code>加入<code>RUN=yes</code>，开启守护进程：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># Defaults for the saned initscript, from sane-utils</span><br><span class="line">RUN&#x3D;yes</span><br><span class="line"></span><br><span class="line"># Set to the user saned should run as</span><br><span class="line">RUN_AS_USER&#x3D;saned</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
 <p>然后编辑<code>/etc/sane.d/saned.conf</code>，取消注释<code>data_portrange = 10000 - 10100</code>，添加<code>192.168.0.0/24</code>（类似前面CUPS允许访问的IP的设置）。</p>
 <p>将saned守护进程<code>saned</code>加入<code>lp</code>组。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo add user saned lp</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo adduser saned lp</span><br></pre></td></tr></table></figure>
 <p>重启sane，使sane随开机启动，并检查状态。</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl start saned.socket</span><br><span class="line">$ sudo systemctl <span class="built_in">enable</span> saned.socket</span><br><span class="line">$ sudo systemctl status saned.socket</span><br><span class="line">● saned.socket - saned incoming socket</span><br><span class="line">   Loaded: loaded (/lib/systemd/system/saned.socket; enabled; vendor preset: enabled)</span><br><span class="line">   Active: active (listening) since Sun 2020-11-08 16:54:46 CST; 8s ago</span><br><span class="line">   Listen: [::]:6566 (Stream)</span><br><span class="line"> Accepted: 3; Connected: 0;</span><br><span class="line">    Tasks: 0 (<span class="built_in">limit</span>: 2306)</span><br><span class="line">   Memory: 28.0K</span><br><span class="line">   CGroup: /system.slice/saned.socket</span><br><span class="line"></span><br><span class="line">11月 08 16:54:46 server systemd[1]: Listening on saned incoming socket.</span><br></pre></td></tr></table></figure>
 <p>说明sane已经在监听6566端口了。</p>
@@ -118,6 +118,9 @@
 <p>点击<code>Scan</code>扫描文件。</p>
 <p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/11/08/BohdKA.md.jpg" alt="Scanning"></p>
 <p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/11/08/Bo4aJU.md.jpg" alt="原谅我字难看...( ＿ ＿)ノ｜"></p>
+<h1 id="发现的一些问题"><a href="#发现的一些问题" class="headerlink" title="发现的一些问题"></a>发现的一些问题</h1><p>在samba共享文件夹下使用<code>sudo scanimage -d &quot;xerox_mfp:libusb:001:005&quot; --format jpeg --resolution 150 &gt; X.jpeg</code>扫描时失败，输出的文件损坏。</p>
+<p>当时将工作目录切换至家目录后正常，但在Windows文件管理器访问家目录时又失败了……可能是sane和samba访问冲突？</p>
+<p>（2021/2/13）</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://linux.cn/article-4139-1.html">在Debian上设置USB网络打印机和扫描仪服务器 - Linux中国</a></p>
 <p><a href="https://blog.tangbao.me/2019/09/rpi-printer-scanner-server/">基于树莓派的打印机/扫描仪服务器 - tangbao’s Blog</a></p>
 ]]></content>
@@ -252,6 +255,31 @@
       </tags>
   </entry>
   <entry>
+    <title>Nmap的基本使用：主机发现</title>
+    <url>/p/2021/523f63fa.html</url>
+    <content><![CDATA[<h1 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h1><p>CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。</p>
+<p>如<code>192.168.0.1/24</code>等同于在<code>192.168.0.1</code>到<code>192.168.0.255</code>之间的所有IP地址。</p>
+<h1 id="Nmap主机发现"><a href="#Nmap主机发现" class="headerlink" title="Nmap主机发现"></a>Nmap主机发现</h1><p>通过<code>nmap -sP [CIDR]</code>对该网络中所有主机进行Ping扫描，以探测主机存活性。</p>
+<p>扫描过程中使用TCP、SYN扫描，ICMP探测主机存活。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sP</span> <span class="number">192.168</span>.<span class="number">0.1</span>/<span class="number">24</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sP 192.168.0.1&#x2F;24</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-09 21:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.1</span><br><span class="line">Host is up (0.0019s latency).</span><br><span class="line">MAC Address: 34:71:46:AE:41:A7 (Huawei Device)</span><br><span class="line">Nmap scan report for 192.168.0.103</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: 18:BC:5A:E0:DA:AA (Zhejiang Tmall Technology)</span><br><span class="line">Nmap scan report for 192.168.0.104</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: B8:24:F0:00:88:15 (Soyo Technology Development)</span><br><span class="line">Nmap scan report for 192.168.0.105</span><br><span class="line">Host is up (0.11s latency).</span><br><span class="line">MAC Address: 34:EA:34:EE:4D:7C (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.113</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line">MAC Address: 1C:CC:D6:88:27:98 (Xiaomi Communications)</span><br><span class="line">Nmap scan report for 192.168.0.116</span><br><span class="line">Host is up (0.49s latency).</span><br><span class="line">MAC Address: 34:EA:34:D5:E9:3F (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.132</span><br><span class="line">Host is up (0.084s latency).</span><br><span class="line">MAC Address: AA:FB:CD:5B:44:C3 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.147</span><br><span class="line">Host is up (0.12s latency).</span><br><span class="line">MAC Address: 9C:A5:C0:53:02:56 (vivo Mobile Communication)</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Nmap scan report for 192.168.0.250</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: E4:F3:F5:7B:2A:1E (Shenzhen Mercury Communication Technologies)</span><br><span class="line">Nmap scan report for 192.168.0.251</span><br><span class="line">Host is up (0.085s latency).</span><br><span class="line">MAC Address: 8E:F2:28:0A:71:66 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.109</span><br><span class="line">Host is up.</span><br><span class="line">Nmap scan report for 192.168.0.118</span><br><span class="line">Host is up.</span><br><span class="line">Nmap done: 256 IP addresses (13 hosts up) scanned in 69.44 seconds</span><br></pre></td></tr></table></figure>
+<p>输出结果第一行是<code>Nmap scan report for [IP]</code>，第二行表示此机器在线，第三行是MAC地址和设备生产厂家。</p>
+<p>使用命令<code>nmap -sn [CIDR]</code>也可以达到相同效果。</p>
+<h1 id="结果输出"><a href="#结果输出" class="headerlink" title="结果输出"></a>结果输出</h1><ul>
+<li><code>-oN [文件名]</code>：将结果保存为普通文本；</li>
+<li><code>-oX [文件名]</code>：将结果保存为外部XML；</li>
+</ul>
+<p>具体参考<code>nmap -h</code>输出的OUTPUT条目。 </p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nmap的基本使用：扫描开放端口</title>
     <url>/p/2021/d7839b7f.html</url>
     <content><![CDATA[<h1 id="何为Nmap"><a href="#何为Nmap" class="headerlink" title="何为Nmap"></a>何为Nmap</h1><p>简单地说，<a href="https://nmap.org">Nmap</a>是一款网络安全领域常用的网络探测工具。我们可以用它探测当前网络在线的主机及其开放的端口。</p>
@@ -319,31 +347,6 @@
 <li><a href="https://blog.csdn.net/suyebiubiu/article/details/108595095">Nmap-03:Nmap识别目标机器上服务的指纹_敲代码的乔帮主-CSDN博客</a></li>
 <li><a href="https://blog.csdn.net/asdushf/article/details/111872759">服务指纹分析_asdushf的博客-CSDN博客</a></li>
 </ul>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>Nmap</tag>
-        <tag>网络安全</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nmap的基本使用：主机发现</title>
-    <url>/p/2021/523f63fa.html</url>
-    <content><![CDATA[<h1 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h1><p>CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。</p>
-<p>如<code>192.168.0.1/24</code>等同于在<code>192.168.0.1</code>到<code>192.168.0.255</code>之间的所有IP地址。</p>
-<h1 id="Nmap主机发现"><a href="#Nmap主机发现" class="headerlink" title="Nmap主机发现"></a>Nmap主机发现</h1><p>通过<code>nmap -sP [CIDR]</code>对该网络中所有主机进行Ping扫描，以探测主机存活性。</p>
-<p>扫描过程中使用TCP、SYN扫描，ICMP探测主机存活。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sP</span> <span class="number">192.168</span>.<span class="number">0.1</span>/<span class="number">24</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sP 192.168.0.1&#x2F;24</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-09 21:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.1</span><br><span class="line">Host is up (0.0019s latency).</span><br><span class="line">MAC Address: 34:71:46:AE:41:A7 (Huawei Device)</span><br><span class="line">Nmap scan report for 192.168.0.103</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: 18:BC:5A:E0:DA:AA (Zhejiang Tmall Technology)</span><br><span class="line">Nmap scan report for 192.168.0.104</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: B8:24:F0:00:88:15 (Soyo Technology Development)</span><br><span class="line">Nmap scan report for 192.168.0.105</span><br><span class="line">Host is up (0.11s latency).</span><br><span class="line">MAC Address: 34:EA:34:EE:4D:7C (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.113</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line">MAC Address: 1C:CC:D6:88:27:98 (Xiaomi Communications)</span><br><span class="line">Nmap scan report for 192.168.0.116</span><br><span class="line">Host is up (0.49s latency).</span><br><span class="line">MAC Address: 34:EA:34:D5:E9:3F (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.132</span><br><span class="line">Host is up (0.084s latency).</span><br><span class="line">MAC Address: AA:FB:CD:5B:44:C3 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.147</span><br><span class="line">Host is up (0.12s latency).</span><br><span class="line">MAC Address: 9C:A5:C0:53:02:56 (vivo Mobile Communication)</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Nmap scan report for 192.168.0.250</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: E4:F3:F5:7B:2A:1E (Shenzhen Mercury Communication Technologies)</span><br><span class="line">Nmap scan report for 192.168.0.251</span><br><span class="line">Host is up (0.085s latency).</span><br><span class="line">MAC Address: 8E:F2:28:0A:71:66 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.109</span><br><span class="line">Host is up.</span><br><span class="line">Nmap scan report for 192.168.0.118</span><br><span class="line">Host is up.</span><br><span class="line">Nmap done: 256 IP addresses (13 hosts up) scanned in 69.44 seconds</span><br></pre></td></tr></table></figure>
-<p>输出结果第一行是<code>Nmap scan report for [IP]</code>，第二行表示此机器在线，第三行是MAC地址和设备生产厂家。</p>
-<p>使用命令<code>nmap -sn [CIDR]</code>也可以达到相同效果。</p>
-<h1 id="结果输出"><a href="#结果输出" class="headerlink" title="结果输出"></a>结果输出</h1><ul>
-<li><code>-oN [文件名]</code>：将结果保存为普通文本；</li>
-<li><code>-oX [文件名]</code>：将结果保存为外部XML；</li>
-</ul>
-<p>具体参考<code>nmap -h</code>输出的OUTPUT条目。 </p>
 ]]></content>
       <categories>
         <category>笔记</category>
@@ -628,6 +631,46 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>Sunset</title>
+    <url>/p/2020/c846c8bb.html</url>
+    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/5cb2559ab0565b1d.webp" alt="0"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/87c62b5bde9cca15.webp" alt="1"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/49eb83c7d0e0c83a.webp" alt="2"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/7056adb0dba4d66e.webp" alt="3"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/0279d2aec8fae6d1.webp" alt="4"></p>
+]]></content>
+      <categories>
+        <category>摄影</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Valine无法加载评论</title>
+    <url>/p/2020/8e4e7ab9.html</url>
+    <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
+<p>最近事情比较多，也就很少更新博客，消息也很少看。但今天比较空闲，也就上来看看博客的数据。不经意间发现Valine评论全没了。</p>
+<p>完了，一天没看着就出岔子了。于是我赶紧上LeanCloud看看情况。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/5146f08684b69918.jpg" alt="原先的评论都在"></p>
+<p>看到这里，我松了口气。不过评论不显示的问题还是要解决。</p>
+<p>我试着更改valine.min.js的CDN，关闭hexo-neat，都不管用。看样子不是我的服务器的问题。最后打开F12，在网络选项卡中发现us.avoscloud.com的请求失败。</p>
+<p>命令行中ping了一下，连接超时。我怀疑这个被GFW河蟹了。</p>
+<p>于是又到站长之家找PING工具测试，结果如下：</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/dd514c931ee8baae.jpg" alt="国内统统访问不了"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/51a01ffac5781cdf.jpg" alt="国外亦是如此"></p>
+<p>大概是那边的服务器宕机下线了……</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://www.freeiconspng.com/uploads/to-be-continued-meme-picture-4.jpg" alt="标准结局"></p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>查找必应上没有,但百度搜到了解决方案.所以在网上找资源不能只吊死在一个搜索引擎上.</p>
+<p><a href="https://blog.csdn.net/qq_35977139/article/details/108768439">解决方案</a></p>
+<p>现在评论恢复了,大家畅所欲言吧.</p>
+]]></content>
+      <categories>
+        <category>日常</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>Valine</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Windows Terminal使用体验</title>
     <url>/p/2020/cfe2793b.html</url>
     <content><![CDATA[<p>Windows Terminal早就不是什么新奇的东西了，在Microsoft Store直接可以找到。有很多新特性。替代Windows原生的Command Prompt再合适不过。我从年初开始，使用至今。</p>
@@ -674,43 +717,83 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>Sunset</title>
-    <url>/p/2020/c846c8bb.html</url>
-    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/5cb2559ab0565b1d.webp" alt="0"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/87c62b5bde9cca15.webp" alt="1"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/49eb83c7d0e0c83a.webp" alt="2"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/7056adb0dba4d66e.webp" alt="3"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/0279d2aec8fae6d1.webp" alt="4"></p>
+    <title>一次配置Emlog</title>
+    <url>/p/2020/77a00aad.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
+<p>环境:</p>
+<blockquote>
+<p>OS: debian 10 i386架构</p>
+</blockquote>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
+<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
+<p>以管理员账户登录:<code>mysql -u root -p</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
+<p>退出,登录这个新帐户.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
+<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
+<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
+
+<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
+<p>顺利的话,你就配置成功了.博客可以显示了.</p>
+<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
+<p>(我用的是PHP 7.4)</p>
+<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
+<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
 ]]></content>
       <categories>
-        <category>摄影</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Valine无法加载评论</title>
-    <url>/p/2020/8e4e7ab9.html</url>
-    <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
-<p>最近事情比较多，也就很少更新博客，消息也很少看。但今天比较空闲，也就上来看看博客的数据。不经意间发现Valine评论全没了。</p>
-<p>完了，一天没看着就出岔子了。于是我赶紧上LeanCloud看看情况。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/5146f08684b69918.jpg" alt="原先的评论都在"></p>
-<p>看到这里，我松了口气。不过评论不显示的问题还是要解决。</p>
-<p>我试着更改valine.min.js的CDN，关闭hexo-neat，都不管用。看样子不是我的服务器的问题。最后打开F12，在网络选项卡中发现us.avoscloud.com的请求失败。</p>
-<p>命令行中ping了一下，连接超时。我怀疑这个被GFW河蟹了。</p>
-<p>于是又到站长之家找PING工具测试，结果如下：</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/dd514c931ee8baae.jpg" alt="国内统统访问不了"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/51a01ffac5781cdf.jpg" alt="国外亦是如此"></p>
-<p>大概是那边的服务器宕机下线了……</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://www.freeiconspng.com/uploads/to-be-continued-meme-picture-4.jpg" alt="标准结局"></p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>查找必应上没有,但百度搜到了解决方案.所以在网上找资源不能只吊死在一个搜索引擎上.</p>
-<p><a href="https://blog.csdn.net/qq_35977139/article/details/108768439">解决方案</a></p>
-<p>现在评论恢复了,大家畅所欲言吧.</p>
-]]></content>
-      <categories>
-        <category>日常</category>
+        <category>日常宅技术</category>
+        <category>闲的蛋疼</category>
       </categories>
       <tags>
         <tag>博客</tag>
-        <tag>Valine</tag>
+        <tag>运维</tag>
+        <tag>Emlog</tag>
+        <tag>PHP</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>不科学地理解C/C++里的指针</title>
+    <url>/p/2020/c1f99cd3.html</url>
+    <content><![CDATA[<h6 id="仅个人理解，如有错误，感谢指正"><a href="#仅个人理解，如有错误，感谢指正" class="headerlink" title="仅个人理解，如有错误，感谢指正"></a>仅个人理解，如有错误，感谢指正</h6><h1 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h1><p>RAM</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://5b0988e595225.cdn.sohucs.com/images/20180122/d2e10420a2c34210a000d69f8e684cc0.jpeg" alt="R.A.M"></p>
+<p>不对，不是她，而是这个。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://tse4-mm.cn.bing.net/th/id/OIP.PtJg0y4BHeaDqxRShlKKmAHaFj?pid=Api&amp;rs=1" alt="内存条"></p>
+<p>RAM，<strong>随机</strong>存取存储器，也就是我们平常所说的<strong>内存条</strong>的那个内存（以下全部简称内存）。它的作用是存储程序运行中产生的变量。</p>
+<p>之所以要专门设计出内存条来存储数据，而非通过硬盘，是因为<strong>硬盘实在是太慢了</strong>。CPU运算速度快，但缓存储存量极小。硬盘容量大，但速度慢。运行程序需要较大的储存容量和较快的速度，于是内存就诞生了。</p>
+<p><strong>每个变量都会分配到一个内存地址，数组则是首个元素的内存地址</strong>。在现代的操作系统中大多都可以把部分内存中的数据分配到硬盘，所以不用担心RAM可用容量不足了。</p>
+<h1 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h1><p><strong>指针变量</strong>，简称指针，<strong>指向内存地址的变量</strong>。举个例子：快捷方式。快捷方式指向文件所在的位置，指针指向变量在内存中的位置。</p>
+<h2 id="声明指针"><a href="#声明指针" class="headerlink" title="声明指针"></a>声明指针</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 233;&#x2F;&#x2F;这声明了一个简单的整型变量</span><br></pre></td></tr></table></figure>
+<p>假设此时，a在内存中的地址是666，那么<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; &amp;a;</span><br><span class="line">&#x2F;&#x2F;这声明了一个指针型变量，指向的是整形变量a的地址并为它赋值a的地址。</span><br></pre></td></tr></table></figure><br>也就是说，<code>*p</code>为<code>a</code>的值233，<code>p</code>为<code>a</code>的地址666。</p>
+<p><strong>就好比快捷方式的位置在你的桌面上，快捷方式指向的是某个程序，你双击快捷方式就运行了这个程序。</strong></p>
+<p><strong>注意</strong>，虽然指针变量的声明与普通变量的声明极其相似，但千万不要声明之后就丢下不管了。不然程序会<strong>当场暴毙</strong>。如果实在要声明一个没有赋值的指针变量，你可以这样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; NULL;</span><br></pre></td></tr></table></figure></p>
+<p><strong>NULL是一个空指针常量。</strong></p>
+<h1 id="内存四区"><a href="#内存四区" class="headerlink" title="内存四区"></a>内存四区</h1><p>前面提到，内存存储程序运行中产生的变量。那么，一个C/C++编译的程序所占用的内存分为以下四类：<strong>栈区</strong>、<strong>堆区</strong>、<strong>全局区</strong>、<strong>代码区</strong>。</p>
+<h3 id="1-栈区"><a href="#1-栈区" class="headerlink" title="1. 栈区"></a>1. 栈区</h3><p>由编译器自动分配，专门存放局部变量。在函数执行完成内存会自动释放。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;<span class="comment">//局部变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-堆区"><a href="#2-堆区" class="headerlink" title="2. 堆区"></a>2. 堆区</h3><p>由程序员手动分配(<code>malloc函数</code>)、释放(<code>free函数</code>)。当进程结束，也会被操作系统回收。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">4</span>);<span class="comment">//为指针p指向的内存地址向后分配4个字节</span></span><br><span class="line">    <span class="comment">//这里要将(void *)转换成(int *)</span></span><br><span class="line">    *p = <span class="number">233</span>;<span class="comment">//为指针变量p所指向的内存地址赋值4</span></span><br><span class="line">    <span class="comment">//此时*运算符是解引用运算符，而之前的(int *)是声明这是个指针变量</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p指针变量的值：%d \t p指针变量指向的地址%d&quot;</span>,*p,p);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p指针变量的值：233    p指针变量指向的地址8524730</span><br></pre></td></tr></table></figure><br>p指针变量指向的内存地址随机。</p>
+<h3 id="3-数据区"><a href="#3-数据区" class="headerlink" title="3. 数据区"></a>3. 数据区</h3><p>往下分还可以分：</p>
+<ol>
+<li>常量区：存放常量（多为字符串常量）</li>
+<li>全局区：存放全局变量和静态变量<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> global = <span class="number">233</span>;<span class="comment">//全局变量</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> c = <span class="number">666</span>;<span class="comment">//加入const关键字声明静态变量  </span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;global=%d \t c=%d&quot;</span>,global,c);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>C++中则是常量和全局变量、静态变量都占用于数据区，没有区分开。</p>
+<h3 id="4-代码区"><a href="#4-代码区" class="headerlink" title="4.代码区"></a>4.代码区</h3><p>存放函数体等，基本上不怎么用到。</p>
+<hr>
+<p>相信介绍到这里，指针比较基本的概念你应该学废了（笑）。似乎也不是很难的样子。</p>
+<h4 id="lt-lt-To-Be-Continued-如果你催我就更"><a href="#lt-lt-To-Be-Continued-如果你催我就更" class="headerlink" title="&lt;&lt;=To Be Continued /|/  如果你催我就更"></a>&lt;&lt;=To Be Continued /|/  <del>如果你催我就更</del></h4>]]></content>
+      <categories>
+        <category>芝士就是力量</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>指针</tag>
+        <tag>经验分享</tag>
       </tags>
   </entry>
   <entry>
@@ -864,45 +947,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>一次配置Emlog</title>
-    <url>/p/2020/77a00aad.html</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
-<p>环境:</p>
-<blockquote>
-<p>OS: debian 10 i386架构</p>
-</blockquote>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
-<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
-<p>以管理员账户登录:<code>mysql -u root -p</code></p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
-<p>退出,登录这个新帐户.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
-<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
-<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
-<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
-
-<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
-<p>顺利的话,你就配置成功了.博客可以显示了.</p>
-<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
-<p>(我用的是PHP 7.4)</p>
-<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
-<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-        <category>闲的蛋疼</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>运维</tag>
-        <tag>Emlog</tag>
-        <tag>PHP</tag>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>叶的自述</title>
     <url>/p/2020/84968ea5.html</url>
     <content><![CDATA[<h1 id="叶的自述"><a href="#叶的自述" class="headerlink" title="叶的自述"></a>叶的自述</h1><p>风轻轻地拂过，<br>将我带下树梢。</p>
@@ -916,47 +960,6 @@ sys.setrecursionlimit(5000)
         <tag>随笔</tag>
         <tag>诗&amp;远方</tag>
         <tag>中二文</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>不科学地理解C/C++里的指针</title>
-    <url>/p/2020/c1f99cd3.html</url>
-    <content><![CDATA[<h6 id="仅个人理解，如有错误，感谢指正"><a href="#仅个人理解，如有错误，感谢指正" class="headerlink" title="仅个人理解，如有错误，感谢指正"></a>仅个人理解，如有错误，感谢指正</h6><h1 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h1><p>RAM</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://5b0988e595225.cdn.sohucs.com/images/20180122/d2e10420a2c34210a000d69f8e684cc0.jpeg" alt="R.A.M"></p>
-<p>不对，不是她，而是这个。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://tse4-mm.cn.bing.net/th/id/OIP.PtJg0y4BHeaDqxRShlKKmAHaFj?pid=Api&amp;rs=1" alt="内存条"></p>
-<p>RAM，<strong>随机</strong>存取存储器，也就是我们平常所说的<strong>内存条</strong>的那个内存（以下全部简称内存）。它的作用是存储程序运行中产生的变量。</p>
-<p>之所以要专门设计出内存条来存储数据，而非通过硬盘，是因为<strong>硬盘实在是太慢了</strong>。CPU运算速度快，但缓存储存量极小。硬盘容量大，但速度慢。运行程序需要较大的储存容量和较快的速度，于是内存就诞生了。</p>
-<p><strong>每个变量都会分配到一个内存地址，数组则是首个元素的内存地址</strong>。在现代的操作系统中大多都可以把部分内存中的数据分配到硬盘，所以不用担心RAM可用容量不足了。</p>
-<h1 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h1><p><strong>指针变量</strong>，简称指针，<strong>指向内存地址的变量</strong>。举个例子：快捷方式。快捷方式指向文件所在的位置，指针指向变量在内存中的位置。</p>
-<h2 id="声明指针"><a href="#声明指针" class="headerlink" title="声明指针"></a>声明指针</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 233;&#x2F;&#x2F;这声明了一个简单的整型变量</span><br></pre></td></tr></table></figure>
-<p>假设此时，a在内存中的地址是666，那么<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; &amp;a;</span><br><span class="line">&#x2F;&#x2F;这声明了一个指针型变量，指向的是整形变量a的地址并为它赋值a的地址。</span><br></pre></td></tr></table></figure><br>也就是说，<code>*p</code>为<code>a</code>的值233，<code>p</code>为<code>a</code>的地址666。</p>
-<p><strong>就好比快捷方式的位置在你的桌面上，快捷方式指向的是某个程序，你双击快捷方式就运行了这个程序。</strong></p>
-<p><strong>注意</strong>，虽然指针变量的声明与普通变量的声明极其相似，但千万不要声明之后就丢下不管了。不然程序会<strong>当场暴毙</strong>。如果实在要声明一个没有赋值的指针变量，你可以这样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; NULL;</span><br></pre></td></tr></table></figure></p>
-<p><strong>NULL是一个空指针常量。</strong></p>
-<h1 id="内存四区"><a href="#内存四区" class="headerlink" title="内存四区"></a>内存四区</h1><p>前面提到，内存存储程序运行中产生的变量。那么，一个C/C++编译的程序所占用的内存分为以下四类：<strong>栈区</strong>、<strong>堆区</strong>、<strong>全局区</strong>、<strong>代码区</strong>。</p>
-<h3 id="1-栈区"><a href="#1-栈区" class="headerlink" title="1. 栈区"></a>1. 栈区</h3><p>由编译器自动分配，专门存放局部变量。在函数执行完成内存会自动释放。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;<span class="comment">//局部变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="2-堆区"><a href="#2-堆区" class="headerlink" title="2. 堆区"></a>2. 堆区</h3><p>由程序员手动分配(<code>malloc函数</code>)、释放(<code>free函数</code>)。当进程结束，也会被操作系统回收。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">4</span>);<span class="comment">//为指针p指向的内存地址向后分配4个字节</span></span><br><span class="line">    <span class="comment">//这里要将(void *)转换成(int *)</span></span><br><span class="line">    *p = <span class="number">233</span>;<span class="comment">//为指针变量p所指向的内存地址赋值4</span></span><br><span class="line">    <span class="comment">//此时*运算符是解引用运算符，而之前的(int *)是声明这是个指针变量</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p指针变量的值：%d \t p指针变量指向的地址%d&quot;</span>,*p,p);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>执行结果：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p指针变量的值：233    p指针变量指向的地址8524730</span><br></pre></td></tr></table></figure><br>p指针变量指向的内存地址随机。</p>
-<h3 id="3-数据区"><a href="#3-数据区" class="headerlink" title="3. 数据区"></a>3. 数据区</h3><p>往下分还可以分：</p>
-<ol>
-<li>常量区：存放常量（多为字符串常量）</li>
-<li>全局区：存放全局变量和静态变量<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> global = <span class="number">233</span>;<span class="comment">//全局变量</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> c = <span class="number">666</span>;<span class="comment">//加入const关键字声明静态变量  </span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;global=%d \t c=%d&quot;</span>,global,c);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>C++中则是常量和全局变量、静态变量都占用于数据区，没有区分开。</p>
-<h3 id="4-代码区"><a href="#4-代码区" class="headerlink" title="4.代码区"></a>4.代码区</h3><p>存放函数体等，基本上不怎么用到。</p>
-<hr>
-<p>相信介绍到这里，指针比较基本的概念你应该学废了（笑）。似乎也不是很难的样子。</p>
-<h4 id="lt-lt-To-Be-Continued-如果你催我就更"><a href="#lt-lt-To-Be-Continued-如果你催我就更" class="headerlink" title="&lt;&lt;=To Be Continued /|/  如果你催我就更"></a>&lt;&lt;=To Be Continued /|/  <del>如果你催我就更</del></h4>]]></content>
-      <categories>
-        <category>芝士就是力量</category>
-      </categories>
-      <tags>
-        <tag>C/C++</tag>
-        <tag>指针</tag>
-        <tag>经验分享</tag>
       </tags>
   </entry>
   <entry>
@@ -2133,8 +2136,8 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>GNU/Linux</tag>
         <tag>运维</tag>
-        <tag>站长</tag>
         <tag>MySQL</tag>
+        <tag>站长</tag>
         <tag>Web</tag>
         <tag>翻译</tag>
       </tags>
@@ -2168,9 +2171,9 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>GNU/Linux</tag>
         <tag>运维</tag>
-        <tag>站长</tag>
         <tag>PHP</tag>
         <tag>MySQL</tag>
+        <tag>站长</tag>
         <tag>Web</tag>
         <tag>翻译</tag>
       </tags>
