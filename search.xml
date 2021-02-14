@@ -169,6 +169,42 @@
       </tags>
   </entry>
   <entry>
+    <title>Linux设置固定IP地址</title>
+    <url>/p/2020/9ef67df1.html</url>
+    <content><![CDATA[<p>Linux设置固定IP地址</p>
+<h1 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h1><p>虽然Windows 10可以通过主机名获取IP地址，但Linux并不能ping主机名。在DHCP网络下，IP地址随机分配，给服务器的维护工作以及后端开发造成了极大的麻烦。但在路由器中设置IP与MAC绑定起不到效果，IP地址照样随机分配。</p>
+<p>解决这种问题的方法就是设置固定IP地址。</p>
+<h1 id="0-更改DHCP地址池的开始地址与终止地址"><a href="#0-更改DHCP地址池的开始地址与终止地址" class="headerlink" title="0. 更改DHCP地址池的开始地址与终止地址"></a>0. 更改DHCP地址池的开始地址与终止地址</h1><p>如图所示，把要自动分配的IP地址限定一个范围：</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/74f90387d40a435c.jpg" alt="&quot;DHCP服务器&quot;设置中编辑地址池开始地址与地址池结束地址"></p>
+<p>本文中设置地址池开始地址为<code>192.168.0.100</code>，结束地址池为<code>192.168.0.199</code>。DHCP服务器能够自动分配的IP地址在<code>192.168.0.100</code>至<code>192.168.0.199</code>之间。</p>
+<p>不同路由器的设置方法存在差异。</p>
+<p>这么做的目的是防止服务器（即要固定IP地址的机器）下线时DHCP会分配前者原先的IP地址给其他机器，造成不必要的麻烦（如下图）。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1598879835687&amp;di=c838f3089eb02674b3616ca70fa69c47&amp;imgtype=0&amp;src=http%3A%2F%2Fe.hiphotos.baidu.com%2Fexp%2Fw%3D500%2Fsign%3Dfc07ab544d086e066aa83f4b32097b5a%2Ff31fbe096b63f6242ffe0e668644ebf81a4ca337.jpg" alt="后果"></p>
+<h1 id="1-在Linux下设置固定的IP地址"><a href="#1-在Linux下设置固定的IP地址" class="headerlink" title="1. 在Linux下设置固定的IP地址"></a>1. 在Linux下设置固定的IP地址</h1><p>现在就要在服务器上操作了。</p>
+<h2 id="1-登录shell，进入-etc-network目录"><a href="#1-登录shell，进入-etc-network目录" class="headerlink" title="1. 登录shell，进入/etc/network目录"></a>1. 登录shell，进入<code>/etc/network</code>目录</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/network</span><br></pre></td></tr></table></figure>
+<h2 id="2-备份interfaces文件"><a href="#2-备份interfaces文件" class="headerlink" title="2. 备份interfaces文件"></a>2. 备份<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo cp interfaces interfaces.bak</span><br></pre></td></tr></table></figure>
+<font color="red">如果配置失败，请将`interfaces.bak`还原为`interfaces`，即`sudo mv interfaces.bak interfaces`</font>
+
+<h2 id="3-编辑interfaces文件"><a href="#3-编辑interfaces文件" class="headerlink" title="3. 编辑interfaces文件"></a>3. 编辑<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo nano interfaces</span><br></pre></td></tr></table></figure>
+<p>文件内容如下：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># lo虚拟网卡启动时映射本地环回</span></span><br><span class="line">auto lo</span><br><span class="line"><span class="comment"># 设置eth0网卡启动时自动联网</span></span><br><span class="line">auto eth0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置lo虚拟网卡为本地换回</span></span><br><span class="line">iface lo inet loopback</span><br><span class="line"><span class="comment"># 设置eth0网卡支持热插拔</span></span><br><span class="line">allow-hotplug eth0</span><br><span class="line"><span class="comment"># 设置eth0网卡为静态IP</span></span><br><span class="line">iface eth0 inet static</span><br><span class="line"><span class="comment"># 你期望的IP地址</span></span><br><span class="line">address 192.168.0.200</span><br><span class="line"><span class="comment"># 子网掩码，一般不用改</span></span><br><span class="line">netmask 255.255.255.0</span><br><span class="line"><span class="comment"># 网关，可以设置你的路由器的IP地址</span></span><br><span class="line">gateway 192.168.0.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>保存(Ctrl+S)，退出(Ctrl+X)</p>
+<h2 id="4-重启网络服务以应用"><a href="#4-重启网络服务以应用" class="headerlink" title="4. 重启网络服务以应用"></a>4. 重启网络服务以应用</h2><p>最简单的方法：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<p>或者这样：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service networking restart</span><br></pre></td></tr></table></figure>
+<p>在重启的过程中，你可以试着ping一下你所期望的IP地址，如果ping有回应则说明配置成功。</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>GNU/Linux</tag>
+        <tag>运维</tag>
+        <tag>网络架构</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>JavaScript解析与生成JSON</title>
     <url>/p/2021/4c6707ec.html</url>
     <content><![CDATA[<h1 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h1><p>一种轻量的数据交换格式，现已基本取代XML，在Web前端广泛运用。</p>
@@ -216,42 +252,6 @@
       <tags>
         <tag>JavaScript</tag>
         <tag>JSON</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux设置固定IP地址</title>
-    <url>/p/2020/9ef67df1.html</url>
-    <content><![CDATA[<p>Linux设置固定IP地址</p>
-<h1 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h1><p>虽然Windows 10可以通过主机名获取IP地址，但Linux并不能ping主机名。在DHCP网络下，IP地址随机分配，给服务器的维护工作以及后端开发造成了极大的麻烦。但在路由器中设置IP与MAC绑定起不到效果，IP地址照样随机分配。</p>
-<p>解决这种问题的方法就是设置固定IP地址。</p>
-<h1 id="0-更改DHCP地址池的开始地址与终止地址"><a href="#0-更改DHCP地址池的开始地址与终止地址" class="headerlink" title="0. 更改DHCP地址池的开始地址与终止地址"></a>0. 更改DHCP地址池的开始地址与终止地址</h1><p>如图所示，把要自动分配的IP地址限定一个范围：</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/74f90387d40a435c.jpg" alt="&quot;DHCP服务器&quot;设置中编辑地址池开始地址与地址池结束地址"></p>
-<p>本文中设置地址池开始地址为<code>192.168.0.100</code>，结束地址池为<code>192.168.0.199</code>。DHCP服务器能够自动分配的IP地址在<code>192.168.0.100</code>至<code>192.168.0.199</code>之间。</p>
-<p>不同路由器的设置方法存在差异。</p>
-<p>这么做的目的是防止服务器（即要固定IP地址的机器）下线时DHCP会分配前者原先的IP地址给其他机器，造成不必要的麻烦（如下图）。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1598879835687&amp;di=c838f3089eb02674b3616ca70fa69c47&amp;imgtype=0&amp;src=http%3A%2F%2Fe.hiphotos.baidu.com%2Fexp%2Fw%3D500%2Fsign%3Dfc07ab544d086e066aa83f4b32097b5a%2Ff31fbe096b63f6242ffe0e668644ebf81a4ca337.jpg" alt="后果"></p>
-<h1 id="1-在Linux下设置固定的IP地址"><a href="#1-在Linux下设置固定的IP地址" class="headerlink" title="1. 在Linux下设置固定的IP地址"></a>1. 在Linux下设置固定的IP地址</h1><p>现在就要在服务器上操作了。</p>
-<h2 id="1-登录shell，进入-etc-network目录"><a href="#1-登录shell，进入-etc-network目录" class="headerlink" title="1. 登录shell，进入/etc/network目录"></a>1. 登录shell，进入<code>/etc/network</code>目录</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/network</span><br></pre></td></tr></table></figure>
-<h2 id="2-备份interfaces文件"><a href="#2-备份interfaces文件" class="headerlink" title="2. 备份interfaces文件"></a>2. 备份<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo cp interfaces interfaces.bak</span><br></pre></td></tr></table></figure>
-<font color="red">如果配置失败，请将`interfaces.bak`还原为`interfaces`，即`sudo mv interfaces.bak interfaces`</font>
-
-<h2 id="3-编辑interfaces文件"><a href="#3-编辑interfaces文件" class="headerlink" title="3. 编辑interfaces文件"></a>3. 编辑<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo nano interfaces</span><br></pre></td></tr></table></figure>
-<p>文件内容如下：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># lo虚拟网卡启动时映射本地环回</span></span><br><span class="line">auto lo</span><br><span class="line"><span class="comment"># 设置eth0网卡启动时自动联网</span></span><br><span class="line">auto eth0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置lo虚拟网卡为本地换回</span></span><br><span class="line">iface lo inet loopback</span><br><span class="line"><span class="comment"># 设置eth0网卡支持热插拔</span></span><br><span class="line">allow-hotplug eth0</span><br><span class="line"><span class="comment"># 设置eth0网卡为静态IP</span></span><br><span class="line">iface eth0 inet static</span><br><span class="line"><span class="comment"># 你期望的IP地址</span></span><br><span class="line">address 192.168.0.200</span><br><span class="line"><span class="comment"># 子网掩码，一般不用改</span></span><br><span class="line">netmask 255.255.255.0</span><br><span class="line"><span class="comment"># 网关，可以设置你的路由器的IP地址</span></span><br><span class="line">gateway 192.168.0.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>保存(Ctrl+S)，退出(Ctrl+X)</p>
-<h2 id="4-重启网络服务以应用"><a href="#4-重启网络服务以应用" class="headerlink" title="4. 重启网络服务以应用"></a>4. 重启网络服务以应用</h2><p>最简单的方法：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
-<p>或者这样：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service networking restart</span><br></pre></td></tr></table></figure>
-<p>在重启的过程中，你可以试着ping一下你所期望的IP地址，如果ping有回应则说明配置成功。</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>GNU/Linux</tag>
-        <tag>运维</tag>
-        <tag>网络架构</tag>
       </tags>
   </entry>
   <entry>
@@ -307,46 +307,6 @@
 <h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>憨憨地在省图书馆测试扫描了以下WLAN登录的服务器，挺有意思的。</p>
 <p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/d7839b7f/1.webp" alt="卧槽，NB啊！"></p>
 <p>讲真挺想试试抓包的，可惜这台机器上没有安装WireShark。<span class="heimu" title="你知道的太多了">就算装了我也不会用。</span></p>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>Nmap</tag>
-        <tag>网络安全</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nmap的基本使用：识别服务指纹</title>
-    <url>/p/2021/1a01b954.html</url>
-    <content><![CDATA[<h1 id="服务指纹"><a href="#服务指纹" class="headerlink" title="服务指纹"></a>服务指纹</h1><p>服务指纹信息包括服务端口、服务名和版本等。通过nmap的服务指纹分析，我们可以得到更有价值的信息，但更加耗时，且容易被察觉（因为这会产生更多的数据流量）。</p>
-<h1 id="Nmap识别服务指纹"><a href="#Nmap识别服务指纹" class="headerlink" title="Nmap识别服务指纹"></a>Nmap识别服务指纹</h1><p>通过<code>-sV</code>参数，获取远程机器所启用的服务。下面还是使用之前的靶机。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sV</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sV 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 01:58 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">80&#x2F;tcp   open  http        Apache httpd 2.4.38</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">443&#x2F;tcp  open  ssl&#x2F;http    Apache httpd 2.4.38</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Service Info: Hosts: server.kawashiros.club, SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 18.14 seconds</span><br></pre></td></tr></table></figure>
-<p>执行该命令后，nmap不仅返回了靶机开放的端口，还识别出了开放对应端口的服务（VERSION列）。通过这些获取服务的指纹。</p>
-<h1 id="Nmap的侵略性探测"><a href="#Nmap的侵略性探测" class="headerlink" title="Nmap的侵略性探测"></a>Nmap的侵略性探测</h1><h2 id="（一）"><a href="#（一）" class="headerlink" title="（一）"></a>（一）</h2><p>使用命令<code>nmap -A -v -T4 [IP]</code>来探测目标机器的操作系统、服务等信息。</p>
-<ul>
-<li><code>-A</code>：使用侵略性策略探测；</li>
-<li><code>-v</code>：持续输出返回的解析；</li>
-<li><code>-T4</code>：速度。可调节最低为<code>T1</code>，最高为<code>T5</code>。</li>
-</ul>
-<p>还是使用刚刚的靶机测试。<span class="heimu" title="你知道的太多了">这里我把Apache2关了，因为<span class="heimu" title="鼠标也划不开的黑幕">⬛⬛⬛⬛⬛⬛⬛⬛</span>&lt;/span&gt;</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-A</span> <span class="literal">-v</span> <span class="literal">-T4</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -A -v -T4 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:23 ?D1ú±ê×?ê±??</span><br><span class="line">NSE: Loaded 153 scripts for scanning.</span><br><span class="line">NSE: Script Pre-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating ARP Ping Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1 port]</span><br><span class="line">Completed ARP Ping Scan at 02:23, 0.42s elapsed (1 total hosts)</span><br><span class="line">Initiating Parallel DNS resolution of 1 host. at 02:23</span><br><span class="line">Completed Parallel DNS resolution of 1 host. at 02:23, 0.02s elapsed</span><br><span class="line">Initiating SYN Stealth Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1000 ports]</span><br><span class="line">Discovered open port 445&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 22&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 21&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 139&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 631&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 6566&#x2F;tcp on 192.168.0.204</span><br><span class="line">Completed SYN Stealth Scan at 02:23, 0.10s elapsed (1000 total ports)</span><br><span class="line">Initiating Service scan at 02:23</span><br><span class="line">Scanning 6 services on 192.168.0.204</span><br><span class="line">Completed Service scan at 02:23, 11.04s elapsed (6 services on 1 host)</span><br><span class="line">Initiating OS detection (try #1) against 192.168.0.204</span><br><span class="line">NSE: Script scanning 192.168.0.204.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 22.27s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.14s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00063s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|   Supported Methods: GET HEAD OPTIONS POST PUT</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6, Linux 5.0 - 5.3</span><br><span class="line">Uptime guess: 45.082 days (since Fri Dec 25 00:25:36 2020)</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">TCP Sequence Prediction: Difficulty&#x3D;251 (Good luck!)</span><br><span class="line">IP ID Sequence Generation: All zeros</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: 0s</span><br><span class="line">| nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| Names:</span><br><span class="line">|   SERVER&lt;00&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;03&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;20&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   \x01\x02__MSBROWSE__\x02&lt;01&gt;  Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;1d&gt;        Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|_  WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:23:20+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:23:20</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">TRACEROUTE</span><br><span class="line">HOP RTT     ADDRESS</span><br><span class="line">1   0.63 ms 192.168.0.204</span><br><span class="line"></span><br><span class="line">NSE: Script Post-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Read data files from: C:\Program Files (x86)\Nmap</span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 40.91 seconds</span><br><span class="line">           Raw packets sent: 1023 (45.806KB) | Rcvd: 1019 (41.502KB)</span><br></pre></td></tr></table></figure>
-<p>在这里，nmap为我们输出了更为详细的信息。包括靶机的内核版本、估算的靶机运行时长、服务的详细信息等。<del>可以说查到连内裤都不剩。</del></p>
-<h2 id="（二）"><a href="#（二）" class="headerlink" title="（二）"></a>（二）</h2><p>使用<code>nmap -sC -sV -O [IP]</code>也可以探测目标机器的操作系统、服务等信息。</p>
-<ul>
-<li><code>-sC</code>：使用Nmap脚本进行探测；</li>
-<li><code>-sV</code>：探测目标机器上的服务指纹信息；</li>
-<li><code>-O</code>：探测目标机器上的操作系统信息。</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sC</span> <span class="literal">-sV</span> <span class="literal">-O</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sC -sV -O 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.0014s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: -1s</span><br><span class="line">|_nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:37:15+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:37:15</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 43.31 seconds</span><br></pre></td></tr></table></figure>
-<p>和<code>nmap -A -v -T4</code>返回的结果没有多大区别。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://blog.csdn.net/suyebiubiu/article/details/108595095">Nmap-03:Nmap识别目标机器上服务的指纹_敲代码的乔帮主-CSDN博客</a></li>
-<li><a href="https://blog.csdn.net/asdushf/article/details/111872759">服务指纹分析_asdushf的博客-CSDN博客</a></li>
-</ul>
 ]]></content>
       <categories>
         <category>笔记</category>
@@ -496,6 +456,46 @@
         <tag>网络架构</tag>
         <tag>OSI</tag>
         <tag>TCP/IP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Nmap的基本使用：识别服务指纹</title>
+    <url>/p/2021/1a01b954.html</url>
+    <content><![CDATA[<h1 id="服务指纹"><a href="#服务指纹" class="headerlink" title="服务指纹"></a>服务指纹</h1><p>服务指纹信息包括服务端口、服务名和版本等。通过nmap的服务指纹分析，我们可以得到更有价值的信息，但更加耗时，且容易被察觉（因为这会产生更多的数据流量）。</p>
+<h1 id="Nmap识别服务指纹"><a href="#Nmap识别服务指纹" class="headerlink" title="Nmap识别服务指纹"></a>Nmap识别服务指纹</h1><p>通过<code>-sV</code>参数，获取远程机器所启用的服务。下面还是使用之前的靶机。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sV</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sV 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 01:58 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">80&#x2F;tcp   open  http        Apache httpd 2.4.38</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">443&#x2F;tcp  open  ssl&#x2F;http    Apache httpd 2.4.38</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Service Info: Hosts: server.kawashiros.club, SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 18.14 seconds</span><br></pre></td></tr></table></figure>
+<p>执行该命令后，nmap不仅返回了靶机开放的端口，还识别出了开放对应端口的服务（VERSION列）。通过这些获取服务的指纹。</p>
+<h1 id="Nmap的侵略性探测"><a href="#Nmap的侵略性探测" class="headerlink" title="Nmap的侵略性探测"></a>Nmap的侵略性探测</h1><h2 id="（一）"><a href="#（一）" class="headerlink" title="（一）"></a>（一）</h2><p>使用命令<code>nmap -A -v -T4 [IP]</code>来探测目标机器的操作系统、服务等信息。</p>
+<ul>
+<li><code>-A</code>：使用侵略性策略探测；</li>
+<li><code>-v</code>：持续输出返回的解析；</li>
+<li><code>-T4</code>：速度。可调节最低为<code>T1</code>，最高为<code>T5</code>。</li>
+</ul>
+<p>还是使用刚刚的靶机测试。<span class="heimu" title="你知道的太多了">这里我把Apache2关了，因为<span class="heimu" title="鼠标也划不开的黑幕">⬛⬛⬛⬛⬛⬛⬛⬛</span>&lt;/span&gt;</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-A</span> <span class="literal">-v</span> <span class="literal">-T4</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -A -v -T4 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:23 ?D1ú±ê×?ê±??</span><br><span class="line">NSE: Loaded 153 scripts for scanning.</span><br><span class="line">NSE: Script Pre-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating ARP Ping Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1 port]</span><br><span class="line">Completed ARP Ping Scan at 02:23, 0.42s elapsed (1 total hosts)</span><br><span class="line">Initiating Parallel DNS resolution of 1 host. at 02:23</span><br><span class="line">Completed Parallel DNS resolution of 1 host. at 02:23, 0.02s elapsed</span><br><span class="line">Initiating SYN Stealth Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1000 ports]</span><br><span class="line">Discovered open port 445&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 22&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 21&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 139&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 631&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 6566&#x2F;tcp on 192.168.0.204</span><br><span class="line">Completed SYN Stealth Scan at 02:23, 0.10s elapsed (1000 total ports)</span><br><span class="line">Initiating Service scan at 02:23</span><br><span class="line">Scanning 6 services on 192.168.0.204</span><br><span class="line">Completed Service scan at 02:23, 11.04s elapsed (6 services on 1 host)</span><br><span class="line">Initiating OS detection (try #1) against 192.168.0.204</span><br><span class="line">NSE: Script scanning 192.168.0.204.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 22.27s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.14s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00063s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|   Supported Methods: GET HEAD OPTIONS POST PUT</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6, Linux 5.0 - 5.3</span><br><span class="line">Uptime guess: 45.082 days (since Fri Dec 25 00:25:36 2020)</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">TCP Sequence Prediction: Difficulty&#x3D;251 (Good luck!)</span><br><span class="line">IP ID Sequence Generation: All zeros</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: 0s</span><br><span class="line">| nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| Names:</span><br><span class="line">|   SERVER&lt;00&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;03&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;20&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   \x01\x02__MSBROWSE__\x02&lt;01&gt;  Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;1d&gt;        Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|_  WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:23:20+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:23:20</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">TRACEROUTE</span><br><span class="line">HOP RTT     ADDRESS</span><br><span class="line">1   0.63 ms 192.168.0.204</span><br><span class="line"></span><br><span class="line">NSE: Script Post-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Read data files from: C:\Program Files (x86)\Nmap</span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 40.91 seconds</span><br><span class="line">           Raw packets sent: 1023 (45.806KB) | Rcvd: 1019 (41.502KB)</span><br></pre></td></tr></table></figure>
+<p>在这里，nmap为我们输出了更为详细的信息。包括靶机的内核版本、估算的靶机运行时长、服务的详细信息等。<del>可以说查到连内裤都不剩。</del></p>
+<h2 id="（二）"><a href="#（二）" class="headerlink" title="（二）"></a>（二）</h2><p>使用<code>nmap -sC -sV -O [IP]</code>也可以探测目标机器的操作系统、服务等信息。</p>
+<ul>
+<li><code>-sC</code>：使用Nmap脚本进行探测；</li>
+<li><code>-sV</code>：探测目标机器上的服务指纹信息；</li>
+<li><code>-O</code>：探测目标机器上的操作系统信息。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sC</span> <span class="literal">-sV</span> <span class="literal">-O</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sC -sV -O 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.0014s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: -1s</span><br><span class="line">|_nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:37:15+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:37:15</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 43.31 seconds</span><br></pre></td></tr></table></figure>
+<p>和<code>nmap -A -v -T4</code>返回的结果没有多大区别。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/suyebiubiu/article/details/108595095">Nmap-03:Nmap识别目标机器上服务的指纹_敲代码的乔帮主-CSDN博客</a></li>
+<li><a href="https://blog.csdn.net/asdushf/article/details/111872759">服务指纹分析_asdushf的博客-CSDN博客</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
       </tags>
   </entry>
   <entry>
@@ -671,6 +671,71 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>一次配置Emlog</title>
+    <url>/p/2020/77a00aad.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
+<p>环境:</p>
+<blockquote>
+<p>OS: debian 10 i386架构</p>
+</blockquote>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
+<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
+<p>以管理员账户登录:<code>mysql -u root -p</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
+<p>退出,登录这个新帐户.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
+<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
+<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
+
+<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
+<p>顺利的话,你就配置成功了.博客可以显示了.</p>
+<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
+<p>(我用的是PHP 7.4)</p>
+<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
+<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+        <category>闲的蛋疼</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>运维</tag>
+        <tag>Emlog</tag>
+        <tag>PHP</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>主板烧了</title>
+    <url>/p/2020/112daf67.html</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>只是给台式机清灰+换一个散热器。 </p>
+<h1 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h1><h2 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h2><p>我拆下原本的风扇，往CPU上涂硅脂。但那劣质硅脂放久了，除了硅脂本体还挤出来许多透明♂液体。 </p>
+<p>拿纸巾擦干后发现有硅脂溢出到主板插槽上了…… </p>
+<font color="red">我我犯了个致命错误：拿纸巾擦插槽</font>
+
+<p>当我意识到时已经晚了，主板插槽的CPU针脚歪了。牙膏厂真的nb，CPU偏偏是触点，针脚在主板上…… </p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0013.jpg" alt="DSC_0013.jpg"> </p>
+<p>我只好拿一字头螺丝刀把针脚挑正。装上机箱试了一下是通过自检的。 </p>
+<p>但当我装上新散热器，电源老毛病又犯了……似乎是电压不稳，主板是亮灯两秒又熄灭，然后又亮，又熄灭……但时间不早了，我整理了一下就去睡觉了。 </p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>下了晚自习，我赶回家，继续修复机器。 </p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0014.jpg" alt="DSC_0014.jpg"> </p>
+<p>但这次，在测试的时候……主板烧了，冒出缕缕青烟，香气四溢。</p>
+<p>R.I.P. </p>
+<p>短时间内，我的工作都会放到笔记本上，希望已故的台式机主板安息，笔记本会继承他的遗志。</p>
+]]></content>
+      <categories>
+        <category>日常</category>
+      </categories>
+      <tags>
+        <tag>日常</tag>
+        <tag>苦逼</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Windows Terminal使用体验</title>
     <url>/p/2020/cfe2793b.html</url>
     <content><![CDATA[<p>Windows Terminal早就不是什么新奇的东西了，在Microsoft Store直接可以找到。有很多新特性。替代Windows原生的Command Prompt再合适不过。我从年初开始，使用至今。</p>
@@ -717,45 +782,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>一次配置Emlog</title>
-    <url>/p/2020/77a00aad.html</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
-<p>环境:</p>
-<blockquote>
-<p>OS: debian 10 i386架构</p>
-</blockquote>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
-<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
-<p>以管理员账户登录:<code>mysql -u root -p</code></p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
-<p>退出,登录这个新帐户.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
-<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
-<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
-<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
-
-<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
-<p>顺利的话,你就配置成功了.博客可以显示了.</p>
-<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
-<p>(我用的是PHP 7.4)</p>
-<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
-<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-        <category>闲的蛋疼</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>运维</tag>
-        <tag>Emlog</tag>
-        <tag>PHP</tag>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>不科学地理解C/C++里的指针</title>
     <url>/p/2020/c1f99cd3.html</url>
     <content><![CDATA[<h6 id="仅个人理解，如有错误，感谢指正"><a href="#仅个人理解，如有错误，感谢指正" class="headerlink" title="仅个人理解，如有错误，感谢指正"></a>仅个人理解，如有错误，感谢指正</h6><h1 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h1><p>RAM</p>
@@ -794,32 +820,6 @@ sys.setrecursionlimit(5000)
         <tag>C/C++</tag>
         <tag>指针</tag>
         <tag>经验分享</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>主板烧了</title>
-    <url>/p/2020/112daf67.html</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>只是给台式机清灰+换一个散热器。 </p>
-<h1 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h1><h2 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h2><p>我拆下原本的风扇，往CPU上涂硅脂。但那劣质硅脂放久了，除了硅脂本体还挤出来许多透明♂液体。 </p>
-<p>拿纸巾擦干后发现有硅脂溢出到主板插槽上了…… </p>
-<font color="red">我我犯了个致命错误：拿纸巾擦插槽</font>
-
-<p>当我意识到时已经晚了，主板插槽的CPU针脚歪了。牙膏厂真的nb，CPU偏偏是触点，针脚在主板上…… </p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0013.jpg" alt="DSC_0013.jpg"> </p>
-<p>我只好拿一字头螺丝刀把针脚挑正。装上机箱试了一下是通过自检的。 </p>
-<p>但当我装上新散热器，电源老毛病又犯了……似乎是电压不稳，主板是亮灯两秒又熄灭，然后又亮，又熄灭……但时间不早了，我整理了一下就去睡觉了。 </p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>下了晚自习，我赶回家，继续修复机器。 </p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0014.jpg" alt="DSC_0014.jpg"> </p>
-<p>但这次，在测试的时候……主板烧了，冒出缕缕青烟，香气四溢。</p>
-<p>R.I.P. </p>
-<p>短时间内，我的工作都会放到笔记本上，希望已故的台式机主板安息，笔记本会继承他的遗志。</p>
-]]></content>
-      <categories>
-        <category>日常</category>
-      </categories>
-      <tags>
-        <tag>日常</tag>
-        <tag>苦逼</tag>
       </tags>
   </entry>
   <entry>
@@ -963,35 +963,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>和绝望，和睦相处</title>
-    <url>/p/2020/d020fa4a.html</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
-
-<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
-<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
-<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
-<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
-<p>希望总会在漫长的等待中终将被耗尽。</p>
-<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
-<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
-<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
-<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
-<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
-<p>等待着她们的，仍是绝望。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
-<p>图片转自原作者つくみず 的推特</p>
-<hr>
-<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
-]]></content>
-      <categories>
-        <category>看番</category>
-      </categories>
-      <tags>
-        <tag>少女终末旅行</tag>
-        <tag>ACGN</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>好的故事</title>
     <url>/p/2020/5585cfe.html</url>
     <content><![CDATA[<p>2020，还有两天就要离我们而去了。一切都经历了太多，也失去了太多，但总还是好的故事。</p>
@@ -1053,6 +1024,35 @@ sys.setrecursionlimit(5000)
       </categories>
       <tags>
         <tag>年终总结</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>和绝望，和睦相处</title>
+    <url>/p/2020/d020fa4a.html</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
+
+<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
+<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
+<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
+<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
+<p>希望总会在漫长的等待中终将被耗尽。</p>
+<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
+<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
+<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
+<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
+<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
+<p>等待着她们的，仍是绝望。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
+<p>图片转自原作者つくみず 的推特</p>
+<hr>
+<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
+]]></content>
+      <categories>
+        <category>看番</category>
+      </categories>
+      <tags>
+        <tag>少女终末旅行</tag>
+        <tag>ACGN</tag>
       </tags>
   </entry>
   <entry>
@@ -1199,108 +1199,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>福报</title>
-    <url>/p/2021/cd763a61.html</url>
-    <content><![CDATA[<p>在Web4.0时代，还在坚持写博客的人们早就不多见了。这些人中，多是一批IT民工。写的文章，也常是技术类的，晦涩难懂，一般的人也不会阅读。他们或是聚集在博客园、CSDN等平台，或是早就有了自己经营的网站。无论展现他们的平台位于何处，他们中也仅极有少数人的文字间带着真挚的感情的。</p>
-<p>我曾订阅过一个博主曾是那少数人中的一员。可惜，那个人已经长久没有更新过一篇真正由他写的文章了。我浏览着他的博客首页，阅读他之前的记录：</p>
-<hr>
-<font color="#0000AA">
-
-你好，2021<br>
-发布时间：2020-12-31 03:38:55<br>
-
-存活确认。<br>
-</font>
-
-<p>这是他最新的一篇文章，一周前发布，此后，他便没有了消息，这篇文章也没有更新。</p>
-<p>我接着向下翻……</p>
-<font color="#0000AA">
-
-在α公司任职两个月感想<br>
-发布时间：2020-08-25 02:46:02<br>
-
-我非常高兴能在α公司就任后端程序员一职。在α公司这个大家庭中，我非常幸运能成为其中一员。尽管我从一个二本毕业，大家也对我非常友善。领导英明果断、明察秋毫，同事们同心并力、团结一致。入职之后，才明白来这里是我的最佳选择，我也更加坚定了自己的选择。<br>
-
-我还记得，在我来这里的第一天，领导就对我说，要把这里当家，在这里拼搏，在这里奋斗。打第一天起，我就记住了领导的话。这里是我的家，也是我挥洒汗水的地方，再苦再累，我也要坚持下去。在领导们和同事们的帮助下，我处理问题、解决问题的能力提高了，技术水平也提高了。<br>
-
-公司的发展，就是我们个人的进步！我不仅要发挥自身优势，还要学习他人，提高自己。相信，在α公司我会变得更好。能成为公司里的一员，我感到无比自豪，今后，我将更富有激情地投入到工作之中。<br>
-
-</font>
-
-<p>与其说这篇文章这是他写的。更不如说，这篇文章更像是他受到强加于其身上的一种外力握着他的手写的。</p>
-<p>我继续向下翻阅，跳过了一篇又一篇。终于找到了一篇真正由他写的文章。</p>
-<font color="#0000AA">
-
-毕业后的近况<br>
-发布时间：2019-07-13 20:37:43<br>
-
-这是我毕业后的第一篇日常向的文章。<br>
-
-众所周知，毕业即失业。毕业后的首要任务，当然是找一个好工作（笑）。<br>
-
-目前比较中意入职α公司。他们那里工资高，待遇优，加班少。而且有朋友内推。我刚刚把简历投完，然后就等面试。通过面试，那就能正式任职，自己也总算是有一份正经工作了。<br>
-
-在这个拼搏的时代，就是应该努力工作，而非安逸。知乎上一位大佬曾说过，人是可以控制自己的努力的，我们都可以。<br>
-
-如果能获得offer的话，将来可能会减少更博客的时间。（我将成为一只鸽子）但……每隔一段时间还是会更新一次博客的(^^;;<br>
-
-……<br>
-
-</font>
-
-<font color="#0000AA">
-
-毕业<br>
-发布时间：2020-06-23 16:57:03<br>
-
-疫情后返校没两三天，就直接开始毕业答辩。<br>
-
-终于又见到了久别重逢的室友，那熟悉的辅导员，还有……那（迫真）和蔼的宿管阿姨。<br>
-
-毕业答辩的安排比较巧，我们四位都在下午进行毕业答辩。<br>
-
-这中间还有段小插曲：我一个哥们儿安排在上午，然后十一点左右的时候，我向他问了问情况。得到的答复很突然：“难”，“难上加难”，“不顺利”。我告诉了旁边还在打炉石的老王。他听后一愣，接着便手忙脚乱地准备起来。庆幸的是，我们几个都非常顺利。<br>
-
-毕业答辩之后的第二天，我们就拍了毕业照，再之后，便要分开了。<br>
-
-四个人站在十字路口中间，相互说了些祝福的话，便朝着各自的方向行去了。<br>
-
-感谢你们四年的陪伴，有缘再见！<br>
-</font>
-
-<p>再向下翻，便是他大学时的日子。每日无非几件事——在教室里上课，在图书馆看书，在宿舍打游戏……</p>
-<p>但由这几件几乎每天都在做的小事编织成的大学时光，是充满阳光的，向上的。</p>
-<p>我从他的文字间，窥见了我的将来要走的路。</p>
-<p>直至网页见底，我关闭了他的博客。</p>
-<hr>
-<p>偶然，我从热点新闻页上瞥见一行字：<code>α公司一二十三岁员工半夜加班后猝死</code>。</p>
-<p>这行字细小却扎眼，我点了进去。得到的回应，也仅仅是这一句话。</p>
-<blockquote>
-<p>“你们看看底层的人民，哪一个不是用命换钱，我一直不以为是资本的问题，而是这个社会的问题，这是一个用命拼的时代，你可以选择安逸的日子，但你就要选择安逸带来的后果，人是可以控制自己的努力的，我们都可以。”</p>
-</blockquote>
-<p>评论区里，有为逝者哀悼的人，也有在责骂的。表面上他们很关心这件事，实际上他们只是为了热度而来，待到舆论随着热度随风散去，这件事也就被忘却了，就像未曾发生过一样。</p>
-<p>我也不由得想起他。</p>
-<p>他的博客……大概不会再更新了。</p>
-<p>我确信，我目睹了一个活生生的人，在光天化日之下，被豺狼虎豹之流啃食为一具骨架。</p>
-<p>而众人先是漠然置之，到他们低下头，看间了那具还沾着鲜血的骨架，也只是长吁一声，或是划十字架，或者咒骂，然后，若无其事地走开了。网民的记忆只有七秒。</p>
-<p>下一个猎物就是我。</p>
-<p>我的气愤，无奈，焦虑汇聚于心。泪滴在屏幕上。我攥紧拳头，却又在一声叹息中松开。我无能为力。对于底层人民而言，“用命拼”是他们唯一的选择。</p>
-<p>隐约之中，我听到了那低沉、沙哑的吼声：</p>
-<blockquote>
-<p>一个幽灵，_________的幽灵，在_________游荡。为了对这个幽灵进行神圣的_________，_________的一切势力，_________和_________、_________和_________、_________和_________都联合起来了……</p>
-</blockquote>
-<div class="note info modern"><p>这是第三次修改。</p>
-<p>本文内容纯属虚构，与现实中的任何单位/个人无关。</p>
-</div>
-]]></content>
-      <categories>
-        <category>小说</category>
-      </categories>
-      <tags>
-        <tag>福报论</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>笔记·AJAX</title>
     <url>/p/2020/46134e8e.html</url>
     <content><![CDATA[<div class="note warning modern"><p>不建议直接搬用本文代码，因为很有可能出现跨域问题</p>
@@ -1372,6 +1270,34 @@ sys.setrecursionlimit(5000)
         <tag>前端</tag>
         <tag>AJAX</tag>
         <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自己在家搭服的坑</title>
+    <url>/p/2020/e9e33d10.html</url>
+    <content><![CDATA[<blockquote>
+<p>由于多种外部因素干涉，最近服务器不太稳定，经常宕机。望各位谅解</p>
+</blockquote>
+<p>在家搭建服务器，是Geeks所热衷的。对于我来说，在家搭建服务器与直接租VPS的区别在于，VPS会提前帮你做好大多数工作，更适合搭建开发时间紧张的网站；而自己在家用自己的硬件搭建服务器，费时，费力，但是它可以给你带来安装操作系统时的期待、构建网站时的兴奋与网站上线的成就，给予你一系列精神上的满足感。</p>
+<p>虽说如此，但自己在家搭建服务器仍是非常费精力的。以下为我个人总结出来的经验。</p>
+<h2 id="1-一定要计划任务重启"><a href="#1-一定要计划任务重启" class="headerlink" title="1.一定要计划任务重启"></a>1.一定要计划任务重启</h2><p>也许你会问，服务器不就是要一直开着吗？的确，服务器作为服务端，必须随时在线。但是，你的服务器必须要释放堆栈，否则会内存泄漏。计划重启是最简单的方法，建议挑选在访问人数少的时候计划重启。当然，如果你的服务器配置高，或者使用真正的服务器主板，可以忽略这一条。</p>
+<h2 id="2-网速"><a href="#2-网速" class="headerlink" title="2.网速"></a>2.网速</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVxvq.png" alt="一般情况下PING测试"></p>
+<p>要搞对外开放的服务器，良好的网速是绕不开的。我的服务器在我房间里，还算良好，没有噪声。但我的房间里没有LAN口，所以，我只能通过路由器的无线网络桥接的方式，链接客厅的主路由器。正常情况下，房间里的从路由器ping网关的延迟是小于10ms的，但倘若主路由器错乱一下，延迟一下子就从小于10ms升至大于两秒。</p>
+<p>网上有一种叫电力猫的装置，可以把一端网口的数字信号转化为模拟信号，输出到家里市电，再由另一端的机器把模拟信号转成数字信号。</p>
+<p>这个装置虽然挽救了没有网口的房间，但由于其通过市电传输，其稳定性是会受到类似空调之类的大功率电器影响的，而且网速不敢恭维，所以我没有采用这类方法。我还是和之前一样采用无线网络桥接的方式，但在服务器上多加了个无线网卡。</p>
+<h2 id="3-电力供应"><a href="#3-电力供应" class="headerlink" title="3.电力供应"></a>3.电力供应</h2><p>这个是最棘手的。</p>
+<p>我的服务器是一台工控机，功耗比较低，也勉强能做Web服务器。但不可避的是停电。</p>
+<p>这个我还没有对策，反正又不会经常停电，怕啥？解决方法慢慢想就是了。</p>
+<h2 id="4-人为"><a href="#4-人为" class="headerlink" title="4.人为"></a>4.人为</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVv2n.png" alt="CykaBlyat"></p>
+<h6 id="本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。"><a href="#本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。" class="headerlink" title="本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 http://creativecommons.org/licenses/by/4.0/ 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。"></a>本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 <a href="http://creativecommons.org/licenses/by/4.0/">http://creativecommons.org/licenses/by/4.0/</a> 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。</h6>]]></content>
+      <categories>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>运维</tag>
+        <tag>经验分享</tag>
+        <tag>Web</tag>
+        <tag>踩坑</tag>
       </tags>
   </entry>
   <entry>
@@ -1729,31 +1655,105 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>自己在家搭服的坑</title>
-    <url>/p/2020/e9e33d10.html</url>
-    <content><![CDATA[<blockquote>
-<p>由于多种外部因素干涉，最近服务器不太稳定，经常宕机。望各位谅解</p>
+    <title>福报</title>
+    <url>/p/2021/cd763a61.html</url>
+    <content><![CDATA[<p>在Web4.0时代，还在坚持写博客的人们早就不多见了。这些人中，多是一批IT民工。写的文章，也常是技术类的，晦涩难懂，一般的人也不会阅读。他们或是聚集在博客园、CSDN等平台，或是早就有了自己经营的网站。无论展现他们的平台位于何处，他们中也仅极有少数人的文字间带着真挚的感情的。</p>
+<p>我曾订阅过一个博主曾是那少数人中的一员。可惜，那个人已经长久没有更新过一篇真正由他写的文章了。我浏览着他的博客首页，阅读他之前的记录：</p>
+<hr>
+<font color="#0000AA">
+
+你好，2021<br>
+发布时间：2020-12-31 03:38:55<br>
+
+存活确认。<br>
+</font>
+
+<p>这是他最新的一篇文章，一周前发布，此后，他便没有了消息，这篇文章也没有更新。</p>
+<p>我接着向下翻……</p>
+<font color="#0000AA">
+
+在α公司任职两个月感想<br>
+发布时间：2020-08-25 02:46:02<br>
+
+我非常高兴能在α公司就任后端程序员一职。在α公司这个大家庭中，我非常幸运能成为其中一员。尽管我从一个二本毕业，大家也对我非常友善。领导英明果断、明察秋毫，同事们同心并力、团结一致。入职之后，才明白来这里是我的最佳选择，我也更加坚定了自己的选择。<br>
+
+我还记得，在我来这里的第一天，领导就对我说，要把这里当家，在这里拼搏，在这里奋斗。打第一天起，我就记住了领导的话。这里是我的家，也是我挥洒汗水的地方，再苦再累，我也要坚持下去。在领导们和同事们的帮助下，我处理问题、解决问题的能力提高了，技术水平也提高了。<br>
+
+公司的发展，就是我们个人的进步！我不仅要发挥自身优势，还要学习他人，提高自己。相信，在α公司我会变得更好。能成为公司里的一员，我感到无比自豪，今后，我将更富有激情地投入到工作之中。<br>
+
+</font>
+
+<p>与其说这篇文章这是他写的。更不如说，这篇文章更像是他受到强加于其身上的一种外力握着他的手写的。</p>
+<p>我继续向下翻阅，跳过了一篇又一篇。终于找到了一篇真正由他写的文章。</p>
+<font color="#0000AA">
+
+毕业后的近况<br>
+发布时间：2019-07-13 20:37:43<br>
+
+这是我毕业后的第一篇日常向的文章。<br>
+
+众所周知，毕业即失业。毕业后的首要任务，当然是找一个好工作（笑）。<br>
+
+目前比较中意入职α公司。他们那里工资高，待遇优，加班少。而且有朋友内推。我刚刚把简历投完，然后就等面试。通过面试，那就能正式任职，自己也总算是有一份正经工作了。<br>
+
+在这个拼搏的时代，就是应该努力工作，而非安逸。知乎上一位大佬曾说过，人是可以控制自己的努力的，我们都可以。<br>
+
+如果能获得offer的话，将来可能会减少更博客的时间。（我将成为一只鸽子）但……每隔一段时间还是会更新一次博客的(^^;;<br>
+
+……<br>
+
+</font>
+
+<font color="#0000AA">
+
+毕业<br>
+发布时间：2020-06-23 16:57:03<br>
+
+疫情后返校没两三天，就直接开始毕业答辩。<br>
+
+终于又见到了久别重逢的室友，那熟悉的辅导员，还有……那（迫真）和蔼的宿管阿姨。<br>
+
+毕业答辩的安排比较巧，我们四位都在下午进行毕业答辩。<br>
+
+这中间还有段小插曲：我一个哥们儿安排在上午，然后十一点左右的时候，我向他问了问情况。得到的答复很突然：“难”，“难上加难”，“不顺利”。我告诉了旁边还在打炉石的老王。他听后一愣，接着便手忙脚乱地准备起来。庆幸的是，我们几个都非常顺利。<br>
+
+毕业答辩之后的第二天，我们就拍了毕业照，再之后，便要分开了。<br>
+
+四个人站在十字路口中间，相互说了些祝福的话，便朝着各自的方向行去了。<br>
+
+感谢你们四年的陪伴，有缘再见！<br>
+</font>
+
+<p>再向下翻，便是他大学时的日子。每日无非几件事——在教室里上课，在图书馆看书，在宿舍打游戏……</p>
+<p>但由这几件几乎每天都在做的小事编织成的大学时光，是充满阳光的，向上的。</p>
+<p>我从他的文字间，窥见了我的将来要走的路。</p>
+<p>直至网页见底，我关闭了他的博客。</p>
+<hr>
+<p>偶然，我从热点新闻页上瞥见一行字：<code>α公司一二十三岁员工半夜加班后猝死</code>。</p>
+<p>这行字细小却扎眼，我点了进去。得到的回应，也仅仅是这一句话。</p>
+<blockquote>
+<p>“你们看看底层的人民，哪一个不是用命换钱，我一直不以为是资本的问题，而是这个社会的问题，这是一个用命拼的时代，你可以选择安逸的日子，但你就要选择安逸带来的后果，人是可以控制自己的努力的，我们都可以。”</p>
 </blockquote>
-<p>在家搭建服务器，是Geeks所热衷的。对于我来说，在家搭建服务器与直接租VPS的区别在于，VPS会提前帮你做好大多数工作，更适合搭建开发时间紧张的网站；而自己在家用自己的硬件搭建服务器，费时，费力，但是它可以给你带来安装操作系统时的期待、构建网站时的兴奋与网站上线的成就，给予你一系列精神上的满足感。</p>
-<p>虽说如此，但自己在家搭建服务器仍是非常费精力的。以下为我个人总结出来的经验。</p>
-<h2 id="1-一定要计划任务重启"><a href="#1-一定要计划任务重启" class="headerlink" title="1.一定要计划任务重启"></a>1.一定要计划任务重启</h2><p>也许你会问，服务器不就是要一直开着吗？的确，服务器作为服务端，必须随时在线。但是，你的服务器必须要释放堆栈，否则会内存泄漏。计划重启是最简单的方法，建议挑选在访问人数少的时候计划重启。当然，如果你的服务器配置高，或者使用真正的服务器主板，可以忽略这一条。</p>
-<h2 id="2-网速"><a href="#2-网速" class="headerlink" title="2.网速"></a>2.网速</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVxvq.png" alt="一般情况下PING测试"></p>
-<p>要搞对外开放的服务器，良好的网速是绕不开的。我的服务器在我房间里，还算良好，没有噪声。但我的房间里没有LAN口，所以，我只能通过路由器的无线网络桥接的方式，链接客厅的主路由器。正常情况下，房间里的从路由器ping网关的延迟是小于10ms的，但倘若主路由器错乱一下，延迟一下子就从小于10ms升至大于两秒。</p>
-<p>网上有一种叫电力猫的装置，可以把一端网口的数字信号转化为模拟信号，输出到家里市电，再由另一端的机器把模拟信号转成数字信号。</p>
-<p>这个装置虽然挽救了没有网口的房间，但由于其通过市电传输，其稳定性是会受到类似空调之类的大功率电器影响的，而且网速不敢恭维，所以我没有采用这类方法。我还是和之前一样采用无线网络桥接的方式，但在服务器上多加了个无线网卡。</p>
-<h2 id="3-电力供应"><a href="#3-电力供应" class="headerlink" title="3.电力供应"></a>3.电力供应</h2><p>这个是最棘手的。</p>
-<p>我的服务器是一台工控机，功耗比较低，也勉强能做Web服务器。但不可避的是停电。</p>
-<p>这个我还没有对策，反正又不会经常停电，怕啥？解决方法慢慢想就是了。</p>
-<h2 id="4-人为"><a href="#4-人为" class="headerlink" title="4.人为"></a>4.人为</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVv2n.png" alt="CykaBlyat"></p>
-<h6 id="本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。"><a href="#本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。" class="headerlink" title="本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 http://creativecommons.org/licenses/by/4.0/ 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。"></a>本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 <a href="http://creativecommons.org/licenses/by/4.0/">http://creativecommons.org/licenses/by/4.0/</a> 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。</h6>]]></content>
+<p>评论区里，有为逝者哀悼的人，也有在责骂的。表面上他们很关心这件事，实际上他们只是为了热度而来，待到舆论随着热度随风散去，这件事也就被忘却了，就像未曾发生过一样。</p>
+<p>我也不由得想起他。</p>
+<p>他的博客……大概不会再更新了。</p>
+<p>我确信，我目睹了一个活生生的人，在光天化日之下，被豺狼虎豹之流啃食为一具骨架。</p>
+<p>而众人先是漠然置之，到他们低下头，看间了那具还沾着鲜血的骨架，也只是长吁一声，或是划十字架，或者咒骂，然后，若无其事地走开了。网民的记忆只有七秒。</p>
+<p>下一个猎物就是我。</p>
+<p>我的气愤，无奈，焦虑汇聚于心。泪滴在屏幕上。我攥紧拳头，却又在一声叹息中松开。我无能为力。对于底层人民而言，“用命拼”是他们唯一的选择。</p>
+<p>隐约之中，我听到了那低沉、沙哑的吼声：</p>
+<blockquote>
+<p>一个幽灵，_________的幽灵，在_________游荡。为了对这个幽灵进行神圣的_________，_________的一切势力，_________和_________、_________和_________、_________和_________都联合起来了……</p>
+</blockquote>
+<div class="note info modern"><p>这是第三次修改。</p>
+<p>本文内容纯属虚构，与现实中的任何单位/个人无关。</p>
+</div>
+]]></content>
       <categories>
-        <category>日常宅技术</category>
+        <category>小说</category>
       </categories>
       <tags>
-        <tag>运维</tag>
-        <tag>经验分享</tag>
-        <tag>Web</tag>
-        <tag>踩坑</tag>
+        <tag>福报论</tag>
       </tags>
   </entry>
   <entry>
@@ -1788,6 +1788,23 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>《一九八四》</tag>
         <tag>品书</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>近况·秋游</title>
+    <url>/p/2020/aedb0196.html</url>
+    <content><![CDATA[<p>嗯……与其说是秋游，不如说是冬游。地点是庐山西海。<span class="heimu" title="你知道的太多了">我本以为去的地方是庐山……</span></p>
+<p>这就是我们最后一次秋游了，196天之后，各自有各自的路要走，便多拍了许多照片。</p>
+<div class="justified-gallery"><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/12.webp" alt="包车上"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/23.webp" alt="景区下发的资料，里面是题目……没有人做便是"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/01.webp" alt="我和他们是同一小组的说，只不过我是阿卡林death！又因为我的身边充满了阿卡林力场，我们组长也没有存在感了~ \\Akariiin/"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/34.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/02.webp" alt="坐船"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/45.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/55.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/56.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/57.webp" alt="蹭得累"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/58.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/03.webp" alt="浪平，云密"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/04.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/05.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/06.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/07.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/08.webp" alt="你以为咱在登庐山吗？不，我们在岛上"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/09.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/10.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/11.webp" alt="看到这锦鲤池了吗？此乃吉地也！把手机丢下去就会有河神送你一部新的了！(x)"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/13.webp" alt="不用看了，我把手机投下去之后河神没有上来。"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/14.webp" alt="山间"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/15.webp" alt="咱魔法系老师，挺帅的（^^;;"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/16.webp" alt="山间的树"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/17.webp" alt="啊♂幻想乡？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/19.webp" alt="Boy♂Next♂Door"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/18.webp" alt="孤独.webp"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/20.webp" alt="此乃吉鸟也！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/21.webp" alt="山上养了孔雀"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/22.webp" alt="数小儿对线类人猿"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/24.webp" alt="o(*≧▽≦)ツ┏━┓ 好孩子不要学系列"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/25.webp" alt="松鼠"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/26.webp" alt="天鹅"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/27.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/28.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/29.webp" alt="杂技表演"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/30.webp" alt="天皇说了什么？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/31.webp" alt="绿坝在哪里绿坝在哪里这里有人吐脏字快把他河蟹勒！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/32.webp" alt="东亚的建筑风格"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/33.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/35.webp" alt="龙桥"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/36.webp" alt="据说晚上来这里超好看"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/37.webp" alt="“哦？是你小砸？”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/38.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/39.webp" alt="临岸一小亭"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/40.webp" alt="水波粼粼"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/41.webp" alt="澄澈"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/42.webp" alt="银杏"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/43.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/44.webp" alt="『幻视』警笛头"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/47.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/48.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/46.webp" alt="“摇啊摇，摇啊摇，摇到外婆桥”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/49.webp" alt="嗯，外婆桥的确很“摇”（吊桥）"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/50.webp" alt="这帮屑在桥上卡其脱离太，害得老夫拍照不稳"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/51.webp" alt="眼 光 呆 滞"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/52.webp" alt="年级组长"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/53.webp" alt=""></p>
+          </div>
+<h1 id="年少，未完待续"><a href="#年少，未完待续" class="headerlink" title="年少，未完待续"></a>年少，未完待续</h1>]]></content>
+      <categories>
+        <category>日常</category>
+        <category>摄影</category>
+      </categories>
+      <tags>
+        <tag>秋游</tag>
+        <tag>相册</tag>
       </tags>
   </entry>
   <entry>
@@ -1832,23 +1849,6 @@ sys.setrecursionlimit(5000)
         <tag>树莓派</tag>
         <tag>桌面</tag>
         <tag>失败案例</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>近况·秋游</title>
-    <url>/p/2020/aedb0196.html</url>
-    <content><![CDATA[<p>嗯……与其说是秋游，不如说是冬游。地点是庐山西海。<span class="heimu" title="你知道的太多了">我本以为去的地方是庐山……</span></p>
-<p>这就是我们最后一次秋游了，196天之后，各自有各自的路要走，便多拍了许多照片。</p>
-<div class="justified-gallery"><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/12.webp" alt="包车上"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/23.webp" alt="景区下发的资料，里面是题目……没有人做便是"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/01.webp" alt="我和他们是同一小组的说，只不过我是阿卡林death！又因为我的身边充满了阿卡林力场，我们组长也没有存在感了~ \\Akariiin/"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/34.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/02.webp" alt="坐船"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/45.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/55.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/56.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/57.webp" alt="蹭得累"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/58.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/03.webp" alt="浪平，云密"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/04.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/05.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/06.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/07.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/08.webp" alt="你以为咱在登庐山吗？不，我们在岛上"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/09.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/10.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/11.webp" alt="看到这锦鲤池了吗？此乃吉地也！把手机丢下去就会有河神送你一部新的了！(x)"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/13.webp" alt="不用看了，我把手机投下去之后河神没有上来。"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/14.webp" alt="山间"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/15.webp" alt="咱魔法系老师，挺帅的（^^;;"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/16.webp" alt="山间的树"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/17.webp" alt="啊♂幻想乡？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/19.webp" alt="Boy♂Next♂Door"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/18.webp" alt="孤独.webp"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/20.webp" alt="此乃吉鸟也！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/21.webp" alt="山上养了孔雀"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/22.webp" alt="数小儿对线类人猿"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/24.webp" alt="o(*≧▽≦)ツ┏━┓ 好孩子不要学系列"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/25.webp" alt="松鼠"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/26.webp" alt="天鹅"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/27.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/28.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/29.webp" alt="杂技表演"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/30.webp" alt="天皇说了什么？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/31.webp" alt="绿坝在哪里绿坝在哪里这里有人吐脏字快把他河蟹勒！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/32.webp" alt="东亚的建筑风格"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/33.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/35.webp" alt="龙桥"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/36.webp" alt="据说晚上来这里超好看"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/37.webp" alt="“哦？是你小砸？”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/38.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/39.webp" alt="临岸一小亭"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/40.webp" alt="水波粼粼"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/41.webp" alt="澄澈"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/42.webp" alt="银杏"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/43.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/44.webp" alt="『幻视』警笛头"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/47.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/48.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/46.webp" alt="“摇啊摇，摇啊摇，摇到外婆桥”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/49.webp" alt="嗯，外婆桥的确很“摇”（吊桥）"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/50.webp" alt="这帮屑在桥上卡其脱离太，害得老夫拍照不稳"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/51.webp" alt="眼 光 呆 滞"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/52.webp" alt="年级组长"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/53.webp" alt=""></p>
-          </div>
-<h1 id="年少，未完待续"><a href="#年少，未完待续" class="headerlink" title="年少，未完待续"></a>年少，未完待续</h1>]]></content>
-      <categories>
-        <category>日常</category>
-        <category>摄影</category>
-      </categories>
-      <tags>
-        <tag>秋游</tag>
-        <tag>相册</tag>
       </tags>
   </entry>
   <entry>
