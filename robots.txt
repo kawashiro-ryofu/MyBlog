@@ -5,4 +5,5 @@ Disallow:/tags/
 Disallow:/categories/
 Disallow:/Kawashiros/
 Disallow:/Bangumi/
+Disallow:/resources/
 Allow:/
