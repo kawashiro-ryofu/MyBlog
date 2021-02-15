@@ -858,22 +858,15 @@ sys.setrecursionlimit(5000)
 <p>[F12]</p>
 
 <!--背景-->
+<script src="https://kawashiro_ryofu.gitee.io/blogimagerc/js/be.js"></script>
 <script>
-function isMobile(){
-	if(window.navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
-		return true; 
+	if(isMobile()){
+		setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/せめて君のその手で_38386764_waifu2x_art_noise1_scale_tta_1.webp")
 	}else{
-		return false;
+		setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/夏だ！_37560505.webp")
 	}
-}
 
-if(isMobile()){
-	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/せめて君のその手で_38386764_waifu2x_art_noise1_scale_tta_1.webp")
-}else{
-	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/夏だ！_37560505.webp")
-}
-
-console.log("也许是从美树沙耶加的身上也看到些许自己的影子吧。\n\n若是没有传销头子QB，那我猜沙耶加也不会有这般结局。")
+	console.log("也许是从美树沙耶加的身上也看到些许自己的影子吧。\n\n若是没有传销头子QB，那我猜沙耶加也不会有这般结局。")
 </script>
 ]]></content>
       <categories>
