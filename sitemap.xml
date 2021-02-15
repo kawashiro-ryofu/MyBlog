@@ -219,14 +219,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/cfe2793b.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/8e4e7ab9.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/p/2020/8e4e7ab9.html</loc>
+    <loc>https://www.kawashiros.club/p/2020/cfe2793b.html</loc>
     
     <lastmod>2021-02-05</lastmod>
     
@@ -452,14 +452,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/Windows-Terminal/</loc>
+    <loc>https://www.kawashiros.club/tags/Valine/</loc>
     <lastmod>2021-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/tags/Valine/</loc>
+    <loc>https://www.kawashiros.club/tags/Windows-Terminal/</loc>
     <lastmod>2021-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -860,14 +860,14 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/categories/%E8%BD%AF%E4%BB%B6%E8%AF%95%E7%94%A8/</loc>
+    <loc>https://www.kawashiros.club/categories/%E6%97%A5%E5%B8%B8/</loc>
     <lastmod>2021-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/categories/%E6%97%A5%E5%B8%B8/</loc>
+    <loc>https://www.kawashiros.club/categories/%E8%BD%AF%E4%BB%B6%E8%AF%95%E7%94%A8/</loc>
     <lastmod>2021-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -923,13 +923,6 @@
   </url>
   
   <url>
-    <loc>https://www.kawashiros.club/categories/%E9%9A%8F%E7%AC%94/%E6%84%9F%E6%83%B3/</loc>
-    <lastmod>2021-02-15</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.kawashiros.club/categories/%E6%97%A5%E5%B8%B8%E5%AE%85%E6%8A%80%E6%9C%AF/%E6%A0%91%E8%8E%93%E6%B4%BE/</loc>
     <lastmod>2021-02-15</lastmod>
     <changefreq>daily</changefreq>
@@ -938,6 +931,13 @@
   
   <url>
     <loc>https://www.kawashiros.club/categories/%E6%97%A5%E5%B8%B8/%E6%91%84%E5%BD%B1/</loc>
+    <lastmod>2021-02-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.kawashiros.club/categories/%E9%9A%8F%E7%AC%94/%E6%84%9F%E6%83%B3/</loc>
     <lastmod>2021-02-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>

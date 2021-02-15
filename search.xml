@@ -644,6 +644,33 @@ sys.setrecursionlimit(5000)
       </categories>
   </entry>
   <entry>
+    <title>Valine无法加载评论</title>
+    <url>/p/2020/8e4e7ab9.html</url>
+    <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
+<p>最近事情比较多，也就很少更新博客，消息也很少看。但今天比较空闲，也就上来看看博客的数据。不经意间发现Valine评论全没了。</p>
+<p>完了，一天没看着就出岔子了。于是我赶紧上LeanCloud看看情况。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/5146f08684b69918.jpg" alt="原先的评论都在"></p>
+<p>看到这里，我松了口气。不过评论不显示的问题还是要解决。</p>
+<p>我试着更改valine.min.js的CDN，关闭hexo-neat，都不管用。看样子不是我的服务器的问题。最后打开F12，在网络选项卡中发现us.avoscloud.com的请求失败。</p>
+<p>命令行中ping了一下，连接超时。我怀疑这个被GFW河蟹了。</p>
+<p>于是又到站长之家找PING工具测试，结果如下：</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/dd514c931ee8baae.jpg" alt="国内统统访问不了"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/51a01ffac5781cdf.jpg" alt="国外亦是如此"></p>
+<p>大概是那边的服务器宕机下线了……</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://www.freeiconspng.com/uploads/to-be-continued-meme-picture-4.jpg" alt="标准结局"></p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>查找必应上没有,但百度搜到了解决方案.所以在网上找资源不能只吊死在一个搜索引擎上.</p>
+<p><a href="https://blog.csdn.net/qq_35977139/article/details/108768439">解决方案</a></p>
+<p>现在评论恢复了,大家畅所欲言吧.</p>
+]]></content>
+      <categories>
+        <category>日常</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>Valine</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Windows Terminal使用体验</title>
     <url>/p/2020/cfe2793b.html</url>
     <content><![CDATA[<p>Windows Terminal早就不是什么新奇的东西了，在Microsoft Store直接可以找到。有很多新特性。替代Windows原生的Command Prompt再合适不过。我从年初开始，使用至今。</p>
@@ -687,33 +714,6 @@ sys.setrecursionlimit(5000)
       </categories>
       <tags>
         <tag>Windows Terminal</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Valine无法加载评论</title>
-    <url>/p/2020/8e4e7ab9.html</url>
-    <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
-<p>最近事情比较多，也就很少更新博客，消息也很少看。但今天比较空闲，也就上来看看博客的数据。不经意间发现Valine评论全没了。</p>
-<p>完了，一天没看着就出岔子了。于是我赶紧上LeanCloud看看情况。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/5146f08684b69918.jpg" alt="原先的评论都在"></p>
-<p>看到这里，我松了口气。不过评论不显示的问题还是要解决。</p>
-<p>我试着更改valine.min.js的CDN，关闭hexo-neat，都不管用。看样子不是我的服务器的问题。最后打开F12，在网络选项卡中发现us.avoscloud.com的请求失败。</p>
-<p>命令行中ping了一下，连接超时。我怀疑这个被GFW河蟹了。</p>
-<p>于是又到站长之家找PING工具测试，结果如下：</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/dd514c931ee8baae.jpg" alt="国内统统访问不了"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/51a01ffac5781cdf.jpg" alt="国外亦是如此"></p>
-<p>大概是那边的服务器宕机下线了……</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://www.freeiconspng.com/uploads/to-be-continued-meme-picture-4.jpg" alt="标准结局"></p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>查找必应上没有,但百度搜到了解决方案.所以在网上找资源不能只吊死在一个搜索引擎上.</p>
-<p><a href="https://blog.csdn.net/qq_35977139/article/details/108768439">解决方案</a></p>
-<p>现在评论恢复了,大家畅所欲言吧.</p>
-]]></content>
-      <categories>
-        <category>日常</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>Valine</tag>
       </tags>
   </entry>
   <entry>
@@ -859,6 +859,14 @@ sys.setrecursionlimit(5000)
 
 <!--背景-->
 <script>
+function isMobile(){
+	if(window.navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
+		return true; 
+	}else{
+		return false;
+	}
+}
+
 if(isMobile()){
 	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/せめて君のその手で_38386764_waifu2x_art_noise1_scale_tta_1.webp")
 }else{
