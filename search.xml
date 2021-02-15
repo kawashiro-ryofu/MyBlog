@@ -317,6 +317,188 @@
       </tags>
   </entry>
   <entry>
+    <title>Nmap的基本使用：识别服务指纹</title>
+    <url>/p/2021/1a01b954.html</url>
+    <content><![CDATA[<h1 id="服务指纹"><a href="#服务指纹" class="headerlink" title="服务指纹"></a>服务指纹</h1><p>服务指纹信息包括服务端口、服务名和版本等。通过nmap的服务指纹分析，我们可以得到更有价值的信息，但更加耗时，且容易被察觉（因为这会产生更多的数据流量）。</p>
+<h1 id="Nmap识别服务指纹"><a href="#Nmap识别服务指纹" class="headerlink" title="Nmap识别服务指纹"></a>Nmap识别服务指纹</h1><p>通过<code>-sV</code>参数，获取远程机器所启用的服务。下面还是使用之前的靶机。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sV</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sV 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 01:58 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">80&#x2F;tcp   open  http        Apache httpd 2.4.38</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">443&#x2F;tcp  open  ssl&#x2F;http    Apache httpd 2.4.38</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Service Info: Hosts: server.kawashiros.club, SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 18.14 seconds</span><br></pre></td></tr></table></figure>
+<p>执行该命令后，nmap不仅返回了靶机开放的端口，还识别出了开放对应端口的服务（VERSION列）。通过这些获取服务的指纹。</p>
+<h1 id="Nmap的侵略性探测"><a href="#Nmap的侵略性探测" class="headerlink" title="Nmap的侵略性探测"></a>Nmap的侵略性探测</h1><h2 id="（一）"><a href="#（一）" class="headerlink" title="（一）"></a>（一）</h2><p>使用命令<code>nmap -A -v -T4 [IP]</code>来探测目标机器的操作系统、服务等信息。</p>
+<ul>
+<li><code>-A</code>：使用侵略性策略探测；</li>
+<li><code>-v</code>：持续输出返回的解析；</li>
+<li><code>-T4</code>：速度。可调节最低为<code>T1</code>，最高为<code>T5</code>。</li>
+</ul>
+<p>还是使用刚刚的靶机测试。<span class="heimu" title="你知道的太多了">这里我把Apache2关了，因为<span class="heimu" title="鼠标也划不开的黑幕">⬛⬛⬛⬛⬛⬛⬛⬛</span>&lt;/span&gt;</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-A</span> <span class="literal">-v</span> <span class="literal">-T4</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -A -v -T4 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:23 ?D1ú±ê×?ê±??</span><br><span class="line">NSE: Loaded 153 scripts for scanning.</span><br><span class="line">NSE: Script Pre-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating ARP Ping Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1 port]</span><br><span class="line">Completed ARP Ping Scan at 02:23, 0.42s elapsed (1 total hosts)</span><br><span class="line">Initiating Parallel DNS resolution of 1 host. at 02:23</span><br><span class="line">Completed Parallel DNS resolution of 1 host. at 02:23, 0.02s elapsed</span><br><span class="line">Initiating SYN Stealth Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1000 ports]</span><br><span class="line">Discovered open port 445&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 22&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 21&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 139&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 631&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 6566&#x2F;tcp on 192.168.0.204</span><br><span class="line">Completed SYN Stealth Scan at 02:23, 0.10s elapsed (1000 total ports)</span><br><span class="line">Initiating Service scan at 02:23</span><br><span class="line">Scanning 6 services on 192.168.0.204</span><br><span class="line">Completed Service scan at 02:23, 11.04s elapsed (6 services on 1 host)</span><br><span class="line">Initiating OS detection (try #1) against 192.168.0.204</span><br><span class="line">NSE: Script scanning 192.168.0.204.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 22.27s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.14s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00063s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|   Supported Methods: GET HEAD OPTIONS POST PUT</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6, Linux 5.0 - 5.3</span><br><span class="line">Uptime guess: 45.082 days (since Fri Dec 25 00:25:36 2020)</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">TCP Sequence Prediction: Difficulty&#x3D;251 (Good luck!)</span><br><span class="line">IP ID Sequence Generation: All zeros</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: 0s</span><br><span class="line">| nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| Names:</span><br><span class="line">|   SERVER&lt;00&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;03&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;20&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   \x01\x02__MSBROWSE__\x02&lt;01&gt;  Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;1d&gt;        Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|_  WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:23:20+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:23:20</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">TRACEROUTE</span><br><span class="line">HOP RTT     ADDRESS</span><br><span class="line">1   0.63 ms 192.168.0.204</span><br><span class="line"></span><br><span class="line">NSE: Script Post-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Read data files from: C:\Program Files (x86)\Nmap</span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 40.91 seconds</span><br><span class="line">           Raw packets sent: 1023 (45.806KB) | Rcvd: 1019 (41.502KB)</span><br></pre></td></tr></table></figure>
+<p>在这里，nmap为我们输出了更为详细的信息。包括靶机的内核版本、估算的靶机运行时长、服务的详细信息等。<del>可以说查到连内裤都不剩。</del></p>
+<h2 id="（二）"><a href="#（二）" class="headerlink" title="（二）"></a>（二）</h2><p>使用<code>nmap -sC -sV -O [IP]</code>也可以探测目标机器的操作系统、服务等信息。</p>
+<ul>
+<li><code>-sC</code>：使用Nmap脚本进行探测；</li>
+<li><code>-sV</code>：探测目标机器上的服务指纹信息；</li>
+<li><code>-O</code>：探测目标机器上的操作系统信息。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sC</span> <span class="literal">-sV</span> <span class="literal">-O</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sC -sV -O 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.0014s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: -1s</span><br><span class="line">|_nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:37:15+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:37:15</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 43.31 seconds</span><br></pre></td></tr></table></figure>
+<p>和<code>nmap -A -v -T4</code>返回的结果没有多大区别。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/suyebiubiu/article/details/108595095">Nmap-03:Nmap识别目标机器上服务的指纹_敲代码的乔帮主-CSDN博客</a></li>
+<li><a href="https://blog.csdn.net/asdushf/article/details/111872759">服务指纹分析_asdushf的博客-CSDN博客</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OSI七层协议模型、TCP/IP四层模型学习笔记</title>
+    <url>/p/2020/c44c6cb2.html</url>
+    <content><![CDATA[<div id="post_detail">
+<!--done-->
+<div id="topics">
+    <div class="post">
+        <h1 class="postTitle">
+
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/Robin-YB/p/6668762.html">
+    <span>OSI七层协议模型、TCP/IP四层模型学习笔记</span>
+
+
+
+</a>
+
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p><strong>1. OSI七层和TCP/IP四层的关系</strong></p>
+<p>1.1&nbsp;OSI引入了服务、接口、协议、分层的概念，TCP/IP借鉴了OSI的这些概念建立TCP/IP模型。</p>
+<p>1.2&nbsp;OSI先有模型，后有协议，先有标准，后进行实践；而TCP/IP则相反，先有协议和应用再提出了模型，且是参照的OSI模型。</p>
+<p>1.3&nbsp;OSI是一种理论下的模型，而TCP/IP已被广泛使用，成为网络互联事实上的标准。</p>
+<p>TCP：transmission control protocol 传输控制协议</p>
+<p>UDP：user data protocol 用户数据报协议</p>
+<p>&nbsp;</p>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td valign="bottom">
+<p align="center">OSI七层网络模型</p>
+</td>
+<td valign="bottom">
+<p align="center">TCP/IP四层概念模型 &nbsp;</p>
+</td>
+<td valign="bottom">
+<p align="center">对应网络协议</p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p>应用层（Application）</p>
+</td>
+<td rowspan="3">
+<p>应用层</p>
+</td>
+<td valign="bottom">
+<p>HTTP、TFTP,&nbsp;FTP, NFS, WAIS、SMTP</p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p>表示层（Presentation）</p>
+</td>
+<td valign="bottom">
+<p>Telnet, Rlogin, SNMP, Gopher</p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p>会话层（Session）</p>
+</td>
+<td valign="bottom">
+<p>SMTP, DNS</p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p>传输层（Transport）</p>
+</td>
+<td>
+<p>传输层</p>
+</td>
+<td valign="bottom">
+<p>TCP, UDP</p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p>网络层（Network）</p>
+</td>
+<td>
+<p>网络层</p>
+</td>
+<td valign="bottom">
+<p>IP, ICMP, ARP, RARP, AKP, UUCP</p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p>数据链路层（Data Link）</p>
+</td>
+<td rowspan="2">
+<p>数据链路层</p>
+</td>
+<td valign="bottom">
+<p>FDDI, Ethernet, Arpanet, PDN, SLIP, PPP</p>
+</td>
+</tr>
+<tr>
+<td valign="bottom">
+<p>物理层（Physical）</p>
+</td>
+<td valign="bottom">
+<p>IEEE 802.1A, IEEE 802.2到IEEE 802.11</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<div>&nbsp;</div>
+<p><strong>&nbsp;</strong></p>
+<p><strong>2. OSI七层协议模型</strong></p>
+<p>七层结构记忆方法：应、表、会、传、网、数、物</p>
+<p>应用层协议需要掌握的是：HTTP（Hyper text transfer&nbsp;protocol）、FTP（file transfer&nbsp;protocol）、SMTP（simple mail transfer rotocol）、POP3（post office protocol 3）、IMAP4（Internet mail access protocol）</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160731161720376" alt="" align="middle"></p>
+<p>&nbsp;</p>
+<p>3. TCP/IP四层模型</p>
+<p>3.1 应用层：对应OSI中的应用层、表示层、会话层</p>
+<p>3.2 物理链路层：对应OSI中的数据链路层、物理层（也有叫网络接口层）</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160731161739907" alt="" align="middle"></p>
+<p>3.3 数据包说明：</p>
+<p>IP层传输单位是IP分组，属于点到点的传输；TCP层传输单位是TCP段，属于端到端的传输</p>
+<p>&nbsp;</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://hi.csdn.net/attachment/201107/4/0_1309782130K66A.gif" alt=""></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160802112022872" alt="" align="middle"></p>
+<p>&nbsp;</p>
+</div>
+
+<hr>
+<p>转载自<a href="https://www.cnblogs.com/Robin-YB/p/6668762.html">https://www.cnblogs.com/Robin-YB/p/6668762.html</a> </p>
+<p>文章版权归原作者( <a href="https://home.cnblogs.com/u/Robin-YB/">博客园@好就分享</a> )所有</p>
+<p>转载为学习用途</p>
+]]></content>
+      <categories>
+        <category>转载</category>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>网络架构</tag>
+        <tag>OSI</tag>
+        <tag>TCP/IP</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PyInstaller打包Python详解</title>
     <url>/p/2020/6994cde3.html</url>
     <content><![CDATA[<p><a href="http://www.pyinstaller.org/">官网参考</a></p>
@@ -462,215 +644,6 @@ sys.setrecursionlimit(5000)
       </categories>
   </entry>
   <entry>
-    <title>OSI七层协议模型、TCP/IP四层模型学习笔记</title>
-    <url>/p/2020/c44c6cb2.html</url>
-    <content><![CDATA[<div id="post_detail">
-<!--done-->
-<div id="topics">
-    <div class="post">
-        <h1 class="postTitle">
-
-<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/Robin-YB/p/6668762.html">
-    <span>OSI七层协议模型、TCP/IP四层模型学习笔记</span>
-
-
-
-</a>
-
-<div id="cnblogs_post_body" class="blogpost-body">
-    <p><strong>1. OSI七层和TCP/IP四层的关系</strong></p>
-<p>1.1&nbsp;OSI引入了服务、接口、协议、分层的概念，TCP/IP借鉴了OSI的这些概念建立TCP/IP模型。</p>
-<p>1.2&nbsp;OSI先有模型，后有协议，先有标准，后进行实践；而TCP/IP则相反，先有协议和应用再提出了模型，且是参照的OSI模型。</p>
-<p>1.3&nbsp;OSI是一种理论下的模型，而TCP/IP已被广泛使用，成为网络互联事实上的标准。</p>
-<p>TCP：transmission control protocol 传输控制协议</p>
-<p>UDP：user data protocol 用户数据报协议</p>
-<p>&nbsp;</p>
-<table border="1" cellspacing="0" cellpadding="0">
-<tbody>
-<tr>
-<td valign="bottom">
-<p align="center">OSI七层网络模型</p>
-</td>
-<td valign="bottom">
-<p align="center">TCP/IP四层概念模型 &nbsp;</p>
-</td>
-<td valign="bottom">
-<p align="center">对应网络协议</p>
-</td>
-</tr>
-<tr>
-<td valign="bottom">
-<p>应用层（Application）</p>
-</td>
-<td rowspan="3">
-<p>应用层</p>
-</td>
-<td valign="bottom">
-<p>HTTP、TFTP,&nbsp;FTP, NFS, WAIS、SMTP</p>
-</td>
-</tr>
-<tr>
-<td valign="bottom">
-<p>表示层（Presentation）</p>
-</td>
-<td valign="bottom">
-<p>Telnet, Rlogin, SNMP, Gopher</p>
-</td>
-</tr>
-<tr>
-<td valign="bottom">
-<p>会话层（Session）</p>
-</td>
-<td valign="bottom">
-<p>SMTP, DNS</p>
-</td>
-</tr>
-<tr>
-<td valign="bottom">
-<p>传输层（Transport）</p>
-</td>
-<td>
-<p>传输层</p>
-</td>
-<td valign="bottom">
-<p>TCP, UDP</p>
-</td>
-</tr>
-<tr>
-<td valign="bottom">
-<p>网络层（Network）</p>
-</td>
-<td>
-<p>网络层</p>
-</td>
-<td valign="bottom">
-<p>IP, ICMP, ARP, RARP, AKP, UUCP</p>
-</td>
-</tr>
-<tr>
-<td valign="bottom">
-<p>数据链路层（Data Link）</p>
-</td>
-<td rowspan="2">
-<p>数据链路层</p>
-</td>
-<td valign="bottom">
-<p>FDDI, Ethernet, Arpanet, PDN, SLIP, PPP</p>
-</td>
-</tr>
-<tr>
-<td valign="bottom">
-<p>物理层（Physical）</p>
-</td>
-<td valign="bottom">
-<p>IEEE 802.1A, IEEE 802.2到IEEE 802.11</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p>&nbsp;</p>
-<div>&nbsp;</div>
-<p><strong>&nbsp;</strong></p>
-<p><strong>2. OSI七层协议模型</strong></p>
-<p>七层结构记忆方法：应、表、会、传、网、数、物</p>
-<p>应用层协议需要掌握的是：HTTP（Hyper text transfer&nbsp;protocol）、FTP（file transfer&nbsp;protocol）、SMTP（simple mail transfer rotocol）、POP3（post office protocol 3）、IMAP4（Internet mail access protocol）</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160731161720376" alt="" align="middle"></p>
-<p>&nbsp;</p>
-<p>3. TCP/IP四层模型</p>
-<p>3.1 应用层：对应OSI中的应用层、表示层、会话层</p>
-<p>3.2 物理链路层：对应OSI中的数据链路层、物理层（也有叫网络接口层）</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160731161739907" alt="" align="middle"></p>
-<p>3.3 数据包说明：</p>
-<p>IP层传输单位是IP分组，属于点到点的传输；TCP层传输单位是TCP段，属于端到端的传输</p>
-<p>&nbsp;</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://hi.csdn.net/attachment/201107/4/0_1309782130K66A.gif" alt=""></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://img.blog.csdn.net/20160802112022872" alt="" align="middle"></p>
-<p>&nbsp;</p>
-</div>
-
-<hr>
-<p>转载自<a href="https://www.cnblogs.com/Robin-YB/p/6668762.html">https://www.cnblogs.com/Robin-YB/p/6668762.html</a> </p>
-<p>文章版权归原作者( <a href="https://home.cnblogs.com/u/Robin-YB/">博客园@好就分享</a> )所有</p>
-<p>转载为学习用途</p>
-]]></content>
-      <categories>
-        <category>转载</category>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>网络架构</tag>
-        <tag>OSI</tag>
-        <tag>TCP/IP</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nmap的基本使用：识别服务指纹</title>
-    <url>/p/2021/1a01b954.html</url>
-    <content><![CDATA[<h1 id="服务指纹"><a href="#服务指纹" class="headerlink" title="服务指纹"></a>服务指纹</h1><p>服务指纹信息包括服务端口、服务名和版本等。通过nmap的服务指纹分析，我们可以得到更有价值的信息，但更加耗时，且容易被察觉（因为这会产生更多的数据流量）。</p>
-<h1 id="Nmap识别服务指纹"><a href="#Nmap识别服务指纹" class="headerlink" title="Nmap识别服务指纹"></a>Nmap识别服务指纹</h1><p>通过<code>-sV</code>参数，获取远程机器所启用的服务。下面还是使用之前的靶机。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sV</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sV 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 01:58 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">Not shown: 992 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">80&#x2F;tcp   open  http        Apache httpd 2.4.38</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">443&#x2F;tcp  open  ssl&#x2F;http    Apache httpd 2.4.38</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Service Info: Hosts: server.kawashiros.club, SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 18.14 seconds</span><br></pre></td></tr></table></figure>
-<p>执行该命令后，nmap不仅返回了靶机开放的端口，还识别出了开放对应端口的服务（VERSION列）。通过这些获取服务的指纹。</p>
-<h1 id="Nmap的侵略性探测"><a href="#Nmap的侵略性探测" class="headerlink" title="Nmap的侵略性探测"></a>Nmap的侵略性探测</h1><h2 id="（一）"><a href="#（一）" class="headerlink" title="（一）"></a>（一）</h2><p>使用命令<code>nmap -A -v -T4 [IP]</code>来探测目标机器的操作系统、服务等信息。</p>
-<ul>
-<li><code>-A</code>：使用侵略性策略探测；</li>
-<li><code>-v</code>：持续输出返回的解析；</li>
-<li><code>-T4</code>：速度。可调节最低为<code>T1</code>，最高为<code>T5</code>。</li>
-</ul>
-<p>还是使用刚刚的靶机测试。<span class="heimu" title="你知道的太多了">这里我把Apache2关了，因为<span class="heimu" title="鼠标也划不开的黑幕">⬛⬛⬛⬛⬛⬛⬛⬛</span>&lt;/span&gt;</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-A</span> <span class="literal">-v</span> <span class="literal">-T4</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -A -v -T4 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:23 ?D1ú±ê×?ê±??</span><br><span class="line">NSE: Loaded 153 scripts for scanning.</span><br><span class="line">NSE: Script Pre-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating ARP Ping Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1 port]</span><br><span class="line">Completed ARP Ping Scan at 02:23, 0.42s elapsed (1 total hosts)</span><br><span class="line">Initiating Parallel DNS resolution of 1 host. at 02:23</span><br><span class="line">Completed Parallel DNS resolution of 1 host. at 02:23, 0.02s elapsed</span><br><span class="line">Initiating SYN Stealth Scan at 02:23</span><br><span class="line">Scanning 192.168.0.204 [1000 ports]</span><br><span class="line">Discovered open port 445&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 22&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 21&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 139&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 631&#x2F;tcp on 192.168.0.204</span><br><span class="line">Discovered open port 6566&#x2F;tcp on 192.168.0.204</span><br><span class="line">Completed SYN Stealth Scan at 02:23, 0.10s elapsed (1000 total ports)</span><br><span class="line">Initiating Service scan at 02:23</span><br><span class="line">Scanning 6 services on 192.168.0.204</span><br><span class="line">Completed Service scan at 02:23, 11.04s elapsed (6 services on 1 host)</span><br><span class="line">Initiating OS detection (try #1) against 192.168.0.204</span><br><span class="line">NSE: Script scanning 192.168.0.204.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 22.27s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.14s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00063s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|   Supported Methods: GET HEAD OPTIONS POST PUT</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6, Linux 5.0 - 5.3</span><br><span class="line">Uptime guess: 45.082 days (since Fri Dec 25 00:25:36 2020)</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">TCP Sequence Prediction: Difficulty&#x3D;251 (Good luck!)</span><br><span class="line">IP ID Sequence Generation: All zeros</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: 0s</span><br><span class="line">| nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| Names:</span><br><span class="line">|   SERVER&lt;00&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;03&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   SERVER&lt;20&gt;           Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|   \x01\x02__MSBROWSE__\x02&lt;01&gt;  Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;00&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">|   WORKGROUP&lt;1d&gt;        Flags: &lt;unique&gt;&lt;active&gt;</span><br><span class="line">|_  WORKGROUP&lt;1e&gt;        Flags: &lt;group&gt;&lt;active&gt;</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:23:20+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:23:20</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">TRACEROUTE</span><br><span class="line">HOP RTT     ADDRESS</span><br><span class="line">1   0.63 ms 192.168.0.204</span><br><span class="line"></span><br><span class="line">NSE: Script Post-scanning.</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Initiating NSE at 02:23</span><br><span class="line">Completed NSE at 02:23, 0.00s elapsed</span><br><span class="line">Read data files from: C:\Program Files (x86)\Nmap</span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 40.91 seconds</span><br><span class="line">           Raw packets sent: 1023 (45.806KB) | Rcvd: 1019 (41.502KB)</span><br></pre></td></tr></table></figure>
-<p>在这里，nmap为我们输出了更为详细的信息。包括靶机的内核版本、估算的靶机运行时长、服务的详细信息等。<del>可以说查到连内裤都不剩。</del></p>
-<h2 id="（二）"><a href="#（二）" class="headerlink" title="（二）"></a>（二）</h2><p>使用<code>nmap -sC -sV -O [IP]</code>也可以探测目标机器的操作系统、服务等信息。</p>
-<ul>
-<li><code>-sC</code>：使用Nmap脚本进行探测；</li>
-<li><code>-sV</code>：探测目标机器上的服务指纹信息；</li>
-<li><code>-O</code>：探测目标机器上的操作系统信息。</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sC</span> <span class="literal">-sV</span> <span class="literal">-O</span> <span class="number">192.168</span>.<span class="number">0.204</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sC -sV -O 192.168.0.204</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-08 02:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.0014s latency).</span><br><span class="line">Not shown: 994 closed ports</span><br><span class="line">PORT     STATE SERVICE     VERSION</span><br><span class="line">21&#x2F;tcp   open  ftp         vsftpd 3.0.3</span><br><span class="line">22&#x2F;tcp   open  ssh         OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)</span><br><span class="line">| ssh-hostkey:</span><br><span class="line">|   2048 c4:17:df:33:57:cb:50:cb:a0:45:84:0b:c7:56:6c:84 (RSA)</span><br><span class="line">|   256 e5:47:d0:3e:18:f7:21:23:81:7a:c7:2b:bb:50:c5:c0 (ECDSA)</span><br><span class="line">|_  256 0a:c5:b9:28:1f:f6:c3:56:a0:2e:96:55:fe:ab:80:7d (ED25519)</span><br><span class="line">139&#x2F;tcp  open  netbios-ssn Samba smbd 3.X - 4.X (workgroup: WORKGROUP)</span><br><span class="line">445&#x2F;tcp  open  netbios-ssn Samba smbd 4.9.5-Debian (workgroup: WORKGROUP)</span><br><span class="line">631&#x2F;tcp  open  ipp         CUPS 2.2</span><br><span class="line">| http-methods:</span><br><span class="line">|_  Potentially risky methods: PUT</span><br><span class="line">| http-robots.txt: 1 disallowed entry</span><br><span class="line">|_&#x2F;</span><br><span class="line">|_http-server-header: CUPS&#x2F;2.2 IPP&#x2F;2.1</span><br><span class="line">|_http-title: Home - CUPS 2.2.10</span><br><span class="line">6566&#x2F;tcp open  sane-port?</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Device type: general purpose</span><br><span class="line">Running: Linux 4.X|5.X</span><br><span class="line">OS CPE: cpe:&#x2F;o:linux:linux_kernel:4 cpe:&#x2F;o:linux:linux_kernel:5</span><br><span class="line">OS details: Linux 4.15 - 5.6</span><br><span class="line">Network Distance: 1 hop</span><br><span class="line">Service Info: Host: SERVER; OSs: Unix, Linux; CPE: cpe:&#x2F;o:linux:linux_kernel</span><br><span class="line"></span><br><span class="line">Host script results:</span><br><span class="line">|_clock-skew: mean: -2h40m00s, deviation: 4h37m07s, median: -1s</span><br><span class="line">|_nbstat: NetBIOS name: SERVER, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: &lt;unknown&gt; (unknown)</span><br><span class="line">| smb-os-discovery:</span><br><span class="line">|   OS: Windows 6.1 (Samba 4.9.5-Debian)</span><br><span class="line">|   Computer name: server</span><br><span class="line">|   NetBIOS computer name: SERVER\x00</span><br><span class="line">|   Domain name: kawashiros.club</span><br><span class="line">|   FQDN: server.kawashiros.club</span><br><span class="line">|_  System time: 2021-02-08T02:37:15+08:00</span><br><span class="line">| smb-security-mode:</span><br><span class="line">|   account_used: guest</span><br><span class="line">|   authentication_level: user</span><br><span class="line">|   challenge_response: supported</span><br><span class="line">|_  message_signing: disabled (dangerous, but default)</span><br><span class="line">| smb2-security-mode:</span><br><span class="line">|   2.02:</span><br><span class="line">|_    Message signing enabled but not required</span><br><span class="line">| smb2-time:</span><br><span class="line">|   date: 2021-02-07T18:37:15</span><br><span class="line">|_  start_date: N&#x2F;A</span><br><span class="line"></span><br><span class="line">OS and Service detection performed. Please report any incorrect results at https:&#x2F;&#x2F;nmap.org&#x2F;submit&#x2F; .</span><br><span class="line">Nmap done: 1 IP address (1 host up) scanned in 43.31 seconds</span><br></pre></td></tr></table></figure>
-<p>和<code>nmap -A -v -T4</code>返回的结果没有多大区别。</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://blog.csdn.net/suyebiubiu/article/details/108595095">Nmap-03:Nmap识别目标机器上服务的指纹_敲代码的乔帮主-CSDN博客</a></li>
-<li><a href="https://blog.csdn.net/asdushf/article/details/111872759">服务指纹分析_asdushf的博客-CSDN博客</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>Nmap</tag>
-        <tag>网络安全</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Valine无法加载评论</title>
-    <url>/p/2020/8e4e7ab9.html</url>
-    <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
-<p>最近事情比较多，也就很少更新博客，消息也很少看。但今天比较空闲，也就上来看看博客的数据。不经意间发现Valine评论全没了。</p>
-<p>完了，一天没看着就出岔子了。于是我赶紧上LeanCloud看看情况。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/5146f08684b69918.jpg" alt="原先的评论都在"></p>
-<p>看到这里，我松了口气。不过评论不显示的问题还是要解决。</p>
-<p>我试着更改valine.min.js的CDN，关闭hexo-neat，都不管用。看样子不是我的服务器的问题。最后打开F12，在网络选项卡中发现us.avoscloud.com的请求失败。</p>
-<p>命令行中ping了一下，连接超时。我怀疑这个被GFW河蟹了。</p>
-<p>于是又到站长之家找PING工具测试，结果如下：</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/dd514c931ee8baae.jpg" alt="国内统统访问不了"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/51a01ffac5781cdf.jpg" alt="国外亦是如此"></p>
-<p>大概是那边的服务器宕机下线了……</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://www.freeiconspng.com/uploads/to-be-continued-meme-picture-4.jpg" alt="标准结局"></p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>查找必应上没有,但百度搜到了解决方案.所以在网上找资源不能只吊死在一个搜索引擎上.</p>
-<p><a href="https://blog.csdn.net/qq_35977139/article/details/108768439">解决方案</a></p>
-<p>现在评论恢复了,大家畅所欲言吧.</p>
-]]></content>
-      <categories>
-        <category>日常</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>Valine</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Windows Terminal使用体验</title>
     <url>/p/2020/cfe2793b.html</url>
     <content><![CDATA[<p>Windows Terminal早就不是什么新奇的东西了，在Microsoft Store直接可以找到。有很多新特性。替代Windows原生的Command Prompt再合适不过。我从年初开始，使用至今。</p>
@@ -717,59 +690,30 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>人鱼的悲剧</title>
-    <url>/p/2021/c4efef06.html</url>
-    <content><![CDATA[
-<!--背景-->
-<script>
-if(isMobile()){
-	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/せめて君のその手で_38386764_waifu2x_art_noise1_scale_tta_1.webp")
-}else{
-	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/夏だ！_37560505.webp")
-}
-
-console.log("也许是从美树沙耶加的身上也看到些许自己的影子吧。\n\n若是没有传销头子QB，那我猜沙耶加也不会有这般结局。")
-</script>
-
-<div class="note warning modern"><ol>
-<li>剧透警告；</li>
-<li>不涉及剧场版；</li>
-<li>个人观点，经供参考。</li>
-</ol>
-</div>
-<p>新房昭之的分镜配合老虚的编剧，再配合上苍树梅老师的画风。《魔法少女小圆》总是有一种未知的魅力吸引着我。</p>
-<p>毕竟是悲剧。</p>
-<p>该作品以魔法少女为包装，刺破凡人对于魔法少女这一类身份甜美的认知，一针见血。这也是这部十年前的老番得以封神的原因，前无古人，后无来者。</p>
-<p>而作品中最能引发我共鸣的角色，不是晓美焰或鹿目圆，而是美树沙耶加。</p>
-<hr>
-<p>这只是一个悲剧中具有悲剧色彩的角色。</p>
-<p>沙耶加从一个阳光、大方、开朗的水蓝色短发少女，变得阴暗、自负，最终化作魔女……这种结局着实令人惋惜。这是必然的结果。晓美焰多次轮回后，也确信她是无法被拯救的了。</p>
-<p>她为了治好幼驯染的病，和孵化者签订契约，成为了魔法少女。但她始终坚信自己的正义，鄙视一切利己主义，自然和红黑两个人不合。得知魔法少女的真相后，一蹶不振，陷入癫狂。再加上幼驯染与同班同学好上，以及未及时清除灵魂宝石内的污秽。自己也就成了魔女。</p>
-<p>孵化者的立场是绝对的理性，他（们）眼中的魔法少女的最终形态即是魔女。而他（们）也永远不会阻止，因为这能够达到他们最终的目的。但这种绝对的理性正是与人的感性相冲突的。孵化者不会说谎话，但他（们）不会把话说全。签订契约所带来的“奇迹”，究竟需要多大的代价，也就只字未提。这也就注定，当沙耶加为了自己的幼驯染成为魔法少女后会走向末路。</p>
-<hr>
-<p>对和错、好和坏、正义和邪恶，这三者的界定并不是绝对的。因为人类不是机器。</p>
-<p>朴素辩证法思想中，统一物由对立面组成，对立面可以互相转化。早在《庄子》中就有论述。</p>
-<blockquote>
-<p>物无非彼，物无非是。自彼则不见，自知则知之。 ——《庄子·齐物论》</p>
-</blockquote>
-<p>换而言之，世界上也就没有绝对的对和错、好和坏、正义和邪恶，二者都是相“齐”的。</p>
-<p>沙耶加的极端利他主义，迫使她付出太多。她播撒了希望，也收获了绝望，这二者并不相“齐”，也就加快了沙耶加精神上的透支。</p>
-<p>沙耶加成为魔法少女的初衷是正义的。但物极必反，任何事物走到极端就会走向反面。与其能力不匹配的信条，使其自暴自弃，到后面，也就酝酿出诅咒了。这是与初衷相反的。</p>
-<hr>
-<p>生物的本性是趋利避害。</p>
-<p>长大了才懂得成年人的眼中为何没有所谓正义，而只有利益了。</p>
-<hr>
-<p>人鱼的悲剧终是来了。</p>
-<p>对于我们一般的观众而言，更多的是惋惜。</p>
-<p>[F12]</p>
+    <title>Valine无法加载评论</title>
+    <url>/p/2020/8e4e7ab9.html</url>
+    <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
+<p>最近事情比较多，也就很少更新博客，消息也很少看。但今天比较空闲，也就上来看看博客的数据。不经意间发现Valine评论全没了。</p>
+<p>完了，一天没看着就出岔子了。于是我赶紧上LeanCloud看看情况。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/5146f08684b69918.jpg" alt="原先的评论都在"></p>
+<p>看到这里，我松了口气。不过评论不显示的问题还是要解决。</p>
+<p>我试着更改valine.min.js的CDN，关闭hexo-neat，都不管用。看样子不是我的服务器的问题。最后打开F12，在网络选项卡中发现us.avoscloud.com的请求失败。</p>
+<p>命令行中ping了一下，连接超时。我怀疑这个被GFW河蟹了。</p>
+<p>于是又到站长之家找PING工具测试，结果如下：</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/dd514c931ee8baae.jpg" alt="国内统统访问不了"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/51a01ffac5781cdf.jpg" alt="国外亦是如此"></p>
+<p>大概是那边的服务器宕机下线了……</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://www.freeiconspng.com/uploads/to-be-continued-meme-picture-4.jpg" alt="标准结局"></p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>查找必应上没有,但百度搜到了解决方案.所以在网上找资源不能只吊死在一个搜索引擎上.</p>
+<p><a href="https://blog.csdn.net/qq_35977139/article/details/108768439">解决方案</a></p>
+<p>现在评论恢复了,大家畅所欲言吧.</p>
 ]]></content>
       <categories>
-        <category>看番</category>
+        <category>日常</category>
       </categories>
       <tags>
-        <tag>魔法少女小圆</tag>
-        <tag>哲学</tag>
-        <tag>朴素辩证法</tag>
+        <tag>博客</tag>
+        <tag>Valine</tag>
       </tags>
   </entry>
   <entry>
@@ -853,6 +797,87 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
       </tags>
   </entry>
   <entry>
+    <title>主板烧了</title>
+    <url>/p/2020/112daf67.html</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>只是给台式机清灰+换一个散热器。 </p>
+<h1 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h1><h2 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h2><p>我拆下原本的风扇，往CPU上涂硅脂。但那劣质硅脂放久了，除了硅脂本体还挤出来许多透明♂液体。 </p>
+<p>拿纸巾擦干后发现有硅脂溢出到主板插槽上了…… </p>
+<font color="red">我我犯了个致命错误：拿纸巾擦插槽</font>
+
+<p>当我意识到时已经晚了，主板插槽的CPU针脚歪了。牙膏厂真的nb，CPU偏偏是触点，针脚在主板上…… </p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0013.jpg" alt="DSC_0013.jpg"> </p>
+<p>我只好拿一字头螺丝刀把针脚挑正。装上机箱试了一下是通过自检的。 </p>
+<p>但当我装上新散热器，电源老毛病又犯了……似乎是电压不稳，主板是亮灯两秒又熄灭，然后又亮，又熄灭……但时间不早了，我整理了一下就去睡觉了。 </p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>下了晚自习，我赶回家，继续修复机器。 </p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0014.jpg" alt="DSC_0014.jpg"> </p>
+<p>但这次，在测试的时候……主板烧了，冒出缕缕青烟，香气四溢。</p>
+<p>R.I.P. </p>
+<p>短时间内，我的工作都会放到笔记本上，希望已故的台式机主板安息，笔记本会继承他的遗志。</p>
+]]></content>
+      <categories>
+        <category>日常</category>
+      </categories>
+      <tags>
+        <tag>日常</tag>
+        <tag>苦逼</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>人鱼的悲剧</title>
+    <url>/p/2021/c4efef06.html</url>
+    <content><![CDATA[<div class="note warning modern"><ol>
+<li>剧透警告；</li>
+<li>不涉及剧场版；</li>
+<li>个人观点，经供参考。</li>
+</ol>
+</div>
+<p>新房昭之的分镜配合老虚的编剧，再配合上苍树梅老师的画风。《魔法少女小圆》总是有一种未知的魅力吸引着我。</p>
+<p>毕竟是悲剧。</p>
+<p>该作品以魔法少女为包装，刺破凡人对于魔法少女这一类身份甜美的认知，一针见血。这也是这部十年前的老番得以封神的原因，前无古人，后无来者。</p>
+<p>而作品中最能引发我共鸣的角色，不是晓美焰或鹿目圆，而是美树沙耶加。</p>
+<hr>
+<p>这只是一个悲剧中具有悲剧色彩的角色。</p>
+<p>沙耶加从一个阳光、大方、开朗的水蓝色短发少女，变得阴暗、自负，最终化作魔女……这种结局着实令人惋惜。这是必然的结果。晓美焰多次轮回后，也确信她是无法被拯救的了。</p>
+<p>她为了治好幼驯染的病，和孵化者签订契约，成为了魔法少女。但她始终坚信自己的正义，鄙视一切利己主义，自然和红黑两个人不合。得知魔法少女的真相后，一蹶不振，陷入癫狂。再加上幼驯染与同班同学好上，以及未及时清除灵魂宝石内的污秽。自己也就成了魔女。</p>
+<p>孵化者的立场是绝对的理性，他（们）眼中的魔法少女的最终形态即是魔女。而他（们）也永远不会阻止，因为这能够达到他们最终的目的。但这种绝对的理性正是与人的感性相冲突的。孵化者不会说谎话，但他（们）不会把话说全。签订契约所带来的“奇迹”，究竟需要多大的代价，也就只字未提。这也就注定，当沙耶加为了自己的幼驯染成为魔法少女后会走向末路。</p>
+<hr>
+<p>对和错、好和坏、正义和邪恶，这三者的界定并不是绝对的。因为人类不是机器。</p>
+<p>朴素辩证法思想中，统一物由对立面组成，对立面可以互相转化。早在《庄子》中就有论述。</p>
+<blockquote>
+<p>物无非彼，物无非是。自彼则不见，自知则知之。 ——《庄子·齐物论》</p>
+</blockquote>
+<p>换而言之，世界上也就没有绝对的对和错、好和坏、正义和邪恶，二者都是相“齐”的。</p>
+<p>沙耶加的极端利他主义，迫使她付出太多。她播撒了希望，也收获了绝望，这二者并不相“齐”，也就加快了沙耶加精神上的透支。</p>
+<p>沙耶加成为魔法少女的初衷是正义的。但物极必反，任何事物走到极端就会走向反面。与其能力不匹配的信条，使其自暴自弃，到后面，也就酝酿出诅咒了。这是与初衷相反的。</p>
+<hr>
+<p>生物的本性是趋利避害。</p>
+<p>长大了才懂得成年人的眼中为何没有所谓正义，而只有利益了。</p>
+<hr>
+<p>人鱼的悲剧终是来了。</p>
+<p>对于我们一般的观众而言，更多的是惋惜。</p>
+<p>[F12]</p>
+
+<!--背景-->
+<script>
+if(isMobile()){
+	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/せめて君のその手で_38386764_waifu2x_art_noise1_scale_tta_1.webp")
+}else{
+	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/夏だ！_37560505.webp")
+}
+
+console.log("也许是从美树沙耶加的身上也看到些许自己的影子吧。\n\n若是没有传销头子QB，那我猜沙耶加也不会有这般结局。")
+</script>
+]]></content>
+      <categories>
+        <category>看番</category>
+      </categories>
+      <tags>
+        <tag>魔法少女小圆</tag>
+        <tag>哲学</tag>
+        <tag>朴素辩证法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Certbot自动申请Let&#39;s Encrypt的SSL证书</title>
     <url>/p/2021/d74d746c.html</url>
     <content><![CDATA[<h1 id="关于证书签发机构"><a href="#关于证书签发机构" class="headerlink" title="关于证书签发机构"></a>关于证书签发机构</h1><p><a href="https://letsencrypt.org">Let’s Encrypt</a></p>
@@ -915,32 +940,6 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
         <tag>SSL</tag>
         <tag>Certbot</tag>
         <tag>Let&#39;s Encrypt</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>主板烧了</title>
-    <url>/p/2020/112daf67.html</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>只是给台式机清灰+换一个散热器。 </p>
-<h1 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h1><h2 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h2><p>我拆下原本的风扇，往CPU上涂硅脂。但那劣质硅脂放久了，除了硅脂本体还挤出来许多透明♂液体。 </p>
-<p>拿纸巾擦干后发现有硅脂溢出到主板插槽上了…… </p>
-<font color="red">我我犯了个致命错误：拿纸巾擦插槽</font>
-
-<p>当我意识到时已经晚了，主板插槽的CPU针脚歪了。牙膏厂真的nb，CPU偏偏是触点，针脚在主板上…… </p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0013.jpg" alt="DSC_0013.jpg"> </p>
-<p>我只好拿一字头螺丝刀把针脚挑正。装上机箱试了一下是通过自检的。 </p>
-<p>但当我装上新散热器，电源老毛病又犯了……似乎是电压不稳，主板是亮灯两秒又熄灭，然后又亮，又熄灭……但时间不早了，我整理了一下就去睡觉了。 </p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>下了晚自习，我赶回家，继续修复机器。 </p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0014.jpg" alt="DSC_0014.jpg"> </p>
-<p>但这次，在测试的时候……主板烧了，冒出缕缕青烟，香气四溢。</p>
-<p>R.I.P. </p>
-<p>短时间内，我的工作都会放到笔记本上，希望已故的台式机主板安息，笔记本会继承他的遗志。</p>
-]]></content>
-      <categories>
-        <category>日常</category>
-      </categories>
-      <tags>
-        <tag>日常</tag>
-        <tag>苦逼</tag>
       </tags>
   </entry>
   <entry>
@@ -1019,6 +1018,35 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
       </tags>
   </entry>
   <entry>
+    <title>和绝望，和睦相处</title>
+    <url>/p/2020/d020fa4a.html</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
+
+<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
+<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
+<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
+<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
+<p>希望总会在漫长的等待中终将被耗尽。</p>
+<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
+<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
+<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
+<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
+<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
+<p>等待着她们的，仍是绝望。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
+<p>图片转自原作者つくみず 的推特</p>
+<hr>
+<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
+]]></content>
+      <categories>
+        <category>看番</category>
+      </categories>
+      <tags>
+        <tag>少女终末旅行</tag>
+        <tag>ACGN</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>好的故事</title>
     <url>/p/2020/5585cfe.html</url>
     <content><![CDATA[<p>2020，还有两天就要离我们而去了。一切都经历了太多，也失去了太多，但总还是好的故事。</p>
@@ -1088,6 +1116,67 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
     <content><![CDATA[<p>本站已支持HTTPS，从友链进入会自动转到HTTPS协议；</p>
 <p><img src= "/resources/loading.gif" data-lazy-src="https://42works.net/wp-content/uploads/2018/07/https-migration.png" alt="http2https"></p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>树莓派搭建简易NAS</title>
+    <url>/p/2020/444bfcb2.html</url>
+    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c3db57119e19103b.jpg" alt="树莓派"></p>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ol>
+<li><p>一台装好系统的树莓派。这里使用之前的4B，OS是Raspbian 10 Buster；</p>
+</li>
+<li><p>一块2.5寸硬盘，以及一个USB硬盘盒；</p>
+</li>
+<li><p>一颗<font color="red">❤</font>决心；</p>
+</li>
+</ol>
+<h1 id="0-格式化硬盘"><a href="#0-格式化硬盘" class="headerlink" title="0. 格式化硬盘"></a>0. 格式化硬盘</h1><p><a href="https://www.linuxidc.com/Linux/2011-05/36051.htm">Linux下格式化硬盘</a></p>
+<p>我是直接在Windows下格式化整块硬盘为一个NTFS分区，反正Raspbian自带<code>ntfs-3g</code>。</p>
+<p>完成后插到树莓派上。支持USB3.0的最好插USB3.0的接口，不然会慢很多。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/329fb0963d666ec3.jpg" alt="sudo执行fdisk -l，最底下sda1是硬盘分区"></p>
+<p>确定了硬盘是<code>/dev/sda1</code>，就可以进行下一步操作了。</p>
+<h1 id="1-设置自动挂载"><a href="#1-设置自动挂载" class="headerlink" title="1. 设置自动挂载"></a>1. 设置自动挂载</h1><p>先创建一个目录，用来挂载硬盘分区。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo mkdir /home/nas</span><br></pre></td></tr></table></figure>
+<p>编辑<code>/etc/fstab</code>设置自动挂载。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/fstab</span><br></pre></td></tr></table></figure>
+<p>插入<code>/dev/sda1 /home/nas ntfs-3g default 0 0</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">proc            &#x2F;proc           proc    defaults          0       0</span><br><span class="line">PARTUUID&#x3D;b13f8abd-01  &#x2F;boot           vfat    defaults          0       2</span><br><span class="line">PARTUUID&#x3D;b13f8abd-02  &#x2F;               ext4    defaults,noatime  0       1</span><br><span class="line"></span><br><span class="line">&#x2F;dev&#x2F;sda1 &#x2F;home&#x2F;nas ntfs-3g default 0 0</span><br><span class="line"></span><br><span class="line"># a swapfile is not a swap partition, no line here</span><br><span class="line">#   use  dphys-swapfile swap[on|off]  for that</span><br></pre></td></tr></table></figure>
+<p><code>/dev/sda1</code>是对应外置硬盘的设备文件；</p>
+<p><code>/home/nas</code>是挂载点；</p>
+<p><code>ntfs-3g</code>是文件系统，可以使用其他文件系统如<code>fat32</code>或<code>ext4</code>。</p>
+<p>编辑完后重启。可以通过<code>df</code>命令查看当前挂载点。如果有<code>/dev/sda1</code>就成功一半了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ df</span><br><span class="line">文件系统           1K-块    已用      可用 已用% 挂载点</span><br><span class="line">/dev/root       14986672 8701748   5589048   61% /</span><br><span class="line">devtmpfs          305760       0    305760    0% /dev</span><br><span class="line">tmpfs             437856       0    437856    0% /dev/shm</span><br><span class="line">tmpfs             437856    7140    430716    2% /run</span><br><span class="line">tmpfs               5120       4      5116    1% /run/lock</span><br><span class="line">tmpfs             437856       0    437856    0% /sys/fs/cgroup</span><br><span class="line">/dev/mmcblk0p1    258095   54605    203490   22% /boot</span><br><span class="line">/dev/sda1      244196348  842828 243353520    1% /home/nas</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/109</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/1001</span><br></pre></td></tr></table></figure>
+<h1 id="启用SMB服务"><a href="#启用SMB服务" class="headerlink" title="启用SMB服务"></a>启用SMB服务</h1><p>先安装<code>samba</code>，类Unix中的SMB服务器。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install samba</span><br></pre></td></tr></table></figure>
+<p>安装过程中会询问配置DHCP主机名，选是。然后又是漫长的等待。</p>
+<p>安装完成后，编辑<code>/etc/samba/smb.conf</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/samba/smb.conf</span><br></pre></td></tr></table></figure>
+<p>在文档末尾加入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[新♂日♂目♂里]</span><br><span class="line">comment &#x3D; Basement</span><br><span class="line">path &#x3D; &#x2F;home&#x2F;nas</span><br><span class="line">browseable &#x3D; yes</span><br><span class="line">read only &#x3D; no</span><br><span class="line">guest ok &#x3D; no</span><br><span class="line">writable &#x3D; yes</span><br></pre></td></tr></table></figure>
+<p><span class="heimu" title="你知道的太多了">个人趣味（狗头），方括号里的内容是SMB共享文件夹的名称</span></p>
+<p>然后，添加samba用户。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo smbpasswd -a [用户名]</span><br></pre></td></tr></table></figure>
+<p>不<code>sudo</code>设置会没有权限。</p>
+<p>最后重启<code>samba</code>服务。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo /etc/init.d/samba-ad-dc restart</span><br></pre></td></tr></table></figure>
+<p>当然，如果你不嫌麻烦的话，重启整个系统也是可以的。</p>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>在Windows端，Win + R 召唤资源管理器，在地址栏中输入<code>\\Pi\</code>。（Pi改成主机名或者IP地址）。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/e99ebf20432befcc.jpg" alt="It Works!"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/801aa4ab89e69d40.jpg" alt="速度大概是10兆每秒，勉强可以接受"></p>
+<hr>
+<p>至此，一个简易的NAS就搭建完了。</p>
+<p>这台树莓派难道至是拿来做做存储服务器？对不起，那不现实啊~</p>
+<p>过几天，LCD1602应该会到，到了再做一个更有意思的东西吧。（笑）</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>GNU/Linux</tag>
+        <tag>运维</tag>
+        <tag>树莓派</tag>
+        <tag>SAMBA</tag>
+        <tag>NAS</tag>
+      </tags>
   </entry>
   <entry>
     <title>树莓派通过I2C总线连接LCD1602并部署一个小项目</title>
@@ -1162,35 +1251,6 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
         <tag>Python</tag>
         <tag>I2C</tag>
         <tag>1024程序员节</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>和绝望，和睦相处</title>
-    <url>/p/2020/d020fa4a.html</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
-
-<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
-<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
-<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
-<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
-<p>希望总会在漫长的等待中终将被耗尽。</p>
-<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
-<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
-<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
-<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
-<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
-<p>等待着她们的，仍是绝望。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
-<p>图片转自原作者つくみず 的推特</p>
-<hr>
-<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
-]]></content>
-      <categories>
-        <category>看番</category>
-      </categories>
-      <tags>
-        <tag>少女终末旅行</tag>
-        <tag>ACGN</tag>
       </tags>
   </entry>
   <entry>
@@ -1296,64 +1356,77 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
       </tags>
   </entry>
   <entry>
-    <title>树莓派搭建简易NAS</title>
-    <url>/p/2020/444bfcb2.html</url>
-    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c3db57119e19103b.jpg" alt="树莓派"></p>
-<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ol>
-<li><p>一台装好系统的树莓派。这里使用之前的4B，OS是Raspbian 10 Buster；</p>
-</li>
-<li><p>一块2.5寸硬盘，以及一个USB硬盘盒；</p>
-</li>
-<li><p>一颗<font color="red">❤</font>决心；</p>
-</li>
+    <title>笔记·AJAX</title>
+    <url>/p/2020/46134e8e.html</url>
+    <content><![CDATA[<div class="note warning modern"><p>不建议直接搬用本文代码，因为很有可能出现跨域问题</p>
+</div>
+<h1 id="AJAX是什么"><a href="#AJAX是什么" class="headerlink" title="AJAX是什么"></a>AJAX是什么</h1><p>AJAX - Asynchronous JavaScript And XML - 异步的JavaScript和XML</p>
+<p>该方法能够让Web浏览器在不刷新页面的情况下与服务器交换数据。</p>
+<blockquote>
+<p>当使用结合了这些技术的AJAX模型以后， 网页应用能够快速地将增量更新呈现在用户界面上，而不需要重载（刷新）整个页面。这使得程序能够更快地回应用户的操作。</p>
+</blockquote>
+<h1 id="XMLHttpRequest"><a href="#XMLHttpRequest" class="headerlink" title="XMLHttpRequest"></a>XMLHttpRequest</h1><p><code>XMLHttpRequest()</code>用于和服务器交换数据。</p>
+<p>发送一个HTTP请求时，需要创建一个<code>XMLHttpRequest</code>对象，打开一个URL，发送请求。服务器会返回HTTP状态码及响应主体。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> NewHTTPRequest = <span class="keyword">new</span> XMLHTTPRequest();</span><br></pre></td></tr></table></figure>
+<p>这样就创建了一个<code>XMLHttpRequest</code>对象。<del>（废话</del></p>
+<p>值得一提的是，IE6及以前版本的IE用的都是<code>ActiveXObject</code>。<span class="heimu" title="你知道的太多了">0202年了，还有人用IE6吗？</span></p>
+<h1 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h1><p>使用<code>XMLHttpRequest</code>对象的<code>open()</code>和<code>send()</code>方法。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>)</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
+<h2 id="open-方法"><a href="#open-方法" class="headerlink" title="open()方法"></a><code>open()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.open(method, url, async, user, passwd);</code></p>
+<ul>
+<li><code>XMLHttpRequestObject</code>: 创建的XMLHttpRequest对象</li>
+<li><code>method</code>: 要使用的HTTP方法。常用的是<code>GET</code>和<code>POST</code></li>
+<li><code>url</code>: 要向其发送请求的URL</li>
+<li><code>async</code>: 可选参数。布尔类型。表示是否异步操作，默认为<code>true</code>。如果为<code>false</code>，<code>send()</code>方法直到收到答复前不会返回</li>
+<li><code>user</code>: 可选参数。用于认证用途，用户名</li>
+<li><code>passwd</code>: 可选参数。用于认证用途，密码</li>
+</ul>
+<h2 id="send-方法"><a href="#send-方法" class="headerlink" title="send()方法"></a><code>send()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.send(body);</code></p>
+<ul>
+<li><code>body</code>: 可选参数。在<code>XMLHttpRequest</code>请求中要发送的数据体，默认为<code>null</code>。仅用于<code>POST</code>请求</li>
+</ul>
+<h2 id="GET还是POST"><a href="#GET还是POST" class="headerlink" title="GET还是POST"></a><code>GET</code>还是<code>POST</code></h2><p>一言蔽之，<code>GET</code>适用于大多数请求。</p>
+<p>而以下情况：</p>
+<ul>
+<li>无法使用缓存文件（更新服务器上的文件或数据库）</li>
+<li>向服务器发送大量数据（POST没有数量限制）</li>
+<li>发送包含未知字符的用户输入时，POST 比 GET 更稳定也更可靠</li>
+</ul>
+<h3 id="GET"><a href="#GET" class="headerlink" title="GET"></a><code>GET</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
+<p>执行上面的例子，浏览器可能返回缓存的数据。</p>
+<p>简单粗暴的解决方案：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html?t=&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
+<p>只需要向URL中添加一个无用的参数就可以了。</p>
+<h3 id="POST"><a href="#POST" class="headerlink" title="POST"></a><code>POST</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;POST&quot;</span>,<span class="string">&quot;https://www.runoob.com/try/ajax/demo_post2.php&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.setRequestHeader(<span class="string">&quot;Content-type&quot;</span>,<span class="string">&quot;application/x-www-form-urlencoded&quot;</span>); <span class="comment">//向请求添加HTTP头</span></span><br><span class="line">NewHTTPRequest.send(<span class="string">&quot;fname=河城&amp;lname=荷取&quot;</span>) <span class="comment">//参数</span></span><br></pre></td></tr></table></figure>
+<p><code>setRequestHeader</code>参数：</p>
+<ul>
+<li><code>header</code>: 规定HTTP头的名称</li>
+<li><code>value</code>: 规定头的值</li>
+</ul>
+<h2 id="异步还是同步"><a href="#异步还是同步" class="headerlink" title="异步还是同步"></a>异步还是同步</h2><p>多数情况下，<code>async</code>应设置为<code>true</code>。但有时，<code>async=false</code>更合适。</p>
+<blockquote>
+<p>对于 web 开发人员来说，发送异步请求是一个巨大的进步。很多在服务器执行的任务都相当费时。AJAX 出现之前，这可能会引起应用程序挂起或停止。<br><br>通过 AJAX，JavaScript 无需等待服务器的响应，而是：<br></p>
+<ol>
+<li>在等待服务器响应时执行其他脚本<br></li>
+<li>当响应就绪后对响应进行处理<br><br>——Runoob.com</li>
 </ol>
-<h1 id="0-格式化硬盘"><a href="#0-格式化硬盘" class="headerlink" title="0. 格式化硬盘"></a>0. 格式化硬盘</h1><p><a href="https://www.linuxidc.com/Linux/2011-05/36051.htm">Linux下格式化硬盘</a></p>
-<p>我是直接在Windows下格式化整块硬盘为一个NTFS分区，反正Raspbian自带<code>ntfs-3g</code>。</p>
-<p>完成后插到树莓派上。支持USB3.0的最好插USB3.0的接口，不然会慢很多。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/329fb0963d666ec3.jpg" alt="sudo执行fdisk -l，最底下sda1是硬盘分区"></p>
-<p>确定了硬盘是<code>/dev/sda1</code>，就可以进行下一步操作了。</p>
-<h1 id="1-设置自动挂载"><a href="#1-设置自动挂载" class="headerlink" title="1. 设置自动挂载"></a>1. 设置自动挂载</h1><p>先创建一个目录，用来挂载硬盘分区。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo mkdir /home/nas</span><br></pre></td></tr></table></figure>
-<p>编辑<code>/etc/fstab</code>设置自动挂载。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/fstab</span><br></pre></td></tr></table></figure>
-<p>插入<code>/dev/sda1 /home/nas ntfs-3g default 0 0</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">proc            &#x2F;proc           proc    defaults          0       0</span><br><span class="line">PARTUUID&#x3D;b13f8abd-01  &#x2F;boot           vfat    defaults          0       2</span><br><span class="line">PARTUUID&#x3D;b13f8abd-02  &#x2F;               ext4    defaults,noatime  0       1</span><br><span class="line"></span><br><span class="line">&#x2F;dev&#x2F;sda1 &#x2F;home&#x2F;nas ntfs-3g default 0 0</span><br><span class="line"></span><br><span class="line"># a swapfile is not a swap partition, no line here</span><br><span class="line">#   use  dphys-swapfile swap[on|off]  for that</span><br></pre></td></tr></table></figure>
-<p><code>/dev/sda1</code>是对应外置硬盘的设备文件；</p>
-<p><code>/home/nas</code>是挂载点；</p>
-<p><code>ntfs-3g</code>是文件系统，可以使用其他文件系统如<code>fat32</code>或<code>ext4</code>。</p>
-<p>编辑完后重启。可以通过<code>df</code>命令查看当前挂载点。如果有<code>/dev/sda1</code>就成功一半了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ df</span><br><span class="line">文件系统           1K-块    已用      可用 已用% 挂载点</span><br><span class="line">/dev/root       14986672 8701748   5589048   61% /</span><br><span class="line">devtmpfs          305760       0    305760    0% /dev</span><br><span class="line">tmpfs             437856       0    437856    0% /dev/shm</span><br><span class="line">tmpfs             437856    7140    430716    2% /run</span><br><span class="line">tmpfs               5120       4      5116    1% /run/lock</span><br><span class="line">tmpfs             437856       0    437856    0% /sys/fs/cgroup</span><br><span class="line">/dev/mmcblk0p1    258095   54605    203490   22% /boot</span><br><span class="line">/dev/sda1      244196348  842828 243353520    1% /home/nas</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/109</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/1001</span><br></pre></td></tr></table></figure>
-<h1 id="启用SMB服务"><a href="#启用SMB服务" class="headerlink" title="启用SMB服务"></a>启用SMB服务</h1><p>先安装<code>samba</code>，类Unix中的SMB服务器。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install samba</span><br></pre></td></tr></table></figure>
-<p>安装过程中会询问配置DHCP主机名，选是。然后又是漫长的等待。</p>
-<p>安装完成后，编辑<code>/etc/samba/smb.conf</code></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/samba/smb.conf</span><br></pre></td></tr></table></figure>
-<p>在文档末尾加入：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[新♂日♂目♂里]</span><br><span class="line">comment &#x3D; Basement</span><br><span class="line">path &#x3D; &#x2F;home&#x2F;nas</span><br><span class="line">browseable &#x3D; yes</span><br><span class="line">read only &#x3D; no</span><br><span class="line">guest ok &#x3D; no</span><br><span class="line">writable &#x3D; yes</span><br></pre></td></tr></table></figure>
-<p><span class="heimu" title="你知道的太多了">个人趣味（狗头），方括号里的内容是SMB共享文件夹的名称</span></p>
-<p>然后，添加samba用户。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo smbpasswd -a [用户名]</span><br></pre></td></tr></table></figure>
-<p>不<code>sudo</code>设置会没有权限。</p>
-<p>最后重启<code>samba</code>服务。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo /etc/init.d/samba-ad-dc restart</span><br></pre></td></tr></table></figure>
-<p>当然，如果你不嫌麻烦的话，重启整个系统也是可以的。</p>
-<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>在Windows端，Win + R 召唤资源管理器，在地址栏中输入<code>\\Pi\</code>。（Pi改成主机名或者IP地址）。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/e99ebf20432befcc.jpg" alt="It Works!"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/801aa4ab89e69d40.jpg" alt="速度大概是10兆每秒，勉强可以接受"></p>
-<hr>
-<p>至此，一个简易的NAS就搭建完了。</p>
-<p>这台树莓派难道至是拿来做做存储服务器？对不起，那不现实啊~</p>
-<p>过几天，LCD1602应该会到，到了再做一个更有意思的东西吧。（笑）</p>
+</blockquote>
+<h1 id="服务器响应"><a href="#服务器响应" class="headerlink" title="服务器响应"></a>服务器响应</h1><p>接收服务器响应数据，应使用<code>responseText</code>或<code>responseXML</code>属性。二者的区别在于，前者默认获得文本数据，后者会解析XML。</p>
+<h2 id="responseText"><a href="#responseText" class="headerlink" title="responseText"></a><code>responseText</code></h2><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(NewHTTPRequest.responseText)</span><br></pre></td></tr></table></figure>
+<h2 id="responseXML"><a href="#responseXML" class="headerlink" title="responseXML"></a><code>responseXML</code></h2><p><del>什么时候推出一个“responseJson”啊</del></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">xmlDoc=xmlhttp.responseXML;</span><br><span class="line">txt=<span class="string">&quot;&quot;</span>;</span><br><span class="line">x=xmlDoc.getElementsByTagName(<span class="string">&quot;ARTIST&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (i=<span class="number">0</span>;i&lt;x.length;i++)</span><br><span class="line">&#123;</span><br><span class="line">    txt=txt + x[i].childNodes[<span class="number">0</span>].nodeValue + <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&quot;myDiv&quot;</span>).innerHTML=txt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.runoob.com/ajax">AJAX 教程 | 菜鸟教程 - RUNOOB.COM</a></p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX">Ajax - Web 开发者指南 | MDN</a></p>
 ]]></content>
       <categories>
-        <category>日常宅技术</category>
+        <category>笔记</category>
+        <category>前端</category>
       </categories>
       <tags>
-        <tag>GNU/Linux</tag>
-        <tag>运维</tag>
-        <tag>树莓派</tag>
-        <tag>SAMBA</tag>
-        <tag>NAS</tag>
+        <tag>JavaScript</tag>
+        <tag>前端</tag>
+        <tag>AJAX</tag>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
@@ -1739,6 +1812,84 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
       </tags>
   </entry>
   <entry>
+    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
+    <url>/p/2020/9e01b7f0.html</url>
+    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
+<p>在阅读本文之前，建议先阅读《1984》原著。</p>
+</div>
+<div class="note info modern"><p>电幕之下，请高呼：</p>
+<font size=14>我爱老大哥！</font>
+</div>
+<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
+<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
+<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
+<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
+<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
+<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
+<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
+<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
+<p>愚蠢像智慧一样必要，也同样难以学到。</p>
+<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
+<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
+<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
+<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>……</p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>感想</category>
+      </categories>
+      <tags>
+        <tag>《一九八四》</tag>
+        <tag>品书</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记一次失败部署树莓派双屏桌面</title>
+    <url>/p/2020/5605bcd6.html</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p><span class="heimu" title="你知道的太多了">想要利用多余的一个屏幕。</span></p>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>树莓派4B+ 1G内存版本</p>
+<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>把原来树莓派服务器上的数据转移完成后，我就把它取下了。比较巧的是，网上买的屏幕转接线刚好到了。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c03cbd7e1e3c6b28.png" alt="接线示意图"></p>
+<p>把树莓派连到两个屏幕上，再用TF卡烧写Ubuntu-Mate，插入树莓派。</p>
+<p>开机，双屏同时显示。但右边接VGA的屏幕分辨率有点问题。用xrandr调整一下，就可以开始使用了。</p>
+<p>当我兴致勃勃地启动firefox，树莓派死机了。</p>
+<p><span class="heimu" title="你知道的太多了">淦！这都带不动。不搞了！睡觉！</span></p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>我下载好原生的Raspbian，烧录系统，启动。调整分辨率……</p>
+<p>一个简单的桌面环境就部署好了。</p>
+<p>在菜单里还自带一个Minecraft，挺有意思的。<span class="heimu" title="你知道的太多了">但只有创造模式</span></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/d216e0a812dd2c7e.jpg" alt="Minecraft!"></p>
+<p>浏览器是自带的Chromium，运行起来还算比较顺畅。</p>
+<p>刷B站CPU烧了一半，不过还是跑得动。</p>
+<p>（请原谅我太懒没有截图）</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/2a311e8045824479.jpg" alt="htop"></p>
+<p>但左边屏幕有一个问题：在窗口最大化的时候总会偏移到屏幕外。</p>
+<p>于是我又去编辑config.txt，按网上教程把有关hdmi的部分内容取消注释了。</p>
+<p>重启。</p>
+<p>然后，就没有然后了。它再起（启）不能啊！</p>
+<p><span class="heimu" title="你知道的太多了">淦！这都整不了。不搞了！睡觉！</span></p>
+<h1 id="Day-3"><a href="#Day-3" class="headerlink" title="Day 3"></a>Day 3</h1><p>我暂缓了双屏使用树莓派，转而使用单屏，放弃HDMI-2口的屏幕。重新烧写<span class="heimu" title=“你知道的太多了”>（TF卡都快烧报废了）</span></p>
+<p>开机，屏幕可以显示。常规地adduser，然后删除pi用户。到网上下载了一张荷取的美图，设置为桌面背景……无效？</p>
+<p>在桌面偏好窗口设置桌面背景，它询问我的用户密码，然后……什么都没变</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt purge lxde</span><br><span class="line">$ sudo apt install lxde</span><br></pre></td></tr></table></figure>
+<p>注销重登录，就进入了原生的lxde桌面。比之前好了太多。</p>
+<p>……</p>
+<h1 id="Day-4"><a href="#Day-4" class="headerlink" title="Day 4"></a>Day 4</h1><p>最终还是放弃了树莓派作为桌面的想法，虽然linux现在勉强可以胜任桌面，但支持armhf的并不多。况且，即便有两个hdmi口，对双屏的支持也不是很好。所以，如果实在要拿树莓派跑桌面，请不要买低配的版本。</p>
+<p>之后……我还是拿它做其他有意思的事情吧。TB买了个LCD1602，等到了，就做一个简单的时钟……</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+        <category>树莓派</category>
+      </categories>
+      <tags>
+        <tag>GNU/Linux</tag>
+        <tag>树莓派</tag>
+        <tag>桌面</tag>
+        <tag>失败案例</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>近况·秋游</title>
     <url>/p/2020/aedb0196.html</url>
     <content><![CDATA[<p>嗯……与其说是秋游，不如说是冬游。地点是庐山西海。<span class="heimu" title="你知道的太多了">我本以为去的地方是庐山……</span></p>
@@ -1929,40 +2080,6 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
       </tags>
   </entry>
   <entry>
-    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
-    <url>/p/2020/9e01b7f0.html</url>
-    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
-<p>在阅读本文之前，建议先阅读《1984》原著。</p>
-</div>
-<div class="note info modern"><p>电幕之下，请高呼：</p>
-<font size=14>我爱老大哥！</font>
-</div>
-<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
-<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
-<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
-<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
-<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
-<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
-<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
-<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
-<p>愚蠢像智慧一样必要，也同样难以学到。</p>
-<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
-<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
-<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
-<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>……</p>
-]]></content>
-      <categories>
-        <category>随笔</category>
-        <category>感想</category>
-      </categories>
-      <tags>
-        <tag>《一九八四》</tag>
-        <tag>品书</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>高精度加、减、乘、除算法实现详解</title>
     <url>/p/2020/7e1d431.html</url>
     <content><![CDATA[<h6 id="本文转载自-https-blog-csdn-net-fanyun-01-article-details-79967170"><a href="#本文转载自-https-blog-csdn-net-fanyun-01-article-details-79967170" class="headerlink" title="本文转载自 https://blog.csdn.net/fanyun_01/article/details/79967170"></a>本文转载自 <a href="https://blog.csdn.net/fanyun_01/article/details/79967170">https://blog.csdn.net/fanyun_01/article/details/79967170</a></h6><h6 id="原作者：老樊Lu码"><a href="#原作者：老樊Lu码" class="headerlink" title="原作者：老樊Lu码"></a>原作者：老樊Lu码</h6><h6 id="遵循-CC-4-0-BY-SA-版权协议，转载请附上原文出处链接和本声明"><a href="#遵循-CC-4-0-BY-SA-版权协议，转载请附上原文出处链接和本声明" class="headerlink" title="遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明"></a>遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明</h6><hr>
@@ -2036,124 +2153,6 @@ console.log("也许是从美树沙耶加的身上也看到些许自己的影子�
         <tag>转载</tag>
         <tag>C/C++</tag>
         <tag>高精度算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>记一次失败部署树莓派双屏桌面</title>
-    <url>/p/2020/5605bcd6.html</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p><span class="heimu" title="你知道的太多了">想要利用多余的一个屏幕。</span></p>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>树莓派4B+ 1G内存版本</p>
-<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>把原来树莓派服务器上的数据转移完成后，我就把它取下了。比较巧的是，网上买的屏幕转接线刚好到了。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c03cbd7e1e3c6b28.png" alt="接线示意图"></p>
-<p>把树莓派连到两个屏幕上，再用TF卡烧写Ubuntu-Mate，插入树莓派。</p>
-<p>开机，双屏同时显示。但右边接VGA的屏幕分辨率有点问题。用xrandr调整一下，就可以开始使用了。</p>
-<p>当我兴致勃勃地启动firefox，树莓派死机了。</p>
-<p><span class="heimu" title="你知道的太多了">淦！这都带不动。不搞了！睡觉！</span></p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>我下载好原生的Raspbian，烧录系统，启动。调整分辨率……</p>
-<p>一个简单的桌面环境就部署好了。</p>
-<p>在菜单里还自带一个Minecraft，挺有意思的。<span class="heimu" title="你知道的太多了">但只有创造模式</span></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/d216e0a812dd2c7e.jpg" alt="Minecraft!"></p>
-<p>浏览器是自带的Chromium，运行起来还算比较顺畅。</p>
-<p>刷B站CPU烧了一半，不过还是跑得动。</p>
-<p>（请原谅我太懒没有截图）</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/2a311e8045824479.jpg" alt="htop"></p>
-<p>但左边屏幕有一个问题：在窗口最大化的时候总会偏移到屏幕外。</p>
-<p>于是我又去编辑config.txt，按网上教程把有关hdmi的部分内容取消注释了。</p>
-<p>重启。</p>
-<p>然后，就没有然后了。它再起（启）不能啊！</p>
-<p><span class="heimu" title="你知道的太多了">淦！这都整不了。不搞了！睡觉！</span></p>
-<h1 id="Day-3"><a href="#Day-3" class="headerlink" title="Day 3"></a>Day 3</h1><p>我暂缓了双屏使用树莓派，转而使用单屏，放弃HDMI-2口的屏幕。重新烧写<span class="heimu" title=“你知道的太多了”>（TF卡都快烧报废了）</span></p>
-<p>开机，屏幕可以显示。常规地adduser，然后删除pi用户。到网上下载了一张荷取的美图，设置为桌面背景……无效？</p>
-<p>在桌面偏好窗口设置桌面背景，它询问我的用户密码，然后……什么都没变</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt purge lxde</span><br><span class="line">$ sudo apt install lxde</span><br></pre></td></tr></table></figure>
-<p>注销重登录，就进入了原生的lxde桌面。比之前好了太多。</p>
-<p>……</p>
-<h1 id="Day-4"><a href="#Day-4" class="headerlink" title="Day 4"></a>Day 4</h1><p>最终还是放弃了树莓派作为桌面的想法，虽然linux现在勉强可以胜任桌面，但支持armhf的并不多。况且，即便有两个hdmi口，对双屏的支持也不是很好。所以，如果实在要拿树莓派跑桌面，请不要买低配的版本。</p>
-<p>之后……我还是拿它做其他有意思的事情吧。TB买了个LCD1602，等到了，就做一个简单的时钟……</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-        <category>树莓派</category>
-      </categories>
-      <tags>
-        <tag>GNU/Linux</tag>
-        <tag>树莓派</tag>
-        <tag>桌面</tag>
-        <tag>失败案例</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>笔记·AJAX</title>
-    <url>/p/2020/46134e8e.html</url>
-    <content><![CDATA[<div class="note warning modern"><p>不建议直接搬用本文代码，因为很有可能出现跨域问题</p>
-</div>
-<h1 id="AJAX是什么"><a href="#AJAX是什么" class="headerlink" title="AJAX是什么"></a>AJAX是什么</h1><p>AJAX - Asynchronous JavaScript And XML - 异步的JavaScript和XML</p>
-<p>该方法能够让Web浏览器在不刷新页面的情况下与服务器交换数据。</p>
-<blockquote>
-<p>当使用结合了这些技术的AJAX模型以后， 网页应用能够快速地将增量更新呈现在用户界面上，而不需要重载（刷新）整个页面。这使得程序能够更快地回应用户的操作。</p>
-</blockquote>
-<h1 id="XMLHttpRequest"><a href="#XMLHttpRequest" class="headerlink" title="XMLHttpRequest"></a>XMLHttpRequest</h1><p><code>XMLHttpRequest()</code>用于和服务器交换数据。</p>
-<p>发送一个HTTP请求时，需要创建一个<code>XMLHttpRequest</code>对象，打开一个URL，发送请求。服务器会返回HTTP状态码及响应主体。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> NewHTTPRequest = <span class="keyword">new</span> XMLHTTPRequest();</span><br></pre></td></tr></table></figure>
-<p>这样就创建了一个<code>XMLHttpRequest</code>对象。<del>（废话</del></p>
-<p>值得一提的是，IE6及以前版本的IE用的都是<code>ActiveXObject</code>。<span class="heimu" title="你知道的太多了">0202年了，还有人用IE6吗？</span></p>
-<h1 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h1><p>使用<code>XMLHttpRequest</code>对象的<code>open()</code>和<code>send()</code>方法。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>)</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
-<h2 id="open-方法"><a href="#open-方法" class="headerlink" title="open()方法"></a><code>open()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.open(method, url, async, user, passwd);</code></p>
-<ul>
-<li><code>XMLHttpRequestObject</code>: 创建的XMLHttpRequest对象</li>
-<li><code>method</code>: 要使用的HTTP方法。常用的是<code>GET</code>和<code>POST</code></li>
-<li><code>url</code>: 要向其发送请求的URL</li>
-<li><code>async</code>: 可选参数。布尔类型。表示是否异步操作，默认为<code>true</code>。如果为<code>false</code>，<code>send()</code>方法直到收到答复前不会返回</li>
-<li><code>user</code>: 可选参数。用于认证用途，用户名</li>
-<li><code>passwd</code>: 可选参数。用于认证用途，密码</li>
-</ul>
-<h2 id="send-方法"><a href="#send-方法" class="headerlink" title="send()方法"></a><code>send()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.send(body);</code></p>
-<ul>
-<li><code>body</code>: 可选参数。在<code>XMLHttpRequest</code>请求中要发送的数据体，默认为<code>null</code>。仅用于<code>POST</code>请求</li>
-</ul>
-<h2 id="GET还是POST"><a href="#GET还是POST" class="headerlink" title="GET还是POST"></a><code>GET</code>还是<code>POST</code></h2><p>一言蔽之，<code>GET</code>适用于大多数请求。</p>
-<p>而以下情况：</p>
-<ul>
-<li>无法使用缓存文件（更新服务器上的文件或数据库）</li>
-<li>向服务器发送大量数据（POST没有数量限制）</li>
-<li>发送包含未知字符的用户输入时，POST 比 GET 更稳定也更可靠</li>
-</ul>
-<h3 id="GET"><a href="#GET" class="headerlink" title="GET"></a><code>GET</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
-<p>执行上面的例子，浏览器可能返回缓存的数据。</p>
-<p>简单粗暴的解决方案：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html?t=&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
-<p>只需要向URL中添加一个无用的参数就可以了。</p>
-<h3 id="POST"><a href="#POST" class="headerlink" title="POST"></a><code>POST</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;POST&quot;</span>,<span class="string">&quot;https://www.runoob.com/try/ajax/demo_post2.php&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.setRequestHeader(<span class="string">&quot;Content-type&quot;</span>,<span class="string">&quot;application/x-www-form-urlencoded&quot;</span>); <span class="comment">//向请求添加HTTP头</span></span><br><span class="line">NewHTTPRequest.send(<span class="string">&quot;fname=河城&amp;lname=荷取&quot;</span>) <span class="comment">//参数</span></span><br></pre></td></tr></table></figure>
-<p><code>setRequestHeader</code>参数：</p>
-<ul>
-<li><code>header</code>: 规定HTTP头的名称</li>
-<li><code>value</code>: 规定头的值</li>
-</ul>
-<h2 id="异步还是同步"><a href="#异步还是同步" class="headerlink" title="异步还是同步"></a>异步还是同步</h2><p>多数情况下，<code>async</code>应设置为<code>true</code>。但有时，<code>async=false</code>更合适。</p>
-<blockquote>
-<p>对于 web 开发人员来说，发送异步请求是一个巨大的进步。很多在服务器执行的任务都相当费时。AJAX 出现之前，这可能会引起应用程序挂起或停止。<br><br>通过 AJAX，JavaScript 无需等待服务器的响应，而是：<br></p>
-<ol>
-<li>在等待服务器响应时执行其他脚本<br></li>
-<li>当响应就绪后对响应进行处理<br><br>——Runoob.com</li>
-</ol>
-</blockquote>
-<h1 id="服务器响应"><a href="#服务器响应" class="headerlink" title="服务器响应"></a>服务器响应</h1><p>接收服务器响应数据，应使用<code>responseText</code>或<code>responseXML</code>属性。二者的区别在于，前者默认获得文本数据，后者会解析XML。</p>
-<h2 id="responseText"><a href="#responseText" class="headerlink" title="responseText"></a><code>responseText</code></h2><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(NewHTTPRequest.responseText)</span><br></pre></td></tr></table></figure>
-<h2 id="responseXML"><a href="#responseXML" class="headerlink" title="responseXML"></a><code>responseXML</code></h2><p><del>什么时候推出一个“responseJson”啊</del></p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">xmlDoc=xmlhttp.responseXML;</span><br><span class="line">txt=<span class="string">&quot;&quot;</span>;</span><br><span class="line">x=xmlDoc.getElementsByTagName(<span class="string">&quot;ARTIST&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (i=<span class="number">0</span>;i&lt;x.length;i++)</span><br><span class="line">&#123;</span><br><span class="line">    txt=txt + x[i].childNodes[<span class="number">0</span>].nodeValue + <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&quot;myDiv&quot;</span>).innerHTML=txt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.runoob.com/ajax">AJAX 教程 | 菜鸟教程 - RUNOOB.COM</a></p>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX">Ajax - Web 开发者指南 | MDN</a></p>
-]]></content>
-      <categories>
-        <category>笔记</category>
-        <category>前端</category>
-      </categories>
-      <tags>
-        <tag>JavaScript</tag>
-        <tag>前端</tag>
-        <tag>笔记</tag>
-        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>
