@@ -169,42 +169,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux设置固定IP地址</title>
-    <url>/p/2020/9ef67df1.html</url>
-    <content><![CDATA[<p>Linux设置固定IP地址</p>
-<h1 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h1><p>虽然Windows 10可以通过主机名获取IP地址，但Linux并不能ping主机名。在DHCP网络下，IP地址随机分配，给服务器的维护工作以及后端开发造成了极大的麻烦。但在路由器中设置IP与MAC绑定起不到效果，IP地址照样随机分配。</p>
-<p>解决这种问题的方法就是设置固定IP地址。</p>
-<h1 id="0-更改DHCP地址池的开始地址与终止地址"><a href="#0-更改DHCP地址池的开始地址与终止地址" class="headerlink" title="0. 更改DHCP地址池的开始地址与终止地址"></a>0. 更改DHCP地址池的开始地址与终止地址</h1><p>如图所示，把要自动分配的IP地址限定一个范围：</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/74f90387d40a435c.jpg" alt="&quot;DHCP服务器&quot;设置中编辑地址池开始地址与地址池结束地址"></p>
-<p>本文中设置地址池开始地址为<code>192.168.0.100</code>，结束地址池为<code>192.168.0.199</code>。DHCP服务器能够自动分配的IP地址在<code>192.168.0.100</code>至<code>192.168.0.199</code>之间。</p>
-<p>不同路由器的设置方法存在差异。</p>
-<p>这么做的目的是防止服务器（即要固定IP地址的机器）下线时DHCP会分配前者原先的IP地址给其他机器，造成不必要的麻烦（如下图）。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1598879835687&amp;di=c838f3089eb02674b3616ca70fa69c47&amp;imgtype=0&amp;src=http%3A%2F%2Fe.hiphotos.baidu.com%2Fexp%2Fw%3D500%2Fsign%3Dfc07ab544d086e066aa83f4b32097b5a%2Ff31fbe096b63f6242ffe0e668644ebf81a4ca337.jpg" alt="后果"></p>
-<h1 id="1-在Linux下设置固定的IP地址"><a href="#1-在Linux下设置固定的IP地址" class="headerlink" title="1. 在Linux下设置固定的IP地址"></a>1. 在Linux下设置固定的IP地址</h1><p>现在就要在服务器上操作了。</p>
-<h2 id="1-登录shell，进入-etc-network目录"><a href="#1-登录shell，进入-etc-network目录" class="headerlink" title="1. 登录shell，进入/etc/network目录"></a>1. 登录shell，进入<code>/etc/network</code>目录</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/network</span><br></pre></td></tr></table></figure>
-<h2 id="2-备份interfaces文件"><a href="#2-备份interfaces文件" class="headerlink" title="2. 备份interfaces文件"></a>2. 备份<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo cp interfaces interfaces.bak</span><br></pre></td></tr></table></figure>
-<font color="red">如果配置失败，请将`interfaces.bak`还原为`interfaces`，即`sudo mv interfaces.bak interfaces`</font>
-
-<h2 id="3-编辑interfaces文件"><a href="#3-编辑interfaces文件" class="headerlink" title="3. 编辑interfaces文件"></a>3. 编辑<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo nano interfaces</span><br></pre></td></tr></table></figure>
-<p>文件内容如下：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># lo虚拟网卡启动时映射本地环回</span></span><br><span class="line">auto lo</span><br><span class="line"><span class="comment"># 设置eth0网卡启动时自动联网</span></span><br><span class="line">auto eth0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置lo虚拟网卡为本地换回</span></span><br><span class="line">iface lo inet loopback</span><br><span class="line"><span class="comment"># 设置eth0网卡支持热插拔</span></span><br><span class="line">allow-hotplug eth0</span><br><span class="line"><span class="comment"># 设置eth0网卡为静态IP</span></span><br><span class="line">iface eth0 inet static</span><br><span class="line"><span class="comment"># 你期望的IP地址</span></span><br><span class="line">address 192.168.0.200</span><br><span class="line"><span class="comment"># 子网掩码，一般不用改</span></span><br><span class="line">netmask 255.255.255.0</span><br><span class="line"><span class="comment"># 网关，可以设置你的路由器的IP地址</span></span><br><span class="line">gateway 192.168.0.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>保存(Ctrl+S)，退出(Ctrl+X)</p>
-<h2 id="4-重启网络服务以应用"><a href="#4-重启网络服务以应用" class="headerlink" title="4. 重启网络服务以应用"></a>4. 重启网络服务以应用</h2><p>最简单的方法：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
-<p>或者这样：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service networking restart</span><br></pre></td></tr></table></figure>
-<p>在重启的过程中，你可以试着ping一下你所期望的IP地址，如果ping有回应则说明配置成功。</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>GNU/Linux</tag>
-        <tag>运维</tag>
-        <tag>网络架构</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>JavaScript解析与生成JSON</title>
     <url>/p/2021/4c6707ec.html</url>
     <content><![CDATA[<h1 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h1><p>一种轻量的数据交换格式，现已基本取代XML，在Web前端广泛运用。</p>
@@ -252,6 +216,42 @@
       <tags>
         <tag>JavaScript</tag>
         <tag>JSON</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux设置固定IP地址</title>
+    <url>/p/2020/9ef67df1.html</url>
+    <content><![CDATA[<p>Linux设置固定IP地址</p>
+<h1 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h1><p>虽然Windows 10可以通过主机名获取IP地址，但Linux并不能ping主机名。在DHCP网络下，IP地址随机分配，给服务器的维护工作以及后端开发造成了极大的麻烦。但在路由器中设置IP与MAC绑定起不到效果，IP地址照样随机分配。</p>
+<p>解决这种问题的方法就是设置固定IP地址。</p>
+<h1 id="0-更改DHCP地址池的开始地址与终止地址"><a href="#0-更改DHCP地址池的开始地址与终止地址" class="headerlink" title="0. 更改DHCP地址池的开始地址与终止地址"></a>0. 更改DHCP地址池的开始地址与终止地址</h1><p>如图所示，把要自动分配的IP地址限定一个范围：</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/74f90387d40a435c.jpg" alt="&quot;DHCP服务器&quot;设置中编辑地址池开始地址与地址池结束地址"></p>
+<p>本文中设置地址池开始地址为<code>192.168.0.100</code>，结束地址池为<code>192.168.0.199</code>。DHCP服务器能够自动分配的IP地址在<code>192.168.0.100</code>至<code>192.168.0.199</code>之间。</p>
+<p>不同路由器的设置方法存在差异。</p>
+<p>这么做的目的是防止服务器（即要固定IP地址的机器）下线时DHCP会分配前者原先的IP地址给其他机器，造成不必要的麻烦（如下图）。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999_10000&amp;sec=1598879835687&amp;di=c838f3089eb02674b3616ca70fa69c47&amp;imgtype=0&amp;src=http%3A%2F%2Fe.hiphotos.baidu.com%2Fexp%2Fw%3D500%2Fsign%3Dfc07ab544d086e066aa83f4b32097b5a%2Ff31fbe096b63f6242ffe0e668644ebf81a4ca337.jpg" alt="后果"></p>
+<h1 id="1-在Linux下设置固定的IP地址"><a href="#1-在Linux下设置固定的IP地址" class="headerlink" title="1. 在Linux下设置固定的IP地址"></a>1. 在Linux下设置固定的IP地址</h1><p>现在就要在服务器上操作了。</p>
+<h2 id="1-登录shell，进入-etc-network目录"><a href="#1-登录shell，进入-etc-network目录" class="headerlink" title="1. 登录shell，进入/etc/network目录"></a>1. 登录shell，进入<code>/etc/network</code>目录</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/network</span><br></pre></td></tr></table></figure>
+<h2 id="2-备份interfaces文件"><a href="#2-备份interfaces文件" class="headerlink" title="2. 备份interfaces文件"></a>2. 备份<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo cp interfaces interfaces.bak</span><br></pre></td></tr></table></figure>
+<font color="red">如果配置失败，请将`interfaces.bak`还原为`interfaces`，即`sudo mv interfaces.bak interfaces`</font>
+
+<h2 id="3-编辑interfaces文件"><a href="#3-编辑interfaces文件" class="headerlink" title="3. 编辑interfaces文件"></a>3. 编辑<code>interfaces</code>文件</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">sudo nano interfaces</span><br></pre></td></tr></table></figure>
+<p>文件内容如下：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment"># lo虚拟网卡启动时映射本地环回</span></span><br><span class="line">auto lo</span><br><span class="line"><span class="comment"># 设置eth0网卡启动时自动联网</span></span><br><span class="line">auto eth0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置lo虚拟网卡为本地换回</span></span><br><span class="line">iface lo inet loopback</span><br><span class="line"><span class="comment"># 设置eth0网卡支持热插拔</span></span><br><span class="line">allow-hotplug eth0</span><br><span class="line"><span class="comment"># 设置eth0网卡为静态IP</span></span><br><span class="line">iface eth0 inet static</span><br><span class="line"><span class="comment"># 你期望的IP地址</span></span><br><span class="line">address 192.168.0.200</span><br><span class="line"><span class="comment"># 子网掩码，一般不用改</span></span><br><span class="line">netmask 255.255.255.0</span><br><span class="line"><span class="comment"># 网关，可以设置你的路由器的IP地址</span></span><br><span class="line">gateway 192.168.0.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>保存(Ctrl+S)，退出(Ctrl+X)</p>
+<h2 id="4-重启网络服务以应用"><a href="#4-重启网络服务以应用" class="headerlink" title="4. 重启网络服务以应用"></a>4. 重启网络服务以应用</h2><p>最简单的方法：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo reboot</span><br></pre></td></tr></table></figure>
+<p>或者这样：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo service networking restart</span><br></pre></td></tr></table></figure>
+<p>在重启的过程中，你可以试着ping一下你所期望的IP地址，如果ping有回应则说明配置成功。</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>GNU/Linux</tag>
+        <tag>运维</tag>
+        <tag>网络架构</tag>
       </tags>
   </entry>
   <entry>
@@ -315,6 +315,151 @@
         <tag>Nmap</tag>
         <tag>网络安全</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>PyInstaller打包Python详解</title>
+    <url>/p/2020/6994cde3.html</url>
+    <content><![CDATA[<p><a href="http://www.pyinstaller.org/">官网参考</a></p>
+<hr>
+<h1 id="一、PyInstaller简介"><a href="#一、PyInstaller简介" class="headerlink" title="一、PyInstaller简介"></a>一、PyInstaller简介</h1><h2 id="1-PyInstaller可以将Python项目在不同平台上打包为可执行文件"><a href="#1-PyInstaller可以将Python项目在不同平台上打包为可执行文件" class="headerlink" title="1.PyInstaller可以将Python项目在不同平台上打包为可执行文件"></a>1.PyInstaller可以将Python项目在不同平台上打包为可执行文件</h2><h2 id="2-PyInstaller打包的流程："><a href="#2-PyInstaller打包的流程：" class="headerlink" title="2. PyInstaller打包的流程："></a>2. PyInstaller打包的流程：</h2><ol>
+<li><p>读取编写好的Python项目</p>
+</li>
+<li><p>分析其中条用的模块和库，并收集其文件副本（包括Python的解释器）</p>
+</li>
+<li><p>将副本和Python项目文件（放在一个文件夹或封装在一个可执行文件）中</p>
+</li>
+</ol>
+<h1 id="二、Pyinstaller的参数列表"><a href="#二、Pyinstaller的参数列表" class="headerlink" title="二、Pyinstaller的参数列表"></a>二、Pyinstaller的参数列表</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>参数意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>-F --onefile</td>
+<td>打包单个文件，产生一个文件用于部署(默认)<br />如果代码都写在一个.py文件时使用，项目有多个文件时不要使用<br /><br />    pyinstaller -F xxx.py <br />    pyinstaller --onefile xxxx.py</td>
+</tr>
+<tr>
+<td>-D --onedir</td>
+<td>打包多个文件，产生一个目录用于部署(默认)，用于框架编写的代码打包 <br /><br /> pyinstaller -D xxx.py（项目入口文件）<br />pyinstaller --onedir xxx.py（项目入口文件）<br /></td>
+</tr>
+<tr>
+<td>--key=keys</td>
+<td>使用keys进行加密打包 <br /><br /> pyinstaller --key=1234 -F xx.py</td>
+</tr>
+<tr>
+<td>-K --tk</td>
+<td>在部署时包含 TCL/TK</td>
+</tr>
+<tr>
+<td>-a --ascii</td>
+<td>不包含编码.在支持Unicode的python版本上默认包含所有的编码</td>
+</tr>
+<tr>
+<td>-d --debug</td>
+<td>产生debug版本的可执行文件</td>
+</tr>
+<tr>
+<td>-n name<br />--name=name</td>
+<td>可选的项目(产生的spec的)名字name <br />第一个脚本的主文件名将作为spec的名字(默认)<br /><br />pyinstaller -F -n my_file_name xxx.py <br /> pyinstaller -F --name=my_file_name xxx.py</td>
+</tr>
+<tr>
+<td>-o dir<br /> --out=dir</td>
+<td>指定spec文件的生成目录dir<br />如果没有指定且当前目录是PyInstaller的根目录,会自动创建一个用于输出(spec和生成的可执行文件)的目录<br />如果没有指定切当前目录不是PyInstaller的根目录，则会输出到当前的目录下</td>
+</tr>
+<tr>
+<td>-p dir <br /> --path=dir</td>
+<td>用来添加程序所用到的包的所在位置，设置导入路径(和使用pythonpath效果相似)<br />可以用路径分割符(Windows使用分号,Linux使用冒号)分割,指定多个目录.也可以使用多个-p参数来设置多个导入路径，让Pyintaller自己去找程序需要的资源</td>
+</tr>
+<tr>
+<td>-w<br />--windowed<br />--noconsole</td>
+<td>表示去掉控制台窗口，使用Windows子系统执行，当程序启动的时候不会打开命令行(只对Windows有效)<br /><br />pyinstaller -c xxx.py<br />pyinstaller xxx.py --noconsole</td>
+</tr>
+<tr>
+<td>-c<br />--nowindowed<br />--console</td>
+<td>表示打开控制台窗口，使用控制台子系统执行,当程序启动的时候会打开命令行(默认)(只对Windows有效)<br /><br />pyinstaller -c xxx.py<br />pyinstaller xxx.py --console</td>
+</tr>
+<tr>
+<td>-i<br />--icon=file.ico<br />--icon=file.exe</td>
+<td>将file.ico添加为可执行文件的资源，改变程序的图标(只对Windows系统有效)<br />将file.exe的第n个图标添加为可执行文件的资源(只对Windows系统有效)<br /><br />pyinstaller -F -i file.ico xxx.py<br />pyinstall -F --icon=file.ico xxx.py<br />pyinstall -F --icon=file.exe xxx.py</td>
+</tr>
+<tr>
+<td>-v file_version.txt<br />--version=file</td>
+<td>将verfile作为可执行文件的版本资源(只对Windows系统有效)</td>
+</tr>
+<tr>
+<td>-s <br />--strip</td>
+<td>可执行文件和共享库将run through strip.<br />注意!Cygwin的strip往往使普通的win32 Dll无法使用</td>
+</tr>
+<tr>
+<td>-X<br />--upx</td>
+<td>如果有UPX安装(执行Configure.py时检测),会压缩执行文件(Windows系统中的DLL也会)(参见note)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="三、Pyinstaller的使用"><a href="#三、Pyinstaller的使用" class="headerlink" title="三、Pyinstaller的使用"></a>三、Pyinstaller的使用</h1><p>PyInstaller在Windows/Linux/Mac环境下的使用：执行命令相同，只需要在不同环境下执行即可</p>
+<h2 id="1-pyinstaller的安装"><a href="#1-pyinstaller的安装" class="headerlink" title="1.pyinstaller的安装"></a>1.pyinstaller的安装</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ pip install pyinstaller</span><br></pre></td></tr></table></figure>
+<hr>
+<p><font color="red"><br>注意！</p>
+<p>pyinstaller在Python 3.8 Windows版下是没有加入PATH的。</p>
+<p>也就是说，pyinstaller一般来说会安装在<code>C:\Users\当前用户\AppData\Roaming\Python\Python38\Scripts</code>下，如果找不到，你可以尝试在Python解释器的路径查找，并需要自行添加环境变量</p>
+<p>其他平台(OSX,Linux，etc.)不明</p>
+<h2 id="lt-font-gt"><a href="#lt-font-gt" class="headerlink" title="&lt;/font&gt;"></a>&lt;/font&gt;</h2><h2 id="2-执行命令"><a href="#2-执行命令" class="headerlink" title="2.执行命令"></a>2.执行命令</h2><h3 id="2-1-打包单个文件"><a href="#2-1-打包单个文件" class="headerlink" title="2.1 打包单个文件"></a>2.1 打包单个文件</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1.执行命令</span></span><br><span class="line">$ pyinstaller -F xxx.py</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.去生成的dist文件夹找xxx.exe运行</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-2打包多个文件"><a href="#2-2打包多个文件" class="headerlink" title="2.2打包多个文件"></a>2.2打包多个文件</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1.执行命令，xxx.py为程序入口文件</span></span><br><span class="line">$ pyinstall -D xxx.py </span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.删除生成的bulid和dist文件夹,仅保留xxx.spec文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.修改xxx.spec文件,详见2.2.1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4.执行命令</span></span><br><span class="line">$ pyinstaller -F xxx.spec</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5.去dist文件夹下找xxx.exe文件</span></span><br></pre></td></tr></table></figure>
+<h4 id="2-2-1-xxx-spec配置文件详解"><a href="#2-2-1-xxx-spec配置文件详解" class="headerlink" title="2.2.1 xxx.spec配置文件详解"></a>2.2.1 xxx.spec配置文件详解</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># -*- mode: python -*-</span><br><span class="line">  </span><br><span class="line">block_cipher &#x3D; None</span><br><span class="line">  </span><br><span class="line"># 以py文件为输入,分析py文件的依赖模块,并生成相应的信息</span><br><span class="line">a &#x3D; Analysis([&#39;xxx.py&#39;], # 要打包.py文件名列表，和xxx.py同级可以不同添加</span><br><span class="line">       pathex&#x3D;[&#39;D:\\abc\\def\\project_v1.0&#39;], # 项目路径</span><br><span class="line">       binaries&#x3D;[], # 程序调用外部pyd、dll文件（二进制文件路径）以数组形式传入;例:(&#39;D:\\pro\\text.dll&#39;, &#39;pro&#39;),将&#39;pdftotext.dll&#39;pro，与原项目结构一致即可</span><br><span class="line">       datas&#x3D;[], # 存放的资源文件（图片、文本等静态文件）以数组形成传入;例：(&#39;D:\\static\\c.ioc&#39;,&#39;static&#39;),将&#39;cc.ioc&#39;打包之后放在static目录，与原项目结构一致即可</span><br><span class="line">       hiddenimports&#x3D;[], # pyinstaller解析模块时可能会遗漏某些模块（not visible to the analysis phase），造成打包后执行程序时出现类似No Module named xxx;这时就需要在hiddenimports中加入遗漏的模块</span><br><span class="line">       hookspath&#x3D;[],</span><br><span class="line">       runtime_hooks&#x3D;[],</span><br><span class="line">       excludes&#x3D;[], # 去除不必要的模块import，写在excludes中添加此模块</span><br><span class="line">       win_no_prefer_redirects&#x3D;False,</span><br><span class="line">       win_private_assemblies&#x3D;False,</span><br><span class="line">       cipher&#x3D;block_cipher)</span><br><span class="line"></span><br><span class="line"># .pyz的压缩包，包含程序运行需要的所有依赖</span><br><span class="line">pyz &#x3D; PYZ(a.pure, a.zipped_data, </span><br><span class="line">       cipher&#x3D;block_cipher)</span><br><span class="line">       </span><br><span class="line"># 根据Analysis和PYZ生成单个exe程序所需要的属性及其配置</span><br><span class="line">exe &#x3D; EXE(pyz,</span><br><span class="line">     a.scripts,</span><br><span class="line">     exclude_binaries&#x3D;True,</span><br><span class="line">     name&#x3D;&#39;xxx&#39;, # 生成exe文件的名字</span><br><span class="line">     debug&#x3D;False, # debug模式</span><br><span class="line">     strip&#x3D;False,</span><br><span class="line">     upx&#x3D;True,</span><br><span class="line">     console&#x3D;False, # 是否在打开exe文件时打开cmd命令框</span><br><span class="line">     icon&#x3D;&#39;C:\Users\xx.ico&#39; ) # 设置exe程序图标，ico格式文件（16*16）</span><br><span class="line">     </span><br><span class="line"># 收集前三个部分的内容进行整合，生成程序所需要的依赖包，及资源文件和配置</span><br><span class="line">coll &#x3D; COLLECT(exe,</span><br><span class="line">        a.binaries,</span><br><span class="line">        a.zipfiles,</span><br><span class="line">        a.datas,</span><br><span class="line">        strip&#x3D;False,</span><br><span class="line">        upx&#x3D;True,</span><br><span class="line">        name&#x3D;&#39;fastplot&#39;)</span><br></pre></td></tr></table></figure>
+<h1 id="四、踩坑"><a href="#四、踩坑" class="headerlink" title="四、踩坑"></a>四、踩坑</h1><h2 id="1-编辑-spec文件路径相关"><a href="#1-编辑-spec文件路径相关" class="headerlink" title="1. 编辑.spec文件路径相关"></a>1. 编辑.spec文件路径相关</h2><blockquote>
+<pre><code>1.windows尽量使用绝对路径，用双斜杠\ \
+2.linux路径/home/my_project/web
+3.路径避免使用中文
+</code></pre></blockquote>
+<h2 id="2-打包-spec文件报错：RecursionError-maximum-recursion-depth-exceeded"><a href="#2-打包-spec文件报错：RecursionError-maximum-recursion-depth-exceeded" class="headerlink" title="2. 打包.spec文件报错：RecursionError: maximum recursion depth exceeded"></a>2. 打包.spec文件报错：RecursionError: maximum recursion depth exceeded</h2><blockquote>
+<pre><code>1.在spec文件上添加递归深度的设置
+import sys
+sys.setrecursionlimit(5000)
+</code></pre></blockquote>
+<h2 id="3-更换exe图标报错：AttributeError-module-‘win32ctypes-pywin32-win32api’-has-no-attribute-‘error’"><a href="#3-更换exe图标报错：AttributeError-module-‘win32ctypes-pywin32-win32api’-has-no-attribute-‘error’" class="headerlink" title="3. 更换exe图标报错：AttributeError: module ‘win32ctypes.pywin32.win32api’ has no attribute ‘error’"></a>3. 更换exe图标报错：AttributeError: module ‘win32ctypes.pywin32.win32api’ has no attribute ‘error’</h2><blockquote>
+<pre><code>1.图标的大小建议（64*64）: https://lvwenhan.com/convertico/
+2.图标的颜色严格限制：256，真彩色是不行的
+</code></pre></blockquote>
+<h2 id="4-打包错误：ModuleNotFoundError-No-module-named-‘xxxxx’"><a href="#4-打包错误：ModuleNotFoundError-No-module-named-‘xxxxx’" class="headerlink" title="4. 打包错误：ModuleNotFoundError: No module named ‘xxxxx’"></a>4. 打包错误：ModuleNotFoundError: No module named ‘xxxxx’</h2><blockquote>
+<pre><code>方法1：pyinstaller -D \-\-hidden-import=&quot;xxxxx&quot; main.py
+方法2：在xxx.spec中配置hiddenimports=[&#39;xxxxx&#39;]
+</code></pre></blockquote>
+<h2 id="5-运行exe文件报错：Failed-to-excute-Script-main"><a href="#5-运行exe文件报错：Failed-to-excute-Script-main" class="headerlink" title="5. 运行exe文件报错：Failed to excute Script main"></a>5. 运行exe文件报错：Failed to excute Script main</h2><p>&gt;</p>
+<pre><code>1. 使用-c模式重新打包调试，找的缺失的模块，pip install安装
+</code></pre><h2 id="6-文件打包后过大"><a href="#6-文件打包后过大" class="headerlink" title="6. 文件打包后过大"></a>6. 文件打包后过大</h2><p>&gt;</p>
+<pre><code>1. 在程序中尽量不使用import xx；而是使用 from xx import xx
+</code></pre><hr>
+<p>转载自<a href="https://www.cnblogs.com/bbiu/p/13209612.html">https://www.cnblogs.com/bbiu/p/13209612.html</a></p>
+<p>原作者： 丶小白吖 </p>
+<p>本文在原文基础上有所修改，版权归原作者所有</p>
+]]></content>
+      <categories>
+        <category>转载</category>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>转载</tag>
+        <tag>Python3</tag>
+        <tag>PyInstaller</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Sunset</title>
+    <url>/p/2020/c846c8bb.html</url>
+    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/5cb2559ab0565b1d.webp" alt="0"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/87c62b5bde9cca15.webp" alt="1"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/49eb83c7d0e0c83a.webp" alt="2"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/7056adb0dba4d66e.webp" alt="3"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/0279d2aec8fae6d1.webp" alt="4"></p>
+]]></content>
+      <categories>
+        <category>摄影</category>
+      </categories>
   </entry>
   <entry>
     <title>OSI七层协议模型、TCP/IP四层模型学习笔记</title>
@@ -499,151 +644,6 @@
       </tags>
   </entry>
   <entry>
-    <title>PyInstaller打包Python详解</title>
-    <url>/p/2020/6994cde3.html</url>
-    <content><![CDATA[<p><a href="http://www.pyinstaller.org/">官网参考</a></p>
-<hr>
-<h1 id="一、PyInstaller简介"><a href="#一、PyInstaller简介" class="headerlink" title="一、PyInstaller简介"></a>一、PyInstaller简介</h1><h2 id="1-PyInstaller可以将Python项目在不同平台上打包为可执行文件"><a href="#1-PyInstaller可以将Python项目在不同平台上打包为可执行文件" class="headerlink" title="1.PyInstaller可以将Python项目在不同平台上打包为可执行文件"></a>1.PyInstaller可以将Python项目在不同平台上打包为可执行文件</h2><h2 id="2-PyInstaller打包的流程："><a href="#2-PyInstaller打包的流程：" class="headerlink" title="2. PyInstaller打包的流程："></a>2. PyInstaller打包的流程：</h2><ol>
-<li><p>读取编写好的Python项目</p>
-</li>
-<li><p>分析其中条用的模块和库，并收集其文件副本（包括Python的解释器）</p>
-</li>
-<li><p>将副本和Python项目文件（放在一个文件夹或封装在一个可执行文件）中</p>
-</li>
-</ol>
-<h1 id="二、Pyinstaller的参数列表"><a href="#二、Pyinstaller的参数列表" class="headerlink" title="二、Pyinstaller的参数列表"></a>二、Pyinstaller的参数列表</h1><div class="table-container">
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>参数意义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>-F --onefile</td>
-<td>打包单个文件，产生一个文件用于部署(默认)<br />如果代码都写在一个.py文件时使用，项目有多个文件时不要使用<br /><br />    pyinstaller -F xxx.py <br />    pyinstaller --onefile xxxx.py</td>
-</tr>
-<tr>
-<td>-D --onedir</td>
-<td>打包多个文件，产生一个目录用于部署(默认)，用于框架编写的代码打包 <br /><br /> pyinstaller -D xxx.py（项目入口文件）<br />pyinstaller --onedir xxx.py（项目入口文件）<br /></td>
-</tr>
-<tr>
-<td>--key=keys</td>
-<td>使用keys进行加密打包 <br /><br /> pyinstaller --key=1234 -F xx.py</td>
-</tr>
-<tr>
-<td>-K --tk</td>
-<td>在部署时包含 TCL/TK</td>
-</tr>
-<tr>
-<td>-a --ascii</td>
-<td>不包含编码.在支持Unicode的python版本上默认包含所有的编码</td>
-</tr>
-<tr>
-<td>-d --debug</td>
-<td>产生debug版本的可执行文件</td>
-</tr>
-<tr>
-<td>-n name<br />--name=name</td>
-<td>可选的项目(产生的spec的)名字name <br />第一个脚本的主文件名将作为spec的名字(默认)<br /><br />pyinstaller -F -n my_file_name xxx.py <br /> pyinstaller -F --name=my_file_name xxx.py</td>
-</tr>
-<tr>
-<td>-o dir<br /> --out=dir</td>
-<td>指定spec文件的生成目录dir<br />如果没有指定且当前目录是PyInstaller的根目录,会自动创建一个用于输出(spec和生成的可执行文件)的目录<br />如果没有指定切当前目录不是PyInstaller的根目录，则会输出到当前的目录下</td>
-</tr>
-<tr>
-<td>-p dir <br /> --path=dir</td>
-<td>用来添加程序所用到的包的所在位置，设置导入路径(和使用pythonpath效果相似)<br />可以用路径分割符(Windows使用分号,Linux使用冒号)分割,指定多个目录.也可以使用多个-p参数来设置多个导入路径，让Pyintaller自己去找程序需要的资源</td>
-</tr>
-<tr>
-<td>-w<br />--windowed<br />--noconsole</td>
-<td>表示去掉控制台窗口，使用Windows子系统执行，当程序启动的时候不会打开命令行(只对Windows有效)<br /><br />pyinstaller -c xxx.py<br />pyinstaller xxx.py --noconsole</td>
-</tr>
-<tr>
-<td>-c<br />--nowindowed<br />--console</td>
-<td>表示打开控制台窗口，使用控制台子系统执行,当程序启动的时候会打开命令行(默认)(只对Windows有效)<br /><br />pyinstaller -c xxx.py<br />pyinstaller xxx.py --console</td>
-</tr>
-<tr>
-<td>-i<br />--icon=file.ico<br />--icon=file.exe</td>
-<td>将file.ico添加为可执行文件的资源，改变程序的图标(只对Windows系统有效)<br />将file.exe的第n个图标添加为可执行文件的资源(只对Windows系统有效)<br /><br />pyinstaller -F -i file.ico xxx.py<br />pyinstall -F --icon=file.ico xxx.py<br />pyinstall -F --icon=file.exe xxx.py</td>
-</tr>
-<tr>
-<td>-v file_version.txt<br />--version=file</td>
-<td>将verfile作为可执行文件的版本资源(只对Windows系统有效)</td>
-</tr>
-<tr>
-<td>-s <br />--strip</td>
-<td>可执行文件和共享库将run through strip.<br />注意!Cygwin的strip往往使普通的win32 Dll无法使用</td>
-</tr>
-<tr>
-<td>-X<br />--upx</td>
-<td>如果有UPX安装(执行Configure.py时检测),会压缩执行文件(Windows系统中的DLL也会)(参见note)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h1 id="三、Pyinstaller的使用"><a href="#三、Pyinstaller的使用" class="headerlink" title="三、Pyinstaller的使用"></a>三、Pyinstaller的使用</h1><p>PyInstaller在Windows/Linux/Mac环境下的使用：执行命令相同，只需要在不同环境下执行即可</p>
-<h2 id="1-pyinstaller的安装"><a href="#1-pyinstaller的安装" class="headerlink" title="1.pyinstaller的安装"></a>1.pyinstaller的安装</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ pip install pyinstaller</span><br></pre></td></tr></table></figure>
-<hr>
-<p><font color="red"><br>注意！</p>
-<p>pyinstaller在Python 3.8 Windows版下是没有加入PATH的。</p>
-<p>也就是说，pyinstaller一般来说会安装在<code>C:\Users\当前用户\AppData\Roaming\Python\Python38\Scripts</code>下，如果找不到，你可以尝试在Python解释器的路径查找，并需要自行添加环境变量</p>
-<p>其他平台(OSX,Linux，etc.)不明</p>
-<h2 id="lt-font-gt"><a href="#lt-font-gt" class="headerlink" title="&lt;/font&gt;"></a>&lt;/font&gt;</h2><h2 id="2-执行命令"><a href="#2-执行命令" class="headerlink" title="2.执行命令"></a>2.执行命令</h2><h3 id="2-1-打包单个文件"><a href="#2-1-打包单个文件" class="headerlink" title="2.1 打包单个文件"></a>2.1 打包单个文件</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1.执行命令</span></span><br><span class="line">$ pyinstaller -F xxx.py</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.去生成的dist文件夹找xxx.exe运行</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-2打包多个文件"><a href="#2-2打包多个文件" class="headerlink" title="2.2打包多个文件"></a>2.2打包多个文件</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 1.执行命令，xxx.py为程序入口文件</span></span><br><span class="line">$ pyinstall -D xxx.py </span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.删除生成的bulid和dist文件夹,仅保留xxx.spec文件</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.修改xxx.spec文件,详见2.2.1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4.执行命令</span></span><br><span class="line">$ pyinstaller -F xxx.spec</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5.去dist文件夹下找xxx.exe文件</span></span><br></pre></td></tr></table></figure>
-<h4 id="2-2-1-xxx-spec配置文件详解"><a href="#2-2-1-xxx-spec配置文件详解" class="headerlink" title="2.2.1 xxx.spec配置文件详解"></a>2.2.1 xxx.spec配置文件详解</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># -*- mode: python -*-</span><br><span class="line">  </span><br><span class="line">block_cipher &#x3D; None</span><br><span class="line">  </span><br><span class="line"># 以py文件为输入,分析py文件的依赖模块,并生成相应的信息</span><br><span class="line">a &#x3D; Analysis([&#39;xxx.py&#39;], # 要打包.py文件名列表，和xxx.py同级可以不同添加</span><br><span class="line">       pathex&#x3D;[&#39;D:\\abc\\def\\project_v1.0&#39;], # 项目路径</span><br><span class="line">       binaries&#x3D;[], # 程序调用外部pyd、dll文件（二进制文件路径）以数组形式传入;例:(&#39;D:\\pro\\text.dll&#39;, &#39;pro&#39;),将&#39;pdftotext.dll&#39;pro，与原项目结构一致即可</span><br><span class="line">       datas&#x3D;[], # 存放的资源文件（图片、文本等静态文件）以数组形成传入;例：(&#39;D:\\static\\c.ioc&#39;,&#39;static&#39;),将&#39;cc.ioc&#39;打包之后放在static目录，与原项目结构一致即可</span><br><span class="line">       hiddenimports&#x3D;[], # pyinstaller解析模块时可能会遗漏某些模块（not visible to the analysis phase），造成打包后执行程序时出现类似No Module named xxx;这时就需要在hiddenimports中加入遗漏的模块</span><br><span class="line">       hookspath&#x3D;[],</span><br><span class="line">       runtime_hooks&#x3D;[],</span><br><span class="line">       excludes&#x3D;[], # 去除不必要的模块import，写在excludes中添加此模块</span><br><span class="line">       win_no_prefer_redirects&#x3D;False,</span><br><span class="line">       win_private_assemblies&#x3D;False,</span><br><span class="line">       cipher&#x3D;block_cipher)</span><br><span class="line"></span><br><span class="line"># .pyz的压缩包，包含程序运行需要的所有依赖</span><br><span class="line">pyz &#x3D; PYZ(a.pure, a.zipped_data, </span><br><span class="line">       cipher&#x3D;block_cipher)</span><br><span class="line">       </span><br><span class="line"># 根据Analysis和PYZ生成单个exe程序所需要的属性及其配置</span><br><span class="line">exe &#x3D; EXE(pyz,</span><br><span class="line">     a.scripts,</span><br><span class="line">     exclude_binaries&#x3D;True,</span><br><span class="line">     name&#x3D;&#39;xxx&#39;, # 生成exe文件的名字</span><br><span class="line">     debug&#x3D;False, # debug模式</span><br><span class="line">     strip&#x3D;False,</span><br><span class="line">     upx&#x3D;True,</span><br><span class="line">     console&#x3D;False, # 是否在打开exe文件时打开cmd命令框</span><br><span class="line">     icon&#x3D;&#39;C:\Users\xx.ico&#39; ) # 设置exe程序图标，ico格式文件（16*16）</span><br><span class="line">     </span><br><span class="line"># 收集前三个部分的内容进行整合，生成程序所需要的依赖包，及资源文件和配置</span><br><span class="line">coll &#x3D; COLLECT(exe,</span><br><span class="line">        a.binaries,</span><br><span class="line">        a.zipfiles,</span><br><span class="line">        a.datas,</span><br><span class="line">        strip&#x3D;False,</span><br><span class="line">        upx&#x3D;True,</span><br><span class="line">        name&#x3D;&#39;fastplot&#39;)</span><br></pre></td></tr></table></figure>
-<h1 id="四、踩坑"><a href="#四、踩坑" class="headerlink" title="四、踩坑"></a>四、踩坑</h1><h2 id="1-编辑-spec文件路径相关"><a href="#1-编辑-spec文件路径相关" class="headerlink" title="1. 编辑.spec文件路径相关"></a>1. 编辑.spec文件路径相关</h2><blockquote>
-<pre><code>1.windows尽量使用绝对路径，用双斜杠\ \
-2.linux路径/home/my_project/web
-3.路径避免使用中文
-</code></pre></blockquote>
-<h2 id="2-打包-spec文件报错：RecursionError-maximum-recursion-depth-exceeded"><a href="#2-打包-spec文件报错：RecursionError-maximum-recursion-depth-exceeded" class="headerlink" title="2. 打包.spec文件报错：RecursionError: maximum recursion depth exceeded"></a>2. 打包.spec文件报错：RecursionError: maximum recursion depth exceeded</h2><blockquote>
-<pre><code>1.在spec文件上添加递归深度的设置
-import sys
-sys.setrecursionlimit(5000)
-</code></pre></blockquote>
-<h2 id="3-更换exe图标报错：AttributeError-module-‘win32ctypes-pywin32-win32api’-has-no-attribute-‘error’"><a href="#3-更换exe图标报错：AttributeError-module-‘win32ctypes-pywin32-win32api’-has-no-attribute-‘error’" class="headerlink" title="3. 更换exe图标报错：AttributeError: module ‘win32ctypes.pywin32.win32api’ has no attribute ‘error’"></a>3. 更换exe图标报错：AttributeError: module ‘win32ctypes.pywin32.win32api’ has no attribute ‘error’</h2><blockquote>
-<pre><code>1.图标的大小建议（64*64）: https://lvwenhan.com/convertico/
-2.图标的颜色严格限制：256，真彩色是不行的
-</code></pre></blockquote>
-<h2 id="4-打包错误：ModuleNotFoundError-No-module-named-‘xxxxx’"><a href="#4-打包错误：ModuleNotFoundError-No-module-named-‘xxxxx’" class="headerlink" title="4. 打包错误：ModuleNotFoundError: No module named ‘xxxxx’"></a>4. 打包错误：ModuleNotFoundError: No module named ‘xxxxx’</h2><blockquote>
-<pre><code>方法1：pyinstaller -D \-\-hidden-import=&quot;xxxxx&quot; main.py
-方法2：在xxx.spec中配置hiddenimports=[&#39;xxxxx&#39;]
-</code></pre></blockquote>
-<h2 id="5-运行exe文件报错：Failed-to-excute-Script-main"><a href="#5-运行exe文件报错：Failed-to-excute-Script-main" class="headerlink" title="5. 运行exe文件报错：Failed to excute Script main"></a>5. 运行exe文件报错：Failed to excute Script main</h2><p>&gt;</p>
-<pre><code>1. 使用-c模式重新打包调试，找的缺失的模块，pip install安装
-</code></pre><h2 id="6-文件打包后过大"><a href="#6-文件打包后过大" class="headerlink" title="6. 文件打包后过大"></a>6. 文件打包后过大</h2><p>&gt;</p>
-<pre><code>1. 在程序中尽量不使用import xx；而是使用 from xx import xx
-</code></pre><hr>
-<p>转载自<a href="https://www.cnblogs.com/bbiu/p/13209612.html">https://www.cnblogs.com/bbiu/p/13209612.html</a></p>
-<p>原作者： 丶小白吖 </p>
-<p>本文在原文基础上有所修改，版权归原作者所有</p>
-]]></content>
-      <categories>
-        <category>转载</category>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>转载</tag>
-        <tag>Python3</tag>
-        <tag>PyInstaller</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Sunset</title>
-    <url>/p/2020/c846c8bb.html</url>
-    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/5cb2559ab0565b1d.webp" alt="0"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/87c62b5bde9cca15.webp" alt="1"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/49eb83c7d0e0c83a.webp" alt="2"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/7056adb0dba4d66e.webp" alt="3"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/08/0279d2aec8fae6d1.webp" alt="4"></p>
-]]></content>
-      <categories>
-        <category>摄影</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Valine无法加载评论</title>
     <url>/p/2020/8e4e7ab9.html</url>
     <content><![CDATA[<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>很早之前博客用的评论系统是Gitalk，但因为服务端跨域问题难解决，便放弃改用Valine了。</p>
@@ -668,71 +668,6 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>博客</tag>
         <tag>Valine</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>一次配置Emlog</title>
-    <url>/p/2020/77a00aad.html</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
-<p>环境:</p>
-<blockquote>
-<p>OS: debian 10 i386架构</p>
-</blockquote>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
-<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
-<p>以管理员账户登录:<code>mysql -u root -p</code></p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
-<p>退出,登录这个新帐户.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
-<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
-<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
-<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
-
-<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
-<p>顺利的话,你就配置成功了.博客可以显示了.</p>
-<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
-<p>(我用的是PHP 7.4)</p>
-<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
-<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-        <category>闲的蛋疼</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>运维</tag>
-        <tag>Emlog</tag>
-        <tag>PHP</tag>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>主板烧了</title>
-    <url>/p/2020/112daf67.html</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>只是给台式机清灰+换一个散热器。 </p>
-<h1 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h1><h2 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h2><p>我拆下原本的风扇，往CPU上涂硅脂。但那劣质硅脂放久了，除了硅脂本体还挤出来许多透明♂液体。 </p>
-<p>拿纸巾擦干后发现有硅脂溢出到主板插槽上了…… </p>
-<font color="red">我我犯了个致命错误：拿纸巾擦插槽</font>
-
-<p>当我意识到时已经晚了，主板插槽的CPU针脚歪了。牙膏厂真的nb，CPU偏偏是触点，针脚在主板上…… </p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0013.jpg" alt="DSC_0013.jpg"> </p>
-<p>我只好拿一字头螺丝刀把针脚挑正。装上机箱试了一下是通过自检的。 </p>
-<p>但当我装上新散热器，电源老毛病又犯了……似乎是电压不稳，主板是亮灯两秒又熄灭，然后又亮，又熄灭……但时间不早了，我整理了一下就去睡觉了。 </p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>下了晚自习，我赶回家，继续修复机器。 </p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0014.jpg" alt="DSC_0014.jpg"> </p>
-<p>但这次，在测试的时候……主板烧了，冒出缕缕青烟，香气四溢。</p>
-<p>R.I.P. </p>
-<p>短时间内，我的工作都会放到笔记本上，希望已故的台式机主板安息，笔记本会继承他的遗志。</p>
-]]></content>
-      <categories>
-        <category>日常</category>
-      </categories>
-      <tags>
-        <tag>日常</tag>
-        <tag>苦逼</tag>
       </tags>
   </entry>
   <entry>
@@ -779,6 +714,101 @@ sys.setrecursionlimit(5000)
       </categories>
       <tags>
         <tag>Windows Terminal</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>人鱼的悲剧</title>
+    <url>/p/2021/c4efef06.html</url>
+    <content><![CDATA[
+<!--背景-->
+<script>
+if(isMobile()){
+	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/せめて君のその手で_38386764_waifu2x_art_noise1_scale_tta_1.webp")
+}else{
+	setBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/夏だ！_37560505.webp")
+}
+
+console.log("也许是从美树沙耶加的身上也看到些许自己的影子吧。\n\n若是没有传销头子QB，那我猜沙耶加也不会有这般结局。")
+</script>
+
+<div class="note warning modern"><ol>
+<li>剧透警告；</li>
+<li>不涉及剧场版；</li>
+<li>个人观点，经供参考。</li>
+</ol>
+</div>
+<p>新房昭之的分镜配合老虚的编剧，再配合上苍树梅老师的画风。《魔法少女小圆》总是有一种未知的魅力吸引着我。</p>
+<p>毕竟是悲剧。</p>
+<p>该作品以魔法少女为包装，刺破凡人对于魔法少女这一类身份甜美的认知，一针见血。这也是这部十年前的老番得以封神的原因，前无古人，后无来者。</p>
+<p>而作品中最能引发我共鸣的角色，不是晓美焰或鹿目圆，而是美树沙耶加。</p>
+<hr>
+<p>这只是一个悲剧中具有悲剧色彩的角色。</p>
+<p>沙耶加从一个阳光、大方、开朗的水蓝色短发少女，变得阴暗、自负，最终化作魔女……这种结局着实令人惋惜。这是必然的结果。晓美焰多次轮回后，也确信她是无法被拯救的了。</p>
+<p>她为了治好幼驯染的病，和孵化者签订契约，成为了魔法少女。但她始终坚信自己的正义，鄙视一切利己主义，自然和红黑两个人不合。得知魔法少女的真相后，一蹶不振，陷入癫狂。再加上幼驯染与同班同学好上，以及未及时清除灵魂宝石内的污秽。自己也就成了魔女。</p>
+<p>孵化者的立场是绝对的理性，他（们）眼中的魔法少女的最终形态即是魔女。而他（们）也永远不会阻止，因为这能够达到他们最终的目的。但这种绝对的理性正是与人的感性相冲突的。孵化者不会说谎话，但他（们）不会把话说全。签订契约所带来的“奇迹”，究竟需要多大的代价，也就只字未提。这也就注定，当沙耶加为了自己的幼驯染成为魔法少女后会走向末路。</p>
+<hr>
+<p>对和错、好和坏、正义和邪恶，这三者的界定并不是绝对的。因为人类不是机器。</p>
+<p>朴素辩证法思想中，统一物由对立面组成，对立面可以互相转化。早在《庄子》中就有论述。</p>
+<blockquote>
+<p>物无非彼，物无非是。自彼则不见，自知则知之。 ——《庄子·齐物论》</p>
+</blockquote>
+<p>换而言之，世界上也就没有绝对的对和错、好和坏、正义和邪恶，二者都是相“齐”的。</p>
+<p>沙耶加的极端利他主义，迫使她付出太多。她播撒了希望，也收获了绝望，这二者并不相“齐”，也就加快了沙耶加精神上的透支。</p>
+<p>沙耶加成为魔法少女的初衷是正义的。但物极必反，任何事物走到极端就会走向反面。与其能力不匹配的信条，使其自暴自弃，到后面，也就酝酿出诅咒了。这是与初衷相反的。</p>
+<hr>
+<p>生物的本性是趋利避害。</p>
+<p>长大了才懂得成年人的眼中为何没有所谓正义，而只有利益了。</p>
+<hr>
+<p>人鱼的悲剧终是来了。</p>
+<p>对于我们一般的观众而言，更多的是惋惜。</p>
+<p>[F12]</p>
+]]></content>
+      <categories>
+        <category>看番</category>
+      </categories>
+      <tags>
+        <tag>魔法少女小圆</tag>
+        <tag>哲学</tag>
+        <tag>朴素辩证法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一次配置Emlog</title>
+    <url>/p/2020/77a00aad.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
+<p>环境:</p>
+<blockquote>
+<p>OS: debian 10 i386架构</p>
+</blockquote>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
+<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
+<p>以管理员账户登录:<code>mysql -u root -p</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
+<p>退出,登录这个新帐户.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
+<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
+<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
+
+<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
+<p>顺利的话,你就配置成功了.博客可以显示了.</p>
+<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
+<p>(我用的是PHP 7.4)</p>
+<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
+<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+        <category>闲的蛋疼</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>运维</tag>
+        <tag>Emlog</tag>
+        <tag>PHP</tag>
+        <tag>MySQL</tag>
       </tags>
   </entry>
   <entry>
@@ -885,6 +915,32 @@ sys.setrecursionlimit(5000)
         <tag>SSL</tag>
         <tag>Certbot</tag>
         <tag>Let&#39;s Encrypt</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>主板烧了</title>
+    <url>/p/2020/112daf67.html</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>只是给台式机清灰+换一个散热器。 </p>
+<h1 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h1><h2 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h2><p>我拆下原本的风扇，往CPU上涂硅脂。但那劣质硅脂放久了，除了硅脂本体还挤出来许多透明♂液体。 </p>
+<p>拿纸巾擦干后发现有硅脂溢出到主板插槽上了…… </p>
+<font color="red">我我犯了个致命错误：拿纸巾擦插槽</font>
+
+<p>当我意识到时已经晚了，主板插槽的CPU针脚歪了。牙膏厂真的nb，CPU偏偏是触点，针脚在主板上…… </p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0013.jpg" alt="DSC_0013.jpg"> </p>
+<p>我只好拿一字头螺丝刀把针脚挑正。装上机箱试了一下是通过自检的。 </p>
+<p>但当我装上新散热器，电源老毛病又犯了……似乎是电压不稳，主板是亮灯两秒又熄灭，然后又亮，又熄灭……但时间不早了，我整理了一下就去睡觉了。 </p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>下了晚自习，我赶回家，继续修复机器。 </p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://qq.tc/images/2020/09/09/DSC_0014.jpg" alt="DSC_0014.jpg"> </p>
+<p>但这次，在测试的时候……主板烧了，冒出缕缕青烟，香气四溢。</p>
+<p>R.I.P. </p>
+<p>短时间内，我的工作都会放到笔记本上，希望已故的台式机主板安息，笔记本会继承他的遗志。</p>
+]]></content>
+      <categories>
+        <category>日常</category>
+      </categories>
+      <tags>
+        <tag>日常</tag>
+        <tag>苦逼</tag>
       </tags>
   </entry>
   <entry>
@@ -1027,101 +1083,11 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>和绝望，和睦相处</title>
-    <url>/p/2020/d020fa4a.html</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
-
-<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
-<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
-<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
-<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
-<p>希望总会在漫长的等待中终将被耗尽。</p>
-<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
-<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
-<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
-<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
-<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
-<p>等待着她们的，仍是绝望。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
-<p>图片转自原作者つくみず 的推特</p>
-<hr>
-<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
-]]></content>
-      <categories>
-        <category>看番</category>
-      </categories>
-      <tags>
-        <tag>少女终末旅行</tag>
-        <tag>ACGN</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>本站已支持HTTPS</title>
     <url>/p/2020/e838770c.html</url>
     <content><![CDATA[<p>本站已支持HTTPS，从友链进入会自动转到HTTPS协议；</p>
 <p><img src= "/resources/loading.gif" data-lazy-src="https://42works.net/wp-content/uploads/2018/07/https-migration.png" alt="http2https"></p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>树莓派搭建简易NAS</title>
-    <url>/p/2020/444bfcb2.html</url>
-    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c3db57119e19103b.jpg" alt="树莓派"></p>
-<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ol>
-<li><p>一台装好系统的树莓派。这里使用之前的4B，OS是Raspbian 10 Buster；</p>
-</li>
-<li><p>一块2.5寸硬盘，以及一个USB硬盘盒；</p>
-</li>
-<li><p>一颗<font color="red">❤</font>决心；</p>
-</li>
-</ol>
-<h1 id="0-格式化硬盘"><a href="#0-格式化硬盘" class="headerlink" title="0. 格式化硬盘"></a>0. 格式化硬盘</h1><p><a href="https://www.linuxidc.com/Linux/2011-05/36051.htm">Linux下格式化硬盘</a></p>
-<p>我是直接在Windows下格式化整块硬盘为一个NTFS分区，反正Raspbian自带<code>ntfs-3g</code>。</p>
-<p>完成后插到树莓派上。支持USB3.0的最好插USB3.0的接口，不然会慢很多。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/329fb0963d666ec3.jpg" alt="sudo执行fdisk -l，最底下sda1是硬盘分区"></p>
-<p>确定了硬盘是<code>/dev/sda1</code>，就可以进行下一步操作了。</p>
-<h1 id="1-设置自动挂载"><a href="#1-设置自动挂载" class="headerlink" title="1. 设置自动挂载"></a>1. 设置自动挂载</h1><p>先创建一个目录，用来挂载硬盘分区。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo mkdir /home/nas</span><br></pre></td></tr></table></figure>
-<p>编辑<code>/etc/fstab</code>设置自动挂载。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/fstab</span><br></pre></td></tr></table></figure>
-<p>插入<code>/dev/sda1 /home/nas ntfs-3g default 0 0</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">proc            &#x2F;proc           proc    defaults          0       0</span><br><span class="line">PARTUUID&#x3D;b13f8abd-01  &#x2F;boot           vfat    defaults          0       2</span><br><span class="line">PARTUUID&#x3D;b13f8abd-02  &#x2F;               ext4    defaults,noatime  0       1</span><br><span class="line"></span><br><span class="line">&#x2F;dev&#x2F;sda1 &#x2F;home&#x2F;nas ntfs-3g default 0 0</span><br><span class="line"></span><br><span class="line"># a swapfile is not a swap partition, no line here</span><br><span class="line">#   use  dphys-swapfile swap[on|off]  for that</span><br></pre></td></tr></table></figure>
-<p><code>/dev/sda1</code>是对应外置硬盘的设备文件；</p>
-<p><code>/home/nas</code>是挂载点；</p>
-<p><code>ntfs-3g</code>是文件系统，可以使用其他文件系统如<code>fat32</code>或<code>ext4</code>。</p>
-<p>编辑完后重启。可以通过<code>df</code>命令查看当前挂载点。如果有<code>/dev/sda1</code>就成功一半了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ df</span><br><span class="line">文件系统           1K-块    已用      可用 已用% 挂载点</span><br><span class="line">/dev/root       14986672 8701748   5589048   61% /</span><br><span class="line">devtmpfs          305760       0    305760    0% /dev</span><br><span class="line">tmpfs             437856       0    437856    0% /dev/shm</span><br><span class="line">tmpfs             437856    7140    430716    2% /run</span><br><span class="line">tmpfs               5120       4      5116    1% /run/lock</span><br><span class="line">tmpfs             437856       0    437856    0% /sys/fs/cgroup</span><br><span class="line">/dev/mmcblk0p1    258095   54605    203490   22% /boot</span><br><span class="line">/dev/sda1      244196348  842828 243353520    1% /home/nas</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/109</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/1001</span><br></pre></td></tr></table></figure>
-<h1 id="启用SMB服务"><a href="#启用SMB服务" class="headerlink" title="启用SMB服务"></a>启用SMB服务</h1><p>先安装<code>samba</code>，类Unix中的SMB服务器。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install samba</span><br></pre></td></tr></table></figure>
-<p>安装过程中会询问配置DHCP主机名，选是。然后又是漫长的等待。</p>
-<p>安装完成后，编辑<code>/etc/samba/smb.conf</code></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/samba/smb.conf</span><br></pre></td></tr></table></figure>
-<p>在文档末尾加入：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[新♂日♂目♂里]</span><br><span class="line">comment &#x3D; Basement</span><br><span class="line">path &#x3D; &#x2F;home&#x2F;nas</span><br><span class="line">browseable &#x3D; yes</span><br><span class="line">read only &#x3D; no</span><br><span class="line">guest ok &#x3D; no</span><br><span class="line">writable &#x3D; yes</span><br></pre></td></tr></table></figure>
-<p><span class="heimu" title="你知道的太多了">个人趣味（狗头），方括号里的内容是SMB共享文件夹的名称</span></p>
-<p>然后，添加samba用户。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo smbpasswd -a [用户名]</span><br></pre></td></tr></table></figure>
-<p>不<code>sudo</code>设置会没有权限。</p>
-<p>最后重启<code>samba</code>服务。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo /etc/init.d/samba-ad-dc restart</span><br></pre></td></tr></table></figure>
-<p>当然，如果你不嫌麻烦的话，重启整个系统也是可以的。</p>
-<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>在Windows端，Win + R 召唤资源管理器，在地址栏中输入<code>\\Pi\</code>。（Pi改成主机名或者IP地址）。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/e99ebf20432befcc.jpg" alt="It Works!"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/801aa4ab89e69d40.jpg" alt="速度大概是10兆每秒，勉强可以接受"></p>
-<hr>
-<p>至此，一个简易的NAS就搭建完了。</p>
-<p>这台树莓派难道至是拿来做做存储服务器？对不起，那不现实啊~</p>
-<p>过几天，LCD1602应该会到，到了再做一个更有意思的东西吧。（笑）</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>GNU/Linux</tag>
-        <tag>运维</tag>
-        <tag>树莓派</tag>
-        <tag>SAMBA</tag>
-        <tag>NAS</tag>
-      </tags>
   </entry>
   <entry>
     <title>树莓派通过I2C总线连接LCD1602并部署一个小项目</title>
@@ -1199,105 +1165,195 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>笔记·AJAX</title>
-    <url>/p/2020/46134e8e.html</url>
-    <content><![CDATA[<div class="note warning modern"><p>不建议直接搬用本文代码，因为很有可能出现跨域问题</p>
-</div>
-<h1 id="AJAX是什么"><a href="#AJAX是什么" class="headerlink" title="AJAX是什么"></a>AJAX是什么</h1><p>AJAX - Asynchronous JavaScript And XML - 异步的JavaScript和XML</p>
-<p>该方法能够让Web浏览器在不刷新页面的情况下与服务器交换数据。</p>
-<blockquote>
-<p>当使用结合了这些技术的AJAX模型以后， 网页应用能够快速地将增量更新呈现在用户界面上，而不需要重载（刷新）整个页面。这使得程序能够更快地回应用户的操作。</p>
-</blockquote>
-<h1 id="XMLHttpRequest"><a href="#XMLHttpRequest" class="headerlink" title="XMLHttpRequest"></a>XMLHttpRequest</h1><p><code>XMLHttpRequest()</code>用于和服务器交换数据。</p>
-<p>发送一个HTTP请求时，需要创建一个<code>XMLHttpRequest</code>对象，打开一个URL，发送请求。服务器会返回HTTP状态码及响应主体。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> NewHTTPRequest = <span class="keyword">new</span> XMLHTTPRequest();</span><br></pre></td></tr></table></figure>
-<p>这样就创建了一个<code>XMLHttpRequest</code>对象。<del>（废话</del></p>
-<p>值得一提的是，IE6及以前版本的IE用的都是<code>ActiveXObject</code>。<span class="heimu" title="你知道的太多了">0202年了，还有人用IE6吗？</span></p>
-<h1 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h1><p>使用<code>XMLHttpRequest</code>对象的<code>open()</code>和<code>send()</code>方法。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>)</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
-<h2 id="open-方法"><a href="#open-方法" class="headerlink" title="open()方法"></a><code>open()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.open(method, url, async, user, passwd);</code></p>
-<ul>
-<li><code>XMLHttpRequestObject</code>: 创建的XMLHttpRequest对象</li>
-<li><code>method</code>: 要使用的HTTP方法。常用的是<code>GET</code>和<code>POST</code></li>
-<li><code>url</code>: 要向其发送请求的URL</li>
-<li><code>async</code>: 可选参数。布尔类型。表示是否异步操作，默认为<code>true</code>。如果为<code>false</code>，<code>send()</code>方法直到收到答复前不会返回</li>
-<li><code>user</code>: 可选参数。用于认证用途，用户名</li>
-<li><code>passwd</code>: 可选参数。用于认证用途，密码</li>
-</ul>
-<h2 id="send-方法"><a href="#send-方法" class="headerlink" title="send()方法"></a><code>send()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.send(body);</code></p>
-<ul>
-<li><code>body</code>: 可选参数。在<code>XMLHttpRequest</code>请求中要发送的数据体，默认为<code>null</code>。仅用于<code>POST</code>请求</li>
-</ul>
-<h2 id="GET还是POST"><a href="#GET还是POST" class="headerlink" title="GET还是POST"></a><code>GET</code>还是<code>POST</code></h2><p>一言蔽之，<code>GET</code>适用于大多数请求。</p>
-<p>而以下情况：</p>
-<ul>
-<li>无法使用缓存文件（更新服务器上的文件或数据库）</li>
-<li>向服务器发送大量数据（POST没有数量限制）</li>
-<li>发送包含未知字符的用户输入时，POST 比 GET 更稳定也更可靠</li>
-</ul>
-<h3 id="GET"><a href="#GET" class="headerlink" title="GET"></a><code>GET</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
-<p>执行上面的例子，浏览器可能返回缓存的数据。</p>
-<p>简单粗暴的解决方案：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html?t=&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
-<p>只需要向URL中添加一个无用的参数就可以了。</p>
-<h3 id="POST"><a href="#POST" class="headerlink" title="POST"></a><code>POST</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;POST&quot;</span>,<span class="string">&quot;https://www.runoob.com/try/ajax/demo_post2.php&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.setRequestHeader(<span class="string">&quot;Content-type&quot;</span>,<span class="string">&quot;application/x-www-form-urlencoded&quot;</span>); <span class="comment">//向请求添加HTTP头</span></span><br><span class="line">NewHTTPRequest.send(<span class="string">&quot;fname=河城&amp;lname=荷取&quot;</span>) <span class="comment">//参数</span></span><br></pre></td></tr></table></figure>
-<p><code>setRequestHeader</code>参数：</p>
-<ul>
-<li><code>header</code>: 规定HTTP头的名称</li>
-<li><code>value</code>: 规定头的值</li>
-</ul>
-<h2 id="异步还是同步"><a href="#异步还是同步" class="headerlink" title="异步还是同步"></a>异步还是同步</h2><p>多数情况下，<code>async</code>应设置为<code>true</code>。但有时，<code>async=false</code>更合适。</p>
-<blockquote>
-<p>对于 web 开发人员来说，发送异步请求是一个巨大的进步。很多在服务器执行的任务都相当费时。AJAX 出现之前，这可能会引起应用程序挂起或停止。<br><br>通过 AJAX，JavaScript 无需等待服务器的响应，而是：<br></p>
-<ol>
-<li>在等待服务器响应时执行其他脚本<br></li>
-<li>当响应就绪后对响应进行处理<br><br>——Runoob.com</li>
-</ol>
-</blockquote>
-<h1 id="服务器响应"><a href="#服务器响应" class="headerlink" title="服务器响应"></a>服务器响应</h1><p>接收服务器响应数据，应使用<code>responseText</code>或<code>responseXML</code>属性。二者的区别在于，前者默认获得文本数据，后者会解析XML。</p>
-<h2 id="responseText"><a href="#responseText" class="headerlink" title="responseText"></a><code>responseText</code></h2><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(NewHTTPRequest.responseText)</span><br></pre></td></tr></table></figure>
-<h2 id="responseXML"><a href="#responseXML" class="headerlink" title="responseXML"></a><code>responseXML</code></h2><p><del>什么时候推出一个“responseJson”啊</del></p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">xmlDoc=xmlhttp.responseXML;</span><br><span class="line">txt=<span class="string">&quot;&quot;</span>;</span><br><span class="line">x=xmlDoc.getElementsByTagName(<span class="string">&quot;ARTIST&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (i=<span class="number">0</span>;i&lt;x.length;i++)</span><br><span class="line">&#123;</span><br><span class="line">    txt=txt + x[i].childNodes[<span class="number">0</span>].nodeValue + <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&quot;myDiv&quot;</span>).innerHTML=txt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.runoob.com/ajax">AJAX 教程 | 菜鸟教程 - RUNOOB.COM</a></p>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX">Ajax - Web 开发者指南 | MDN</a></p>
+    <title>和绝望，和睦相处</title>
+    <url>/p/2020/d020fa4a.html</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
+
+<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
+<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
+<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
+<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
+<p>希望总会在漫长的等待中终将被耗尽。</p>
+<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
+<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
+<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
+<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
+<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
+<p>等待着她们的，仍是绝望。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
+<p>图片转自原作者つくみず 的推特</p>
+<hr>
+<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
 ]]></content>
       <categories>
-        <category>笔记</category>
-        <category>前端</category>
+        <category>看番</category>
       </categories>
       <tags>
-        <tag>JavaScript</tag>
-        <tag>前端</tag>
-        <tag>AJAX</tag>
-        <tag>笔记</tag>
+        <tag>少女终末旅行</tag>
+        <tag>ACGN</tag>
       </tags>
   </entry>
   <entry>
-    <title>自己在家搭服的坑</title>
-    <url>/p/2020/e9e33d10.html</url>
-    <content><![CDATA[<blockquote>
-<p>由于多种外部因素干涉，最近服务器不太稳定，经常宕机。望各位谅解</p>
+    <title>福报</title>
+    <url>/p/2021/cd763a61.html</url>
+    <content><![CDATA[<p>在Web4.0时代，还在坚持写博客的人们早就不多见了。这些人中，多是一批IT民工。写的文章，也常是技术类的，晦涩难懂，一般的人也不会阅读。他们或是聚集在博客园、CSDN等平台，或是早就有了自己经营的网站。无论展现他们的平台位于何处，他们中也仅极有少数人的文字间带着真挚的感情的。</p>
+<p>我曾订阅过一个博主曾是那少数人中的一员。可惜，那个人已经长久没有更新过一篇真正由他写的文章了。我浏览着他的博客首页，阅读他之前的记录：</p>
+<hr>
+<font color="#0000AA">
+
+你好，2021<br>
+发布时间：2020-12-31 03:38:55<br>
+
+存活确认。<br>
+</font>
+
+<p>这是他最新的一篇文章，一周前发布，此后，他便没有了消息，这篇文章也没有更新。</p>
+<p>我接着向下翻……</p>
+<font color="#0000AA">
+
+在α公司任职两个月感想<br>
+发布时间：2020-08-25 02:46:02<br>
+
+我非常高兴能在α公司就任后端程序员一职。在α公司这个大家庭中，我非常幸运能成为其中一员。尽管我从一个二本毕业，大家也对我非常友善。领导英明果断、明察秋毫，同事们同心并力、团结一致。入职之后，才明白来这里是我的最佳选择，我也更加坚定了自己的选择。<br>
+
+我还记得，在我来这里的第一天，领导就对我说，要把这里当家，在这里拼搏，在这里奋斗。打第一天起，我就记住了领导的话。这里是我的家，也是我挥洒汗水的地方，再苦再累，我也要坚持下去。在领导们和同事们的帮助下，我处理问题、解决问题的能力提高了，技术水平也提高了。<br>
+
+公司的发展，就是我们个人的进步！我不仅要发挥自身优势，还要学习他人，提高自己。相信，在α公司我会变得更好。能成为公司里的一员，我感到无比自豪，今后，我将更富有激情地投入到工作之中。<br>
+
+</font>
+
+<p>与其说这篇文章这是他写的。更不如说，这篇文章更像是他受到强加于其身上的一种外力握着他的手写的。</p>
+<p>我继续向下翻阅，跳过了一篇又一篇。终于找到了一篇真正由他写的文章。</p>
+<font color="#0000AA">
+
+毕业后的近况<br>
+发布时间：2019-07-13 20:37:43<br>
+
+这是我毕业后的第一篇日常向的文章。<br>
+
+众所周知，毕业即失业。毕业后的首要任务，当然是找一个好工作（笑）。<br>
+
+目前比较中意入职α公司。他们那里工资高，待遇优，加班少。而且有朋友内推。我刚刚把简历投完，然后就等面试。通过面试，那就能正式任职，自己也总算是有一份正经工作了。<br>
+
+在这个拼搏的时代，就是应该努力工作，而非安逸。知乎上一位大佬曾说过，人是可以控制自己的努力的，我们都可以。<br>
+
+如果能获得offer的话，将来可能会减少更博客的时间。（我将成为一只鸽子）但……每隔一段时间还是会更新一次博客的(^^;;<br>
+
+……<br>
+
+</font>
+
+<font color="#0000AA">
+
+毕业<br>
+发布时间：2020-06-23 16:57:03<br>
+
+疫情后返校没两三天，就直接开始毕业答辩。<br>
+
+终于又见到了久别重逢的室友，那熟悉的辅导员，还有……那（迫真）和蔼的宿管阿姨。<br>
+
+毕业答辩的安排比较巧，我们四位都在下午进行毕业答辩。<br>
+
+这中间还有段小插曲：我一个哥们儿安排在上午，然后十一点左右的时候，我向他问了问情况。得到的答复很突然：“难”，“难上加难”，“不顺利”。我告诉了旁边还在打炉石的老王。他听后一愣，接着便手忙脚乱地准备起来。庆幸的是，我们几个都非常顺利。<br>
+
+毕业答辩之后的第二天，我们就拍了毕业照，再之后，便要分开了。<br>
+
+四个人站在十字路口中间，相互说了些祝福的话，便朝着各自的方向行去了。<br>
+
+感谢你们四年的陪伴，有缘再见！<br>
+</font>
+
+<p>再向下翻，便是他大学时的日子。每日无非几件事——在教室里上课，在图书馆看书，在宿舍打游戏……</p>
+<p>但由这几件几乎每天都在做的小事编织成的大学时光，是充满阳光的，向上的。</p>
+<p>我从他的文字间，窥见了我的将来要走的路。</p>
+<p>直至网页见底，我关闭了他的博客。</p>
+<hr>
+<p>偶然，我从热点新闻页上瞥见一行字：<code>α公司一二十三岁员工半夜加班后猝死</code>。</p>
+<p>这行字细小却扎眼，我点了进去。得到的回应，也仅仅是这一句话。</p>
+<blockquote>
+<p>“你们看看底层的人民，哪一个不是用命换钱，我一直不以为是资本的问题，而是这个社会的问题，这是一个用命拼的时代，你可以选择安逸的日子，但你就要选择安逸带来的后果，人是可以控制自己的努力的，我们都可以。”</p>
 </blockquote>
-<p>在家搭建服务器，是Geeks所热衷的。对于我来说，在家搭建服务器与直接租VPS的区别在于，VPS会提前帮你做好大多数工作，更适合搭建开发时间紧张的网站；而自己在家用自己的硬件搭建服务器，费时，费力，但是它可以给你带来安装操作系统时的期待、构建网站时的兴奋与网站上线的成就，给予你一系列精神上的满足感。</p>
-<p>虽说如此，但自己在家搭建服务器仍是非常费精力的。以下为我个人总结出来的经验。</p>
-<h2 id="1-一定要计划任务重启"><a href="#1-一定要计划任务重启" class="headerlink" title="1.一定要计划任务重启"></a>1.一定要计划任务重启</h2><p>也许你会问，服务器不就是要一直开着吗？的确，服务器作为服务端，必须随时在线。但是，你的服务器必须要释放堆栈，否则会内存泄漏。计划重启是最简单的方法，建议挑选在访问人数少的时候计划重启。当然，如果你的服务器配置高，或者使用真正的服务器主板，可以忽略这一条。</p>
-<h2 id="2-网速"><a href="#2-网速" class="headerlink" title="2.网速"></a>2.网速</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVxvq.png" alt="一般情况下PING测试"></p>
-<p>要搞对外开放的服务器，良好的网速是绕不开的。我的服务器在我房间里，还算良好，没有噪声。但我的房间里没有LAN口，所以，我只能通过路由器的无线网络桥接的方式，链接客厅的主路由器。正常情况下，房间里的从路由器ping网关的延迟是小于10ms的，但倘若主路由器错乱一下，延迟一下子就从小于10ms升至大于两秒。</p>
-<p>网上有一种叫电力猫的装置，可以把一端网口的数字信号转化为模拟信号，输出到家里市电，再由另一端的机器把模拟信号转成数字信号。</p>
-<p>这个装置虽然挽救了没有网口的房间，但由于其通过市电传输，其稳定性是会受到类似空调之类的大功率电器影响的，而且网速不敢恭维，所以我没有采用这类方法。我还是和之前一样采用无线网络桥接的方式，但在服务器上多加了个无线网卡。</p>
-<h2 id="3-电力供应"><a href="#3-电力供应" class="headerlink" title="3.电力供应"></a>3.电力供应</h2><p>这个是最棘手的。</p>
-<p>我的服务器是一台工控机，功耗比较低，也勉强能做Web服务器。但不可避的是停电。</p>
-<p>这个我还没有对策，反正又不会经常停电，怕啥？解决方法慢慢想就是了。</p>
-<h2 id="4-人为"><a href="#4-人为" class="headerlink" title="4.人为"></a>4.人为</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVv2n.png" alt="CykaBlyat"></p>
-<h6 id="本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。"><a href="#本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。" class="headerlink" title="本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 http://creativecommons.org/licenses/by/4.0/ 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。"></a>本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 <a href="http://creativecommons.org/licenses/by/4.0/">http://creativecommons.org/licenses/by/4.0/</a> 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。</h6>]]></content>
+<p>评论区里，有为逝者哀悼的人，也有在责骂的。表面上他们很关心这件事，实际上他们只是为了热度而来，待到舆论随着热度随风散去，这件事也就被忘却了，就像未曾发生过一样。</p>
+<p>我也不由得想起他。</p>
+<p>他的博客……大概不会再更新了。</p>
+<p>我确信，我目睹了一个活生生的人，在光天化日之下，被豺狼虎豹之流啃食为一具骨架。</p>
+<p>而众人先是漠然置之，到他们低下头，看间了那具还沾着鲜血的骨架，也只是长吁一声，或是划十字架，或者咒骂，然后，若无其事地走开了。网民的记忆只有七秒。</p>
+<p>下一个猎物就是我。</p>
+<p>我的气愤，无奈，焦虑汇聚于心。泪滴在屏幕上。我攥紧拳头，却又在一声叹息中松开。我无能为力。对于底层人民而言，“用命拼”是他们唯一的选择。</p>
+<p>隐约之中，我听到了那低沉、沙哑的吼声：</p>
+<blockquote>
+<p>一个幽灵，_________的幽灵，在_________游荡。为了对这个幽灵进行神圣的_________，_________的一切势力，_________和_________、_________和_________、_________和_________都联合起来了……</p>
+</blockquote>
+<div class="note info modern"><p>这是第三次修改。</p>
+<p>本文内容纯属虚构，与现实中的任何单位/个人无关。</p>
+</div>
+]]></content>
+      <categories>
+        <category>小说</category>
+      </categories>
+      <tags>
+        <tag>福报论</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>树莓派搭建简易NAS</title>
+    <url>/p/2020/444bfcb2.html</url>
+    <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c3db57119e19103b.jpg" alt="树莓派"></p>
+<h1 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h1><ol>
+<li><p>一台装好系统的树莓派。这里使用之前的4B，OS是Raspbian 10 Buster；</p>
+</li>
+<li><p>一块2.5寸硬盘，以及一个USB硬盘盒；</p>
+</li>
+<li><p>一颗<font color="red">❤</font>决心；</p>
+</li>
+</ol>
+<h1 id="0-格式化硬盘"><a href="#0-格式化硬盘" class="headerlink" title="0. 格式化硬盘"></a>0. 格式化硬盘</h1><p><a href="https://www.linuxidc.com/Linux/2011-05/36051.htm">Linux下格式化硬盘</a></p>
+<p>我是直接在Windows下格式化整块硬盘为一个NTFS分区，反正Raspbian自带<code>ntfs-3g</code>。</p>
+<p>完成后插到树莓派上。支持USB3.0的最好插USB3.0的接口，不然会慢很多。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/329fb0963d666ec3.jpg" alt="sudo执行fdisk -l，最底下sda1是硬盘分区"></p>
+<p>确定了硬盘是<code>/dev/sda1</code>，就可以进行下一步操作了。</p>
+<h1 id="1-设置自动挂载"><a href="#1-设置自动挂载" class="headerlink" title="1. 设置自动挂载"></a>1. 设置自动挂载</h1><p>先创建一个目录，用来挂载硬盘分区。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo mkdir /home/nas</span><br></pre></td></tr></table></figure>
+<p>编辑<code>/etc/fstab</code>设置自动挂载。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/fstab</span><br></pre></td></tr></table></figure>
+<p>插入<code>/dev/sda1 /home/nas ntfs-3g default 0 0</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">proc            &#x2F;proc           proc    defaults          0       0</span><br><span class="line">PARTUUID&#x3D;b13f8abd-01  &#x2F;boot           vfat    defaults          0       2</span><br><span class="line">PARTUUID&#x3D;b13f8abd-02  &#x2F;               ext4    defaults,noatime  0       1</span><br><span class="line"></span><br><span class="line">&#x2F;dev&#x2F;sda1 &#x2F;home&#x2F;nas ntfs-3g default 0 0</span><br><span class="line"></span><br><span class="line"># a swapfile is not a swap partition, no line here</span><br><span class="line">#   use  dphys-swapfile swap[on|off]  for that</span><br></pre></td></tr></table></figure>
+<p><code>/dev/sda1</code>是对应外置硬盘的设备文件；</p>
+<p><code>/home/nas</code>是挂载点；</p>
+<p><code>ntfs-3g</code>是文件系统，可以使用其他文件系统如<code>fat32</code>或<code>ext4</code>。</p>
+<p>编辑完后重启。可以通过<code>df</code>命令查看当前挂载点。如果有<code>/dev/sda1</code>就成功一半了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ df</span><br><span class="line">文件系统           1K-块    已用      可用 已用% 挂载点</span><br><span class="line">/dev/root       14986672 8701748   5589048   61% /</span><br><span class="line">devtmpfs          305760       0    305760    0% /dev</span><br><span class="line">tmpfs             437856       0    437856    0% /dev/shm</span><br><span class="line">tmpfs             437856    7140    430716    2% /run</span><br><span class="line">tmpfs               5120       4      5116    1% /run/lock</span><br><span class="line">tmpfs             437856       0    437856    0% /sys/fs/cgroup</span><br><span class="line">/dev/mmcblk0p1    258095   54605    203490   22% /boot</span><br><span class="line">/dev/sda1      244196348  842828 243353520    1% /home/nas</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/109</span><br><span class="line">tmpfs              87568       0     87568    0% /run/user/1001</span><br></pre></td></tr></table></figure>
+<h1 id="启用SMB服务"><a href="#启用SMB服务" class="headerlink" title="启用SMB服务"></a>启用SMB服务</h1><p>先安装<code>samba</code>，类Unix中的SMB服务器。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install samba</span><br></pre></td></tr></table></figure>
+<p>安装过程中会询问配置DHCP主机名，选是。然后又是漫长的等待。</p>
+<p>安装完成后，编辑<code>/etc/samba/smb.conf</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/samba/smb.conf</span><br></pre></td></tr></table></figure>
+<p>在文档末尾加入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[新♂日♂目♂里]</span><br><span class="line">comment &#x3D; Basement</span><br><span class="line">path &#x3D; &#x2F;home&#x2F;nas</span><br><span class="line">browseable &#x3D; yes</span><br><span class="line">read only &#x3D; no</span><br><span class="line">guest ok &#x3D; no</span><br><span class="line">writable &#x3D; yes</span><br></pre></td></tr></table></figure>
+<p><span class="heimu" title="你知道的太多了">个人趣味（狗头），方括号里的内容是SMB共享文件夹的名称</span></p>
+<p>然后，添加samba用户。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo smbpasswd -a [用户名]</span><br></pre></td></tr></table></figure>
+<p>不<code>sudo</code>设置会没有权限。</p>
+<p>最后重启<code>samba</code>服务。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo /etc/init.d/samba-ad-dc restart</span><br></pre></td></tr></table></figure>
+<p>当然，如果你不嫌麻烦的话，重启整个系统也是可以的。</p>
+<h1 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h1><p>在Windows端，Win + R 召唤资源管理器，在地址栏中输入<code>\\Pi\</code>。（Pi改成主机名或者IP地址）。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/e99ebf20432befcc.jpg" alt="It Works!"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/801aa4ab89e69d40.jpg" alt="速度大概是10兆每秒，勉强可以接受"></p>
+<hr>
+<p>至此，一个简易的NAS就搭建完了。</p>
+<p>这台树莓派难道至是拿来做做存储服务器？对不起，那不现实啊~</p>
+<p>过几天，LCD1602应该会到，到了再做一个更有意思的东西吧。（笑）</p>
+]]></content>
       <categories>
         <category>日常宅技术</category>
       </categories>
       <tags>
+        <tag>GNU/Linux</tag>
         <tag>运维</tag>
-        <tag>经验分享</tag>
-        <tag>Web</tag>
-        <tag>踩坑</tag>
+        <tag>树莓派</tag>
+        <tag>SAMBA</tag>
+        <tag>NAS</tag>
       </tags>
   </entry>
   <entry>
@@ -1655,139 +1711,31 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>福报</title>
-    <url>/p/2021/cd763a61.html</url>
-    <content><![CDATA[<p>在Web4.0时代，还在坚持写博客的人们早就不多见了。这些人中，多是一批IT民工。写的文章，也常是技术类的，晦涩难懂，一般的人也不会阅读。他们或是聚集在博客园、CSDN等平台，或是早就有了自己经营的网站。无论展现他们的平台位于何处，他们中也仅极有少数人的文字间带着真挚的感情的。</p>
-<p>我曾订阅过一个博主曾是那少数人中的一员。可惜，那个人已经长久没有更新过一篇真正由他写的文章了。我浏览着他的博客首页，阅读他之前的记录：</p>
-<hr>
-<font color="#0000AA">
-
-你好，2021<br>
-发布时间：2020-12-31 03:38:55<br>
-
-存活确认。<br>
-</font>
-
-<p>这是他最新的一篇文章，一周前发布，此后，他便没有了消息，这篇文章也没有更新。</p>
-<p>我接着向下翻……</p>
-<font color="#0000AA">
-
-在α公司任职两个月感想<br>
-发布时间：2020-08-25 02:46:02<br>
-
-我非常高兴能在α公司就任后端程序员一职。在α公司这个大家庭中，我非常幸运能成为其中一员。尽管我从一个二本毕业，大家也对我非常友善。领导英明果断、明察秋毫，同事们同心并力、团结一致。入职之后，才明白来这里是我的最佳选择，我也更加坚定了自己的选择。<br>
-
-我还记得，在我来这里的第一天，领导就对我说，要把这里当家，在这里拼搏，在这里奋斗。打第一天起，我就记住了领导的话。这里是我的家，也是我挥洒汗水的地方，再苦再累，我也要坚持下去。在领导们和同事们的帮助下，我处理问题、解决问题的能力提高了，技术水平也提高了。<br>
-
-公司的发展，就是我们个人的进步！我不仅要发挥自身优势，还要学习他人，提高自己。相信，在α公司我会变得更好。能成为公司里的一员，我感到无比自豪，今后，我将更富有激情地投入到工作之中。<br>
-
-</font>
-
-<p>与其说这篇文章这是他写的。更不如说，这篇文章更像是他受到强加于其身上的一种外力握着他的手写的。</p>
-<p>我继续向下翻阅，跳过了一篇又一篇。终于找到了一篇真正由他写的文章。</p>
-<font color="#0000AA">
-
-毕业后的近况<br>
-发布时间：2019-07-13 20:37:43<br>
-
-这是我毕业后的第一篇日常向的文章。<br>
-
-众所周知，毕业即失业。毕业后的首要任务，当然是找一个好工作（笑）。<br>
-
-目前比较中意入职α公司。他们那里工资高，待遇优，加班少。而且有朋友内推。我刚刚把简历投完，然后就等面试。通过面试，那就能正式任职，自己也总算是有一份正经工作了。<br>
-
-在这个拼搏的时代，就是应该努力工作，而非安逸。知乎上一位大佬曾说过，人是可以控制自己的努力的，我们都可以。<br>
-
-如果能获得offer的话，将来可能会减少更博客的时间。（我将成为一只鸽子）但……每隔一段时间还是会更新一次博客的(^^;;<br>
-
-……<br>
-
-</font>
-
-<font color="#0000AA">
-
-毕业<br>
-发布时间：2020-06-23 16:57:03<br>
-
-疫情后返校没两三天，就直接开始毕业答辩。<br>
-
-终于又见到了久别重逢的室友，那熟悉的辅导员，还有……那（迫真）和蔼的宿管阿姨。<br>
-
-毕业答辩的安排比较巧，我们四位都在下午进行毕业答辩。<br>
-
-这中间还有段小插曲：我一个哥们儿安排在上午，然后十一点左右的时候，我向他问了问情况。得到的答复很突然：“难”，“难上加难”，“不顺利”。我告诉了旁边还在打炉石的老王。他听后一愣，接着便手忙脚乱地准备起来。庆幸的是，我们几个都非常顺利。<br>
-
-毕业答辩之后的第二天，我们就拍了毕业照，再之后，便要分开了。<br>
-
-四个人站在十字路口中间，相互说了些祝福的话，便朝着各自的方向行去了。<br>
-
-感谢你们四年的陪伴，有缘再见！<br>
-</font>
-
-<p>再向下翻，便是他大学时的日子。每日无非几件事——在教室里上课，在图书馆看书，在宿舍打游戏……</p>
-<p>但由这几件几乎每天都在做的小事编织成的大学时光，是充满阳光的，向上的。</p>
-<p>我从他的文字间，窥见了我的将来要走的路。</p>
-<p>直至网页见底，我关闭了他的博客。</p>
-<hr>
-<p>偶然，我从热点新闻页上瞥见一行字：<code>α公司一二十三岁员工半夜加班后猝死</code>。</p>
-<p>这行字细小却扎眼，我点了进去。得到的回应，也仅仅是这一句话。</p>
-<blockquote>
-<p>“你们看看底层的人民，哪一个不是用命换钱，我一直不以为是资本的问题，而是这个社会的问题，这是一个用命拼的时代，你可以选择安逸的日子，但你就要选择安逸带来的后果，人是可以控制自己的努力的，我们都可以。”</p>
+    <title>自己在家搭服的坑</title>
+    <url>/p/2020/e9e33d10.html</url>
+    <content><![CDATA[<blockquote>
+<p>由于多种外部因素干涉，最近服务器不太稳定，经常宕机。望各位谅解</p>
 </blockquote>
-<p>评论区里，有为逝者哀悼的人，也有在责骂的。表面上他们很关心这件事，实际上他们只是为了热度而来，待到舆论随着热度随风散去，这件事也就被忘却了，就像未曾发生过一样。</p>
-<p>我也不由得想起他。</p>
-<p>他的博客……大概不会再更新了。</p>
-<p>我确信，我目睹了一个活生生的人，在光天化日之下，被豺狼虎豹之流啃食为一具骨架。</p>
-<p>而众人先是漠然置之，到他们低下头，看间了那具还沾着鲜血的骨架，也只是长吁一声，或是划十字架，或者咒骂，然后，若无其事地走开了。网民的记忆只有七秒。</p>
-<p>下一个猎物就是我。</p>
-<p>我的气愤，无奈，焦虑汇聚于心。泪滴在屏幕上。我攥紧拳头，却又在一声叹息中松开。我无能为力。对于底层人民而言，“用命拼”是他们唯一的选择。</p>
-<p>隐约之中，我听到了那低沉、沙哑的吼声：</p>
-<blockquote>
-<p>一个幽灵，_________的幽灵，在_________游荡。为了对这个幽灵进行神圣的_________，_________的一切势力，_________和_________、_________和_________、_________和_________都联合起来了……</p>
-</blockquote>
-<div class="note info modern"><p>这是第三次修改。</p>
-<p>本文内容纯属虚构，与现实中的任何单位/个人无关。</p>
-</div>
-]]></content>
+<p>在家搭建服务器，是Geeks所热衷的。对于我来说，在家搭建服务器与直接租VPS的区别在于，VPS会提前帮你做好大多数工作，更适合搭建开发时间紧张的网站；而自己在家用自己的硬件搭建服务器，费时，费力，但是它可以给你带来安装操作系统时的期待、构建网站时的兴奋与网站上线的成就，给予你一系列精神上的满足感。</p>
+<p>虽说如此，但自己在家搭建服务器仍是非常费精力的。以下为我个人总结出来的经验。</p>
+<h2 id="1-一定要计划任务重启"><a href="#1-一定要计划任务重启" class="headerlink" title="1.一定要计划任务重启"></a>1.一定要计划任务重启</h2><p>也许你会问，服务器不就是要一直开着吗？的确，服务器作为服务端，必须随时在线。但是，你的服务器必须要释放堆栈，否则会内存泄漏。计划重启是最简单的方法，建议挑选在访问人数少的时候计划重启。当然，如果你的服务器配置高，或者使用真正的服务器主板，可以忽略这一条。</p>
+<h2 id="2-网速"><a href="#2-网速" class="headerlink" title="2.网速"></a>2.网速</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVxvq.png" alt="一般情况下PING测试"></p>
+<p>要搞对外开放的服务器，良好的网速是绕不开的。我的服务器在我房间里，还算良好，没有噪声。但我的房间里没有LAN口，所以，我只能通过路由器的无线网络桥接的方式，链接客厅的主路由器。正常情况下，房间里的从路由器ping网关的延迟是小于10ms的，但倘若主路由器错乱一下，延迟一下子就从小于10ms升至大于两秒。</p>
+<p>网上有一种叫电力猫的装置，可以把一端网口的数字信号转化为模拟信号，输出到家里市电，再由另一端的机器把模拟信号转成数字信号。</p>
+<p>这个装置虽然挽救了没有网口的房间，但由于其通过市电传输，其稳定性是会受到类似空调之类的大功率电器影响的，而且网速不敢恭维，所以我没有采用这类方法。我还是和之前一样采用无线网络桥接的方式，但在服务器上多加了个无线网卡。</p>
+<h2 id="3-电力供应"><a href="#3-电力供应" class="headerlink" title="3.电力供应"></a>3.电力供应</h2><p>这个是最棘手的。</p>
+<p>我的服务器是一台工控机，功耗比较低，也勉强能做Web服务器。但不可避的是停电。</p>
+<p>这个我还没有对策，反正又不会经常停电，怕啥？解决方法慢慢想就是了。</p>
+<h2 id="4-人为"><a href="#4-人为" class="headerlink" title="4.人为"></a>4.人为</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVv2n.png" alt="CykaBlyat"></p>
+<h6 id="本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。"><a href="#本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。" class="headerlink" title="本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 http://creativecommons.org/licenses/by/4.0/ 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。"></a>本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 <a href="http://creativecommons.org/licenses/by/4.0/">http://creativecommons.org/licenses/by/4.0/</a> 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。</h6>]]></content>
       <categories>
-        <category>小说</category>
+        <category>日常宅技术</category>
       </categories>
       <tags>
-        <tag>福报论</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
-    <url>/p/2020/9e01b7f0.html</url>
-    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
-<p>在阅读本文之前，建议先阅读《1984》原著。</p>
-</div>
-<div class="note info modern"><p>电幕之下，请高呼：</p>
-<font size=14>我爱老大哥！</font>
-</div>
-<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
-<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
-<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
-<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
-<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
-<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
-<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
-<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
-<p>愚蠢像智慧一样必要，也同样难以学到。</p>
-<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
-<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
-<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
-<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>……</p>
-]]></content>
-      <categories>
-        <category>随笔</category>
-        <category>感想</category>
-      </categories>
-      <tags>
-        <tag>《一九八四》</tag>
-        <tag>品书</tag>
+        <tag>运维</tag>
+        <tag>经验分享</tag>
+        <tag>Web</tag>
+        <tag>踩坑</tag>
       </tags>
   </entry>
   <entry>
@@ -1805,50 +1753,6 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>秋游</tag>
         <tag>相册</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>记一次失败部署树莓派双屏桌面</title>
-    <url>/p/2020/5605bcd6.html</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p><span class="heimu" title="你知道的太多了">想要利用多余的一个屏幕。</span></p>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>树莓派4B+ 1G内存版本</p>
-<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>把原来树莓派服务器上的数据转移完成后，我就把它取下了。比较巧的是，网上买的屏幕转接线刚好到了。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c03cbd7e1e3c6b28.png" alt="接线示意图"></p>
-<p>把树莓派连到两个屏幕上，再用TF卡烧写Ubuntu-Mate，插入树莓派。</p>
-<p>开机，双屏同时显示。但右边接VGA的屏幕分辨率有点问题。用xrandr调整一下，就可以开始使用了。</p>
-<p>当我兴致勃勃地启动firefox，树莓派死机了。</p>
-<p><span class="heimu" title="你知道的太多了">淦！这都带不动。不搞了！睡觉！</span></p>
-<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>我下载好原生的Raspbian，烧录系统，启动。调整分辨率……</p>
-<p>一个简单的桌面环境就部署好了。</p>
-<p>在菜单里还自带一个Minecraft，挺有意思的。<span class="heimu" title="你知道的太多了">但只有创造模式</span></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/d216e0a812dd2c7e.jpg" alt="Minecraft!"></p>
-<p>浏览器是自带的Chromium，运行起来还算比较顺畅。</p>
-<p>刷B站CPU烧了一半，不过还是跑得动。</p>
-<p>（请原谅我太懒没有截图）</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/2a311e8045824479.jpg" alt="htop"></p>
-<p>但左边屏幕有一个问题：在窗口最大化的时候总会偏移到屏幕外。</p>
-<p>于是我又去编辑config.txt，按网上教程把有关hdmi的部分内容取消注释了。</p>
-<p>重启。</p>
-<p>然后，就没有然后了。它再起（启）不能啊！</p>
-<p><span class="heimu" title="你知道的太多了">淦！这都整不了。不搞了！睡觉！</span></p>
-<h1 id="Day-3"><a href="#Day-3" class="headerlink" title="Day 3"></a>Day 3</h1><p>我暂缓了双屏使用树莓派，转而使用单屏，放弃HDMI-2口的屏幕。重新烧写<span class="heimu" title=“你知道的太多了”>（TF卡都快烧报废了）</span></p>
-<p>开机，屏幕可以显示。常规地adduser，然后删除pi用户。到网上下载了一张荷取的美图，设置为桌面背景……无效？</p>
-<p>在桌面偏好窗口设置桌面背景，它询问我的用户密码，然后……什么都没变</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt purge lxde</span><br><span class="line">$ sudo apt install lxde</span><br></pre></td></tr></table></figure>
-<p>注销重登录，就进入了原生的lxde桌面。比之前好了太多。</p>
-<p>……</p>
-<h1 id="Day-4"><a href="#Day-4" class="headerlink" title="Day 4"></a>Day 4</h1><p>最终还是放弃了树莓派作为桌面的想法，虽然linux现在勉强可以胜任桌面，但支持armhf的并不多。况且，即便有两个hdmi口，对双屏的支持也不是很好。所以，如果实在要拿树莓派跑桌面，请不要买低配的版本。</p>
-<p>之后……我还是拿它做其他有意思的事情吧。TB买了个LCD1602，等到了，就做一个简单的时钟……</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-        <category>树莓派</category>
-      </categories>
-      <tags>
-        <tag>GNU/Linux</tag>
-        <tag>树莓派</tag>
-        <tag>桌面</tag>
-        <tag>失败案例</tag>
       </tags>
   </entry>
   <entry>
@@ -2025,6 +1929,40 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
+    <url>/p/2020/9e01b7f0.html</url>
+    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
+<p>在阅读本文之前，建议先阅读《1984》原著。</p>
+</div>
+<div class="note info modern"><p>电幕之下，请高呼：</p>
+<font size=14>我爱老大哥！</font>
+</div>
+<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
+<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
+<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
+<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
+<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
+<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
+<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
+<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
+<p>愚蠢像智慧一样必要，也同样难以学到。</p>
+<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
+<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
+<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
+<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>……</p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>感想</category>
+      </categories>
+      <tags>
+        <tag>《一九八四》</tag>
+        <tag>品书</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>高精度加、减、乘、除算法实现详解</title>
     <url>/p/2020/7e1d431.html</url>
     <content><![CDATA[<h6 id="本文转载自-https-blog-csdn-net-fanyun-01-article-details-79967170"><a href="#本文转载自-https-blog-csdn-net-fanyun-01-article-details-79967170" class="headerlink" title="本文转载自 https://blog.csdn.net/fanyun_01/article/details/79967170"></a>本文转载自 <a href="https://blog.csdn.net/fanyun_01/article/details/79967170">https://blog.csdn.net/fanyun_01/article/details/79967170</a></h6><h6 id="原作者：老樊Lu码"><a href="#原作者：老樊Lu码" class="headerlink" title="原作者：老樊Lu码"></a>原作者：老樊Lu码</h6><h6 id="遵循-CC-4-0-BY-SA-版权协议，转载请附上原文出处链接和本声明"><a href="#遵循-CC-4-0-BY-SA-版权协议，转载请附上原文出处链接和本声明" class="headerlink" title="遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明"></a>遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明</h6><hr>
@@ -2098,6 +2036,124 @@ sys.setrecursionlimit(5000)
         <tag>转载</tag>
         <tag>C/C++</tag>
         <tag>高精度算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记一次失败部署树莓派双屏桌面</title>
+    <url>/p/2020/5605bcd6.html</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p><span class="heimu" title="你知道的太多了">想要利用多余的一个屏幕。</span></p>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><p>树莓派4B+ 1G内存版本</p>
+<h1 id="Day-1"><a href="#Day-1" class="headerlink" title="Day 1"></a>Day 1</h1><p>把原来树莓派服务器上的数据转移完成后，我就把它取下了。比较巧的是，网上买的屏幕转接线刚好到了。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c03cbd7e1e3c6b28.png" alt="接线示意图"></p>
+<p>把树莓派连到两个屏幕上，再用TF卡烧写Ubuntu-Mate，插入树莓派。</p>
+<p>开机，双屏同时显示。但右边接VGA的屏幕分辨率有点问题。用xrandr调整一下，就可以开始使用了。</p>
+<p>当我兴致勃勃地启动firefox，树莓派死机了。</p>
+<p><span class="heimu" title="你知道的太多了">淦！这都带不动。不搞了！睡觉！</span></p>
+<h1 id="Day-2"><a href="#Day-2" class="headerlink" title="Day 2"></a>Day 2</h1><p>我下载好原生的Raspbian，烧录系统，启动。调整分辨率……</p>
+<p>一个简单的桌面环境就部署好了。</p>
+<p>在菜单里还自带一个Minecraft，挺有意思的。<span class="heimu" title="你知道的太多了">但只有创造模式</span></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/d216e0a812dd2c7e.jpg" alt="Minecraft!"></p>
+<p>浏览器是自带的Chromium，运行起来还算比较顺畅。</p>
+<p>刷B站CPU烧了一半，不过还是跑得动。</p>
+<p>（请原谅我太懒没有截图）</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/2a311e8045824479.jpg" alt="htop"></p>
+<p>但左边屏幕有一个问题：在窗口最大化的时候总会偏移到屏幕外。</p>
+<p>于是我又去编辑config.txt，按网上教程把有关hdmi的部分内容取消注释了。</p>
+<p>重启。</p>
+<p>然后，就没有然后了。它再起（启）不能啊！</p>
+<p><span class="heimu" title="你知道的太多了">淦！这都整不了。不搞了！睡觉！</span></p>
+<h1 id="Day-3"><a href="#Day-3" class="headerlink" title="Day 3"></a>Day 3</h1><p>我暂缓了双屏使用树莓派，转而使用单屏，放弃HDMI-2口的屏幕。重新烧写<span class="heimu" title=“你知道的太多了”>（TF卡都快烧报废了）</span></p>
+<p>开机，屏幕可以显示。常规地adduser，然后删除pi用户。到网上下载了一张荷取的美图，设置为桌面背景……无效？</p>
+<p>在桌面偏好窗口设置桌面背景，它询问我的用户密码，然后……什么都没变</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt purge lxde</span><br><span class="line">$ sudo apt install lxde</span><br></pre></td></tr></table></figure>
+<p>注销重登录，就进入了原生的lxde桌面。比之前好了太多。</p>
+<p>……</p>
+<h1 id="Day-4"><a href="#Day-4" class="headerlink" title="Day 4"></a>Day 4</h1><p>最终还是放弃了树莓派作为桌面的想法，虽然linux现在勉强可以胜任桌面，但支持armhf的并不多。况且，即便有两个hdmi口，对双屏的支持也不是很好。所以，如果实在要拿树莓派跑桌面，请不要买低配的版本。</p>
+<p>之后……我还是拿它做其他有意思的事情吧。TB买了个LCD1602，等到了，就做一个简单的时钟……</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+        <category>树莓派</category>
+      </categories>
+      <tags>
+        <tag>GNU/Linux</tag>
+        <tag>树莓派</tag>
+        <tag>桌面</tag>
+        <tag>失败案例</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>笔记·AJAX</title>
+    <url>/p/2020/46134e8e.html</url>
+    <content><![CDATA[<div class="note warning modern"><p>不建议直接搬用本文代码，因为很有可能出现跨域问题</p>
+</div>
+<h1 id="AJAX是什么"><a href="#AJAX是什么" class="headerlink" title="AJAX是什么"></a>AJAX是什么</h1><p>AJAX - Asynchronous JavaScript And XML - 异步的JavaScript和XML</p>
+<p>该方法能够让Web浏览器在不刷新页面的情况下与服务器交换数据。</p>
+<blockquote>
+<p>当使用结合了这些技术的AJAX模型以后， 网页应用能够快速地将增量更新呈现在用户界面上，而不需要重载（刷新）整个页面。这使得程序能够更快地回应用户的操作。</p>
+</blockquote>
+<h1 id="XMLHttpRequest"><a href="#XMLHttpRequest" class="headerlink" title="XMLHttpRequest"></a>XMLHttpRequest</h1><p><code>XMLHttpRequest()</code>用于和服务器交换数据。</p>
+<p>发送一个HTTP请求时，需要创建一个<code>XMLHttpRequest</code>对象，打开一个URL，发送请求。服务器会返回HTTP状态码及响应主体。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> NewHTTPRequest = <span class="keyword">new</span> XMLHTTPRequest();</span><br></pre></td></tr></table></figure>
+<p>这样就创建了一个<code>XMLHttpRequest</code>对象。<del>（废话</del></p>
+<p>值得一提的是，IE6及以前版本的IE用的都是<code>ActiveXObject</code>。<span class="heimu" title="你知道的太多了">0202年了，还有人用IE6吗？</span></p>
+<h1 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h1><p>使用<code>XMLHttpRequest</code>对象的<code>open()</code>和<code>send()</code>方法。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>)</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
+<h2 id="open-方法"><a href="#open-方法" class="headerlink" title="open()方法"></a><code>open()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.open(method, url, async, user, passwd);</code></p>
+<ul>
+<li><code>XMLHttpRequestObject</code>: 创建的XMLHttpRequest对象</li>
+<li><code>method</code>: 要使用的HTTP方法。常用的是<code>GET</code>和<code>POST</code></li>
+<li><code>url</code>: 要向其发送请求的URL</li>
+<li><code>async</code>: 可选参数。布尔类型。表示是否异步操作，默认为<code>true</code>。如果为<code>false</code>，<code>send()</code>方法直到收到答复前不会返回</li>
+<li><code>user</code>: 可选参数。用于认证用途，用户名</li>
+<li><code>passwd</code>: 可选参数。用于认证用途，密码</li>
+</ul>
+<h2 id="send-方法"><a href="#send-方法" class="headerlink" title="send()方法"></a><code>send()</code>方法</h2><p>语法：<code>XMLHttpRequestObject.send(body);</code></p>
+<ul>
+<li><code>body</code>: 可选参数。在<code>XMLHttpRequest</code>请求中要发送的数据体，默认为<code>null</code>。仅用于<code>POST</code>请求</li>
+</ul>
+<h2 id="GET还是POST"><a href="#GET还是POST" class="headerlink" title="GET还是POST"></a><code>GET</code>还是<code>POST</code></h2><p>一言蔽之，<code>GET</code>适用于大多数请求。</p>
+<p>而以下情况：</p>
+<ul>
+<li>无法使用缓存文件（更新服务器上的文件或数据库）</li>
+<li>向服务器发送大量数据（POST没有数量限制）</li>
+<li>发送包含未知字符的用户输入时，POST 比 GET 更稳定也更可靠</li>
+</ul>
+<h3 id="GET"><a href="#GET" class="headerlink" title="GET"></a><code>GET</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html&quot;</span>,<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
+<p>执行上面的例子，浏览器可能返回缓存的数据。</p>
+<p>简单粗暴的解决方案：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;GET&quot;</span>,<span class="string">&quot;https://kawashiro_ryofu.gitee.io/blogimagerc/index.html?t=&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.send();</span><br></pre></td></tr></table></figure>
+<p>只需要向URL中添加一个无用的参数就可以了。</p>
+<h3 id="POST"><a href="#POST" class="headerlink" title="POST"></a><code>POST</code></h3><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">NewHTTPRequest.open(<span class="string">&quot;POST&quot;</span>,<span class="string">&quot;https://www.runoob.com/try/ajax/demo_post2.php&quot;</span> + <span class="built_in">Math</span>.random(),<span class="literal">true</span>);</span><br><span class="line">NewHTTPRequest.setRequestHeader(<span class="string">&quot;Content-type&quot;</span>,<span class="string">&quot;application/x-www-form-urlencoded&quot;</span>); <span class="comment">//向请求添加HTTP头</span></span><br><span class="line">NewHTTPRequest.send(<span class="string">&quot;fname=河城&amp;lname=荷取&quot;</span>) <span class="comment">//参数</span></span><br></pre></td></tr></table></figure>
+<p><code>setRequestHeader</code>参数：</p>
+<ul>
+<li><code>header</code>: 规定HTTP头的名称</li>
+<li><code>value</code>: 规定头的值</li>
+</ul>
+<h2 id="异步还是同步"><a href="#异步还是同步" class="headerlink" title="异步还是同步"></a>异步还是同步</h2><p>多数情况下，<code>async</code>应设置为<code>true</code>。但有时，<code>async=false</code>更合适。</p>
+<blockquote>
+<p>对于 web 开发人员来说，发送异步请求是一个巨大的进步。很多在服务器执行的任务都相当费时。AJAX 出现之前，这可能会引起应用程序挂起或停止。<br><br>通过 AJAX，JavaScript 无需等待服务器的响应，而是：<br></p>
+<ol>
+<li>在等待服务器响应时执行其他脚本<br></li>
+<li>当响应就绪后对响应进行处理<br><br>——Runoob.com</li>
+</ol>
+</blockquote>
+<h1 id="服务器响应"><a href="#服务器响应" class="headerlink" title="服务器响应"></a>服务器响应</h1><p>接收服务器响应数据，应使用<code>responseText</code>或<code>responseXML</code>属性。二者的区别在于，前者默认获得文本数据，后者会解析XML。</p>
+<h2 id="responseText"><a href="#responseText" class="headerlink" title="responseText"></a><code>responseText</code></h2><figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(NewHTTPRequest.responseText)</span><br></pre></td></tr></table></figure>
+<h2 id="responseXML"><a href="#responseXML" class="headerlink" title="responseXML"></a><code>responseXML</code></h2><p><del>什么时候推出一个“responseJson”啊</del></p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">xmlDoc=xmlhttp.responseXML;</span><br><span class="line">txt=<span class="string">&quot;&quot;</span>;</span><br><span class="line">x=xmlDoc.getElementsByTagName(<span class="string">&quot;ARTIST&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (i=<span class="number">0</span>;i&lt;x.length;i++)</span><br><span class="line">&#123;</span><br><span class="line">    txt=txt + x[i].childNodes[<span class="number">0</span>].nodeValue + <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&quot;myDiv&quot;</span>).innerHTML=txt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.runoob.com/ajax">AJAX 教程 | 菜鸟教程 - RUNOOB.COM</a></p>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/AJAX">Ajax - Web 开发者指南 | MDN</a></p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+        <category>前端</category>
+      </categories>
+      <tags>
+        <tag>JavaScript</tag>
+        <tag>前端</tag>
+        <tag>笔记</tag>
+        <tag>AJAX</tag>
       </tags>
   </entry>
   <entry>
