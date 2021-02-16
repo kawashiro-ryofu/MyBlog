@@ -873,7 +873,7 @@ sys.setrecursionlimit(5000)
 			return false;
 		}
 	}
-	setTimeout(function(){
+	setInterval(function(){
 		if(isMobile()){
 			SetBG("https://kawashiro_ryofu.gitee.io/blogimagerc/moebg/せめて君のその手で_38386764_waifu2x_art_noise1_scale_tta_1.webp")
 		}else{
