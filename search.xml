@@ -867,7 +867,7 @@ sys.setrecursionlimit(5000)
 		$(document).ready(function(e){$(".framework-info").html('布科学地使用<a href="https://hexo.io">Hexo</a>和<a href="https://butterfly.js.org/">Butterfly</a>主题<br><a href="https://www.foreverblog.cn/blog/1914.html" target="_blank" style="color:#2995FF"> <img src= "/resources/loading.gif" data-lazy-src="https://img.foreverblog.cn/logo_en_default.png" alt="" style="width:auto;height:16px;">本站已加入十年之约</a>')})
 	}
 	function isMobile(){
-		if(window.navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
+		 if(window.navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)) {
 			return true; 
 		}else{
 			return false;
@@ -1128,13 +1128,6 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>年终总结</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>本站已支持HTTPS</title>
-    <url>/p/2020/e838770c.html</url>
-    <content><![CDATA[<p>本站已支持HTTPS，从友链进入会自动转到HTTPS协议；</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://42works.net/wp-content/uploads/2018/07/https-migration.png" alt="http2https"></p>
-]]></content>
   </entry>
   <entry>
     <title>树莓派搭建简易NAS</title>
@@ -2173,6 +2166,13 @@ sys.setrecursionlimit(5000)
         <tag>C/C++</tag>
         <tag>高精度算法</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>本站已支持HTTPS</title>
+    <url>/p/2020/e838770c.html</url>
+    <content><![CDATA[<p>本站已支持HTTPS，从友链进入会自动转到HTTPS协议；</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://42works.net/wp-content/uploads/2018/07/https-migration.png" alt="http2https"></p>
+]]></content>
   </entry>
   <entry>
     <title>如何在Debian10上安装MySQL</title>
