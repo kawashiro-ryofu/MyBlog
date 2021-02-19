@@ -823,75 +823,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>二进制的移位运算</title>
-    <url>/p/2021/13d7db48.html</url>
-    <content><![CDATA[<h1 id="废话"><a href="#废话" class="headerlink" title="废话"></a><del>废话</del></h1><p>最近有试着用C语言输出自己土豆服务器上NAS的占用情况。环境还是Debian 10。</p>
-<p>通过调用<code>statfs.h</code>头文件获取文件系统信息。</p>
-<p>我的代码(nasstat2.c)：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">//套公式换算</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = (((totalSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span>);</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = (((freeSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span> );</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %0.0f%&quot;</span>,totalGSize,p);</span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>在输出<code>totalGSize</code>（GB单位的挂载点总容量）和<code>p</code>（剩余容量百分比）前，需要对单位进行换算。<del>我选择套公式。</del></p>
-<p>我也参考了其他前辈的的方法，改良后是这样(nasstat3.c)：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">				<span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = totalSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = freeSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %f%\n&quot;</span>, totalGSize, p);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>二者输出的结果几乎没有区别。</p>
-<p><del>输出<code>p</code>时只保留了整数……</del></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/1.webp" alt="结果"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/2.webp" alt="不省略的结果"></p>
-<hr>
-<p>虽然说二进制移位运算这个很容易理解，但我还是没有很好地运用呢，就干脆温习一下吧。</p>
-<h1 id="终于到了正文"><a href="#终于到了正文" class="headerlink" title="终于到了正文"></a><del>终于到了</del>正文</h1><p>二进制的位运算中，<code>与</code>、<code>或</code>、<code>异或</code>和<code>取反</code>都和逻辑运算没有多大的区别。</p>
-<p>而移位运算也不难理解。</p>
-<p>移位运算分为<code>左移</code>和<code>右移</code>，对应的运算符分别是<code>&lt;&lt;</code>和<code>&gt;&gt;</code>。</p>
-<ul>
-<li><code>左移</code>：各二进制位向左移若干位，高位丢弃，低位补0。<span class="heimu" title="你知道的太多了">二进制左移x位后面就加x个0再去掉前面的0</span>；</li>
-<li><code>右移</code>：各二进位全部右移若干位，对无符号数，高位补0，有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移）<span class="heimu" title="你知道的太多了">通常右移x位就在前面加x位0（正数加0，复数加1）并去掉后面x位</span>。</li>
-</ul>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="左移"><a href="#左移" class="headerlink" title="左移"></a>左移</h3><p>0011 0111 &lt;&lt; 2 = 1101 1100</p>
-<div style="background-color: #00000077">
-
-<font  size="6">
-<font color="red"><del>00</del></font><font color="aqua">11 0111</font> << 2
-
-= <font color="#FF000077"><del>00</del></font> <font color="aqua"> 1101 11<font color="yellow">00</font>
-</font> 
-
-= 1101 1100
-
-</font> 
-
-</div>
-
-
-
-<h3 id="右移"><a href="#右移" class="headerlink" title="右移"></a>右移</h3><p>0011 0111 &gt;&gt; 2 = 0000 1101</p>
-<div style="background-color: #00000077">
-
-<font  size="6">
-<font color="aqua">0011 01<font color="red"><del>11</del></font> </font> >> 2
-
-= <font color="yellow">00</font><font color="aqua">00 1101<font color="#FF000077"> <del>11</del></font>
-</font> 
-
-= 0000 1101
-
-</font> 
-
-</div>
-
-<hr>
-<p>到这里就很好理解了。</p>
-<script type="math/tex; mode=display">\because \left ( 1 \right ) _{10} << 1  = \left ( 1 \right ) _{2} << 1 = \left (10 \right )_{2} = \left ( 2 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 2 \right ) _{10} << 1  = \left ( 10 \right ) _{2} << 1  = \left (100 \right )_{2} = \left ( 4 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 4 \right ) _{10} <<  1 = \left ( 100 \right ) _{2} << 1  = \left (1000 \right )_{2} = \left ( 8 \right  ) _{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a << 1 = a \times 2</script><script type="math/tex; mode=display">\because \left( 128 \right)_{10} >> 1 = (1000 0000)_{2} >> 1 = (1000000)_{2} = (64)_{10}</script><script type="math/tex; mode=display">\left ( 64 \right )_{10} >> 1  = \left ( 1000000 \right ) _{2} >> 1  = \left (100000 \right )_{2} = \left (32\right )_{10}</script><script type="math/tex; mode=display">\left ( 32 \right )_{10} >> 1  = \left ( 100000 \right ) _{2} >> 1  = \left (10000 \right )_{2} = \left (16\right )_{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a >> 1 = \frac{a}{2}</script><p><strong>左移一个二进制位等同于该数化为十进制后乘以2，右移一个二进制位相当于该数化为十进制后除以2。</strong></p>
-<h1 id="末尾"><a href="#末尾" class="headerlink" title="末尾"></a>末尾</h1><p>那么前面通过右移30个二进制位将字节换算为GB的方法就没有那么难理解了。</p>
-<script type="math/tex; mode=display">\because 1 KB = 1B \times 1024</script><script type="math/tex; mode=display">1MB = 1 KB \times  1024 = 1B \times  1024^{2}</script><script type="math/tex; mode=display">1GB = 1MB \times  1024 = 1KB \times 1024^{2} = 1B \times 1024^{3} = 1B \times 1073741824</script><script type="math/tex; mode=display">\therefore 1GB = 1073741824B</script><script type="math/tex; mode=display">\because (1073741824 B)_{10} = (1 \times 10^{30})_{2}</script><script type="math/tex; mode=display">\therefore (1 \times 10^{30})_{2} >> 30 = (1)_{2} = 1GB</script><p>（完，又水了一篇）</p>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>C/C++</tag>
-        <tag>数据结构和算法</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>人鱼的悲剧</title>
     <url>/p/2021/c4efef06.html</url>
     <content><![CDATA[<div class="note warning modern"><ol>
@@ -966,6 +897,91 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>叶的自述</title>
+    <url>/p/2020/84968ea5.html</url>
+    <content><![CDATA[<h1 id="叶的自述"><a href="#叶的自述" class="headerlink" title="叶的自述"></a>叶的自述</h1><p>风轻轻地拂过，<br>将我带下树梢。</p>
+<p>我舞动于空中，<br>一点点，一点点，<br>缓缓降落。</p>
+<p>她端着书，<br>站在窗前。<br>她见了我，<br>我见了她。</p>
+<p>我笑了，她也笑了。<br>她向往我舞动于空，欢快自由。<br>我羡慕她路途漫漫，来日方长。</p>
+<p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/fce4e77b68d38ac7.jpg" alt="秋"></p>
+]]></content>
+      <tags>
+        <tag>随笔</tag>
+        <tag>诗&amp;远方</tag>
+        <tag>中二文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>二进制的移位运算</title>
+    <url>/p/2021/13d7db48.html</url>
+    <content><![CDATA[<h1 id="废话"><a href="#废话" class="headerlink" title="废话"></a><del>废话</del></h1><p>最近有试着用C语言输出自己土豆服务器上NAS的占用情况。环境还是Debian 10。</p>
+<p>通过调用<code>statfs.h</code>头文件获取文件系统信息。</p>
+<p>我的代码(nasstat2.c)：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">//套公式换算</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = (((totalSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span>);</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = (((freeSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span> );</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %0.0f%&quot;</span>,totalGSize,p);</span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>在输出<code>totalGSize</code>（GB单位的挂载点总容量）和<code>p</code>（剩余容量百分比）前，需要对单位进行换算。<del>我选择套公式。</del></p>
+<p>我也参考了其他前辈的的方法，改良后是这样(nasstat3.c)：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">				<span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = totalSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = freeSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %f%\n&quot;</span>, totalGSize, p);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>二者输出的结果几乎没有区别。</p>
+<p><del>输出<code>p</code>时只保留了整数……</del></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/1.webp" alt="结果"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/2.webp" alt="不省略的结果"></p>
+<hr>
+<p>虽然说二进制移位运算这个很容易理解，但我还是没有很好地运用呢，就干脆温习一下吧。</p>
+<h1 id="终于到了正文"><a href="#终于到了正文" class="headerlink" title="终于到了正文"></a><del>终于到了</del>正文</h1><p>二进制的位运算中，<code>与</code>、<code>或</code>、<code>异或</code>和<code>取反</code>都和逻辑运算没有多大的区别。</p>
+<p>而移位运算也不难理解。</p>
+<p>移位运算分为<code>左移</code>和<code>右移</code>，对应的运算符分别是<code>&lt;&lt;</code>和<code>&gt;&gt;</code>。</p>
+<ul>
+<li><code>左移</code>：各二进制位向左移若干位，高位丢弃，低位补0。<span class="heimu" title="你知道的太多了">二进制左移x位后面就加x个0再去掉前面的0</span>；</li>
+<li><code>右移</code>：各二进位全部右移若干位，对无符号数，高位补0，有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移）<span class="heimu" title="你知道的太多了">通常右移x位就在前面加x位0（正数加0，复数加1）并去掉后面x位</span>。</li>
+</ul>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="左移"><a href="#左移" class="headerlink" title="左移"></a>左移</h3><p>0011 0111 &lt;&lt; 2 = 1101 1100</p>
+<div style="background-color: #00000077">
+
+<font  size="6">
+<font color="red"><del>00</del></font><font color="aqua">11 0111</font> << 2
+
+= <font color="#FF000077"><del>00</del></font> <font color="aqua"> 1101 11<font color="yellow">00</font>
+</font> 
+
+= 1101 1100
+
+</font> 
+
+</div>
+
+
+
+<h3 id="右移"><a href="#右移" class="headerlink" title="右移"></a>右移</h3><p>0011 0111 &gt;&gt; 2 = 0000 1101</p>
+<div style="background-color: #00000077">
+
+<font  size="6">
+<font color="aqua">0011 01<font color="red"><del>11</del></font> </font> >> 2
+
+= <font color="yellow">00</font><font color="aqua">00 1101<font color="#FF000077"> <del>11</del></font>
+</font> 
+
+= 0000 1101
+
+</font> 
+
+</div>
+
+<hr>
+<p>到这里就很好理解了。</p>
+<script type="math/tex; mode=display">\because \left ( 1 \right ) _{10} << 1  = \left ( 1 \right ) _{2} << 1 = \left (10 \right )_{2} = \left ( 2 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 2 \right ) _{10} << 1  = \left ( 10 \right ) _{2} << 1  = \left (100 \right )_{2} = \left ( 4 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 4 \right ) _{10} <<  1 = \left ( 100 \right ) _{2} << 1  = \left (1000 \right )_{2} = \left ( 8 \right  ) _{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a << 1 = a \times 2</script><script type="math/tex; mode=display">\because \left( 128 \right)_{10} >> 1 = (1000 0000)_{2} >> 1 = (1000000)_{2} = (64)_{10}</script><script type="math/tex; mode=display">\left ( 64 \right )_{10} >> 1  = \left ( 1000000 \right ) _{2} >> 1  = \left (100000 \right )_{2} = \left (32\right )_{10}</script><script type="math/tex; mode=display">\left ( 32 \right )_{10} >> 1  = \left ( 100000 \right ) _{2} >> 1  = \left (10000 \right )_{2} = \left (16\right )_{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a >> 1 = \frac{a}{2}</script><p><strong>左移一个二进制位等同于该数化为十进制后乘以2，右移一个二进制位相当于该数化为十进制后除以2。</strong></p>
+<h1 id="末尾"><a href="#末尾" class="headerlink" title="末尾"></a>末尾</h1><p>那么前面通过右移30个二进制位将字节换算为GB的方法就没有那么难理解了。</p>
+<script type="math/tex; mode=display">\because 1 KB = 1B \times 1024</script><script type="math/tex; mode=display">1MB = 1 KB \times  1024 = 1B \times  1024^{2}</script><script type="math/tex; mode=display">1GB = 1MB \times  1024 = 1KB \times 1024^{2} = 1B \times 1024^{3} = 1B \times 1073741824</script><script type="math/tex; mode=display">\therefore 1GB = 1073741824B</script><script type="math/tex; mode=display">\because (1073741824 B)_{10} = (1 \times 10^{30})_{2}</script><script type="math/tex; mode=display">\therefore (1 \times 10^{30})_{2} >> 30 = (1)_{2} = 1GB</script><p>（完，又水了一篇）</p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>数据结构和算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>使用Certbot自动申请Let&#39;s Encrypt的SSL证书</title>
     <url>/p/2021/d74d746c.html</url>
     <content><![CDATA[<h1 id="关于证书签发机构"><a href="#关于证书签发机构" class="headerlink" title="关于证书签发机构"></a>关于证书签发机构</h1><p><a href="https://letsencrypt.org">Let’s Encrypt</a></p>
@@ -1031,22 +1047,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>叶的自述</title>
-    <url>/p/2020/84968ea5.html</url>
-    <content><![CDATA[<h1 id="叶的自述"><a href="#叶的自述" class="headerlink" title="叶的自述"></a>叶的自述</h1><p>风轻轻地拂过，<br>将我带下树梢。</p>
-<p>我舞动于空中，<br>一点点，一点点，<br>缓缓降落。</p>
-<p>她端着书，<br>站在窗前。<br>她见了我，<br>我见了她。</p>
-<p>我笑了，她也笑了。<br>她向往我舞动于空，欢快自由。<br>我羡慕她路途漫漫，来日方长。</p>
-<p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/fce4e77b68d38ac7.jpg" alt="秋"></p>
-]]></content>
-      <tags>
-        <tag>随笔</tag>
-        <tag>诗&amp;远方</tag>
-        <tag>中二文</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>关于我用手机更新hexo博客这件事情</title>
     <url>/p/2021/437b4571.html</url>
     <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>不知是哪位勇士把学校端了，我们的寒假得以续命几天。</p>
@@ -1103,35 +1103,6 @@ sys.setrecursionlimit(5000)
         <tag>Termux</tag>
         <tag>手机</tag>
         <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>和绝望，和睦相处</title>
-    <url>/p/2020/d020fa4a.html</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
-
-<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
-<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
-<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
-<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
-<p>希望总会在漫长的等待中终将被耗尽。</p>
-<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
-<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
-<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
-<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
-<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
-<p>等待着她们的，仍是绝望。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
-<p>图片转自原作者つくみず 的推特</p>
-<hr>
-<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
-]]></content>
-      <categories>
-        <category>看番</category>
-      </categories>
-      <tags>
-        <tag>少女终末旅行</tag>
-        <tag>ACGN</tag>
       </tags>
   </entry>
   <entry>
@@ -1196,6 +1167,35 @@ sys.setrecursionlimit(5000)
       </categories>
       <tags>
         <tag>年终总结</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>和绝望，和睦相处</title>
+    <url>/p/2020/d020fa4a.html</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
+
+<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
+<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
+<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
+<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
+<p>希望总会在漫长的等待中终将被耗尽。</p>
+<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
+<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
+<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
+<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
+<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
+<p>等待着她们的，仍是绝望。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
+<p>图片转自原作者つくみず 的推特</p>
+<hr>
+<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
+]]></content>
+      <categories>
+        <category>看番</category>
+      </categories>
+      <tags>
+        <tag>少女终末旅行</tag>
+        <tag>ACGN</tag>
       </tags>
   </entry>
   <entry>
@@ -1441,6 +1441,40 @@ sys.setrecursionlimit(5000)
       </categories>
       <tags>
         <tag>福报论</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
+    <url>/p/2020/9e01b7f0.html</url>
+    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
+<p>在阅读本文之前，建议先阅读《1984》原著。</p>
+</div>
+<div class="note info modern"><p>电幕之下，请高呼：</p>
+<font size=14>我爱老大哥！</font>
+</div>
+<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
+<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
+<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
+<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
+<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
+<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
+<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
+<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
+<p>愚蠢像智慧一样必要，也同样难以学到。</p>
+<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
+<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
+<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
+<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>……</p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>感想</category>
+      </categories>
+      <tags>
+        <tag>《一九八四》</tag>
+        <tag>品书</tag>
       </tags>
   </entry>
   <entry>
@@ -1900,37 +1934,20 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
-    <url>/p/2020/9e01b7f0.html</url>
-    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
-<p>在阅读本文之前，建议先阅读《1984》原著。</p>
-</div>
-<div class="note info modern"><p>电幕之下，请高呼：</p>
-<font size=14>我爱老大哥！</font>
-</div>
-<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
-<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
-<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
-<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
-<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
-<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
-<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
-<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
-<p>愚蠢像智慧一样必要，也同样难以学到。</p>
-<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
-<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
-<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
-<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>……</p>
-]]></content>
+    <title>近况·秋游</title>
+    <url>/p/2020/aedb0196.html</url>
+    <content><![CDATA[<p>嗯……与其说是秋游，不如说是冬游。地点是庐山西海。<span class="heimu" title="你知道的太多了">我本以为去的地方是庐山……</span></p>
+<p>这就是我们最后一次秋游了，196天之后，各自有各自的路要走，便多拍了许多照片。</p>
+<div class="justified-gallery"><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/12.webp" alt="包车上"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/23.webp" alt="景区下发的资料，里面是题目……没有人做便是"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/01.webp" alt="我和他们是同一小组的说，只不过我是阿卡林death！又因为我的身边充满了阿卡林力场，我们组长也没有存在感了~ \\Akariiin/"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/34.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/02.webp" alt="坐船"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/45.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/55.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/56.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/57.webp" alt="蹭得累"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/58.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/03.webp" alt="浪平，云密"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/04.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/05.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/06.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/07.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/08.webp" alt="你以为咱在登庐山吗？不，我们在岛上"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/09.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/10.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/11.webp" alt="看到这锦鲤池了吗？此乃吉地也！把手机丢下去就会有河神送你一部新的了！(x)"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/13.webp" alt="不用看了，我把手机投下去之后河神没有上来。"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/14.webp" alt="山间"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/15.webp" alt="咱魔法系老师，挺帅的（^^;;"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/16.webp" alt="山间的树"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/17.webp" alt="啊♂幻想乡？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/19.webp" alt="Boy♂Next♂Door"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/18.webp" alt="孤独.webp"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/20.webp" alt="此乃吉鸟也！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/21.webp" alt="山上养了孔雀"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/22.webp" alt="数小儿对线类人猿"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/24.webp" alt="o(*≧▽≦)ツ┏━┓ 好孩子不要学系列"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/25.webp" alt="松鼠"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/26.webp" alt="天鹅"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/27.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/28.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/29.webp" alt="杂技表演"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/30.webp" alt="天皇说了什么？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/31.webp" alt="绿坝在哪里绿坝在哪里这里有人吐脏字快把他河蟹勒！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/32.webp" alt="东亚的建筑风格"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/33.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/35.webp" alt="龙桥"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/36.webp" alt="据说晚上来这里超好看"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/37.webp" alt="“哦？是你小砸？”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/38.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/39.webp" alt="临岸一小亭"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/40.webp" alt="水波粼粼"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/41.webp" alt="澄澈"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/42.webp" alt="银杏"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/43.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/44.webp" alt="『幻视』警笛头"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/47.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/48.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/46.webp" alt="“摇啊摇，摇啊摇，摇到外婆桥”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/49.webp" alt="嗯，外婆桥的确很“摇”（吊桥）"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/50.webp" alt="这帮屑在桥上卡其脱离太，害得老夫拍照不稳"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/51.webp" alt="眼 光 呆 滞"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/52.webp" alt="年级组长"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/53.webp" alt=""></p>
+          </div>
+<h1 id="年少，未完待续"><a href="#年少，未完待续" class="headerlink" title="年少，未完待续"></a>年少，未完待续</h1>]]></content>
       <categories>
-        <category>随笔</category>
-        <category>感想</category>
+        <category>日常</category>
+        <category>摄影</category>
       </categories>
       <tags>
-        <tag>《一九八四》</tag>
-        <tag>品书</tag>
+        <tag>秋游</tag>
+        <tag>相册</tag>
       </tags>
   </entry>
   <entry>
@@ -1975,78 +1992,6 @@ sys.setrecursionlimit(5000)
         <tag>树莓派</tag>
         <tag>桌面</tag>
         <tag>失败案例</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>近况·秋游</title>
-    <url>/p/2020/aedb0196.html</url>
-    <content><![CDATA[<p>嗯……与其说是秋游，不如说是冬游。地点是庐山西海。<span class="heimu" title="你知道的太多了">我本以为去的地方是庐山……</span></p>
-<p>这就是我们最后一次秋游了，196天之后，各自有各自的路要走，便多拍了许多照片。</p>
-<div class="justified-gallery"><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/12.webp" alt="包车上"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/23.webp" alt="景区下发的资料，里面是题目……没有人做便是"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/01.webp" alt="我和他们是同一小组的说，只不过我是阿卡林death！又因为我的身边充满了阿卡林力场，我们组长也没有存在感了~ \\Akariiin/"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/34.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/02.webp" alt="坐船"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/45.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/55.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/56.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/57.webp" alt="蹭得累"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/58.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/03.webp" alt="浪平，云密"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/04.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/05.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/06.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/07.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/08.webp" alt="你以为咱在登庐山吗？不，我们在岛上"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/09.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/10.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/11.webp" alt="看到这锦鲤池了吗？此乃吉地也！把手机丢下去就会有河神送你一部新的了！(x)"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/13.webp" alt="不用看了，我把手机投下去之后河神没有上来。"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/14.webp" alt="山间"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/15.webp" alt="咱魔法系老师，挺帅的（^^;;"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/16.webp" alt="山间的树"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/17.webp" alt="啊♂幻想乡？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/19.webp" alt="Boy♂Next♂Door"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/18.webp" alt="孤独.webp"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/20.webp" alt="此乃吉鸟也！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/21.webp" alt="山上养了孔雀"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/22.webp" alt="数小儿对线类人猿"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/24.webp" alt="o(*≧▽≦)ツ┏━┓ 好孩子不要学系列"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/25.webp" alt="松鼠"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/26.webp" alt="天鹅"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/27.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/28.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/29.webp" alt="杂技表演"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/30.webp" alt="天皇说了什么？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/31.webp" alt="绿坝在哪里绿坝在哪里这里有人吐脏字快把他河蟹勒！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/32.webp" alt="东亚的建筑风格"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/33.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/35.webp" alt="龙桥"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/36.webp" alt="据说晚上来这里超好看"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/37.webp" alt="“哦？是你小砸？”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/38.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/39.webp" alt="临岸一小亭"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/40.webp" alt="水波粼粼"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/41.webp" alt="澄澈"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/42.webp" alt="银杏"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/43.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/44.webp" alt="『幻视』警笛头"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/47.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/48.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/46.webp" alt="“摇啊摇，摇啊摇，摇到外婆桥”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/49.webp" alt="嗯，外婆桥的确很“摇”（吊桥）"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/50.webp" alt="这帮屑在桥上卡其脱离太，害得老夫拍照不稳"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/51.webp" alt="眼 光 呆 滞"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/52.webp" alt="年级组长"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/53.webp" alt=""></p>
-          </div>
-<h1 id="年少，未完待续"><a href="#年少，未完待续" class="headerlink" title="年少，未完待续"></a>年少，未完待续</h1>]]></content>
-      <categories>
-        <category>日常</category>
-        <category>摄影</category>
-      </categories>
-      <tags>
-        <tag>秋游</tag>
-        <tag>相册</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>近况·腊月十五</title>
-    <url>/p/2021/1aa35a5.html</url>
-    <content><![CDATA[<p>十二月过后就忙碌起来了，我自然也没怎么抽出时间写博客。</p>
-<p>有些时候，即使在学校有写文的冲动，我也会憋回家。而到家时，那股冲动也早早地消散了。</p>
-<p>我不太喜欢在学校写文，不是因为学校的环境嘈杂，而是害怕被人看见。也挺莫名其妙地，怕被别人发现自己在写一些奇奇怪怪的东西，虽然别人并不在意。</p>
-<p>相较于纸笔，我还是享受用键盘打字的感觉。不必在意字迹工整，不必事前计划提纲，可以直接按心中所想的记录下来，有问题也方便修改。这也就注定了我不会在一个人多的陌生的没有电脑的地方作文章。</p>
-<h1 id="琐事"><a href="#琐事" class="headerlink" title="琐事"></a>琐事</h1><p>也许是南昌的天气变化多端，也许是在两点一线的生活中劳累过度了。1月18日上午感到胃不舒服，<span class="heimu" title="你知道的太多了">下午第一节课就直接没忍住，吐在了教室里 <del>网——管——喷——射——</del></span>。当天下午，我就请假回家了。本来去诊所开了点药，一回到家又吐了一地……最后还是吊盐水。唯一令人感到暖意的，是看到了<a href="https://chee5e.space">芝士桑</a>在12号发来的电子邮件问候，可惜是偶然翻Outlook垃圾箱中发现的。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/1.webp" alt="抱歉……"></p>
-<p>1月19号挺糗的。我本来打算上午打完针就去学校的，但打完针已经到了那边吃午饭的时候。我图方便在家里吃完午饭，然后打算在家里睡一觉再去学校。为防止睡过头，还特意在手机上设了一个一点的闹钟。我睡下去后，醒来已经是下午四点半，母上打电话质问我。我看了看闹钟，发现深夜一点有一个闹钟……我匆忙把手机的时间设置改为24小时制，然后匆忙去参加学校的晚自习。我到了学校，身边同学都这么问我：</p>
-<p>“欸？网管你怎么来了？”</p>
-<p><span class="heimu" title="你知道的太多了">“我妈逼的。”（字面意思）</span></p>
-<p>“噗——你要是这样干脆别来咯，你过来了要写作业。”</p>
-<p>……</p>
-<hr>
-<p>在21号和22号这两天是期末考试。但因为之前闹胃病，有些知识点没记完整。最后得到的分数也不是很理想吧，但对于常年挂科的我来说，分数还是有一点进步的。相对于理科而言我文科更好，我也不明白自己明明更擅长文科，却对计算机情有独钟。</p>
-<p>“呐，做人呢，最重要的就是开心啦。”</p>
-<p>期末考完就是各科进入第一轮大复习，目前还算跟得上。</p>
-<hr>
-<p>1月24日，周日下午，我从省图书馆回来，本来打算更一篇博客文章，但在写文章的过程中发现树莓派宕机了。</p>
-<p>我没空再接一个显示器诊断异常。它的表现也只是开机后硬盘灯闪烁几下，就灭了，只剩电源灯，而外接的LCD1602也没有被驱动，貌似没有进Bootloader。我试图重建引导，把boot分区下的配置文件全部写入为默认的状态，但无济于事。只好临时把一些服务器资源，如CGI文件和一些服务配置文件临时通过ext2fsd拷下来，部署在之前那个凌动i686的土豆服务器上。而ext2fsd也不知道是出了什么问题，挂载TF卡上的根目录镜像之后就不读盘了，我只好保存文件重启电脑。重启完毕，之前拷贝好的数据也没了。</p>
-<p>最终还是把TF卡直接挂载到服务器上，才得以把一些有用的内容部署。博客的Hexo目录我也是放在之前的树莓派上，后面用win10自带的sftp下载下来。而站点的API，我花费了两个小时的时间，把内网穿透、服务、SSL、Apache2的CGI给配置好，勉强能够正常运作了。全部搞完，已经是周一的凌晨两点。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/2.webp" alt="把锅推给波波沙的屑"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/3.webp" alt="搬运博客文件中……"></p>
-<p>等到放寒假再去把树莓派修复吧。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/4.webp" alt="迫害"></p>
-<hr>
-<p>貌似是1月26号左右，我收到了来自<a href="https://www.foreverblog.cn/">十年之约</a>的邮件。我在1月中旬申请加入，今天终于有了回应。</p>
-<p>看样子本站要枯燥地更新十年了。</p>
-<hr>
-<p>1月28日，第三节晚自习，班上把学生手册都发还回来了，里面有班主任<del>老大哥</del>的评语。而给我的评语是这样：</p>
-<blockquote>
-<p>君可有十五？怎思八十事。八十有天命，十五正少年。</p>
-</blockquote>
-<p>我看着这二十个字楞了几秒，才悟出他的意思。</p>
-<p>新话翻译：好好读书。</p>
-<h1 id="看番"><a href="#看番" class="headerlink" title="看番"></a>看番</h1><p>在一月中旬的时候重新刷了一遍<a href="https://b23.tv/ss1816">《AIR》</a>，之前是在疫情期间看的，可惜我那时候是一边码字一边看番，没看出什么细节来。唯一忘不掉的就是女主神尾观铃的主题曲《夏影》。这次二刷，看完感觉心里挺憋屈的，就差没哭出来了。而其他还有诸如<a href="https://b23.tv/ss36174">《工作细胞 第二季》</a>和<a href="https://b23.tv/ss36177">《工作细胞BLACK》</a>等，以及在补的经典老番<a href="https://b23.tv/ss191">《请问您今天要来点兔子吗》</a>，想看，但抽不出时间。</p>
-<p>只能等寒假空闲的时候了。</p>
-<h1 id="看书"><a href="#看书" class="headerlink" title="看书"></a>看书</h1><p>也就只在看恩格斯的《家庭、私有制和国家的起源》，可惜只看完序言部分。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/5.webp" alt="到现在手头上所有的两本马恩的书籍"></p>
-<p>终有一天，国家机器会被时代所淘汰，但这不是短期之内的事情。我生在这片土地上，自然也爱这片土地。但我也包容其他各类人种。对于国内的民粹主义而言，国际主义就是卖国贼。我曾经看到过微博上高呼“打倒马列废青”口号的反智言论。只能说，国际主义不在乎所谓种族、民族和国籍，他们也会反抗法西斯侵略扩张，也会热爱自己所处的一方土地。这种情怀，是那帮嚷嚷着“打倒XX废青”的人们不会懂的。至于这本书，等到有时间再接着看下去吧。</p>
-<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>我确信我为自己的寒假时光准备得很充足。</p>
-<p>我们的校领导也是这么认为的，所以给我们的假期打折了。</p>
-<p>本来是二月四号放假，但还是在私下不留证据地通知了上课上到二月八号才放假的消息，放假放到正月初八。<span class="heimu" title="你知道的太多了">无所谓，听老大哥的话就好，我爱老大哥。</span></p>
-<p><del>我们某德真是太厉害了！为我们某得靴子安排了个充实的寒假！连氪金的钱都为我们省下来了！我爱某德！（甲亢）</del></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/6.webp" alt="我们某德真是太厉害了！"></p>
-<p>January 31, 2021.</p>
-]]></content>
-      <categories>
-        <category>日常</category>
-      </categories>
-      <tags>
-        <tag>近况</tag>
       </tags>
   </entry>
   <entry>
@@ -2145,6 +2090,61 @@ sys.setrecursionlimit(5000)
       </categories>
       <tags>
         <tag>杂文</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>近况·腊月十五</title>
+    <url>/p/2021/1aa35a5.html</url>
+    <content><![CDATA[<p>十二月过后就忙碌起来了，我自然也没怎么抽出时间写博客。</p>
+<p>有些时候，即使在学校有写文的冲动，我也会憋回家。而到家时，那股冲动也早早地消散了。</p>
+<p>我不太喜欢在学校写文，不是因为学校的环境嘈杂，而是害怕被人看见。也挺莫名其妙地，怕被别人发现自己在写一些奇奇怪怪的东西，虽然别人并不在意。</p>
+<p>相较于纸笔，我还是享受用键盘打字的感觉。不必在意字迹工整，不必事前计划提纲，可以直接按心中所想的记录下来，有问题也方便修改。这也就注定了我不会在一个人多的陌生的没有电脑的地方作文章。</p>
+<h1 id="琐事"><a href="#琐事" class="headerlink" title="琐事"></a>琐事</h1><p>也许是南昌的天气变化多端，也许是在两点一线的生活中劳累过度了。1月18日上午感到胃不舒服，<span class="heimu" title="你知道的太多了">下午第一节课就直接没忍住，吐在了教室里 <del>网——管——喷——射——</del></span>。当天下午，我就请假回家了。本来去诊所开了点药，一回到家又吐了一地……最后还是吊盐水。唯一令人感到暖意的，是看到了<a href="https://chee5e.space">芝士桑</a>在12号发来的电子邮件问候，可惜是偶然翻Outlook垃圾箱中发现的。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/1.webp" alt="抱歉……"></p>
+<p>1月19号挺糗的。我本来打算上午打完针就去学校的，但打完针已经到了那边吃午饭的时候。我图方便在家里吃完午饭，然后打算在家里睡一觉再去学校。为防止睡过头，还特意在手机上设了一个一点的闹钟。我睡下去后，醒来已经是下午四点半，母上打电话质问我。我看了看闹钟，发现深夜一点有一个闹钟……我匆忙把手机的时间设置改为24小时制，然后匆忙去参加学校的晚自习。我到了学校，身边同学都这么问我：</p>
+<p>“欸？网管你怎么来了？”</p>
+<p><span class="heimu" title="你知道的太多了">“我妈逼的。”（字面意思）</span></p>
+<p>“噗——你要是这样干脆别来咯，你过来了要写作业。”</p>
+<p>……</p>
+<hr>
+<p>在21号和22号这两天是期末考试。但因为之前闹胃病，有些知识点没记完整。最后得到的分数也不是很理想吧，但对于常年挂科的我来说，分数还是有一点进步的。相对于理科而言我文科更好，我也不明白自己明明更擅长文科，却对计算机情有独钟。</p>
+<p>“呐，做人呢，最重要的就是开心啦。”</p>
+<p>期末考完就是各科进入第一轮大复习，目前还算跟得上。</p>
+<hr>
+<p>1月24日，周日下午，我从省图书馆回来，本来打算更一篇博客文章，但在写文章的过程中发现树莓派宕机了。</p>
+<p>我没空再接一个显示器诊断异常。它的表现也只是开机后硬盘灯闪烁几下，就灭了，只剩电源灯，而外接的LCD1602也没有被驱动，貌似没有进Bootloader。我试图重建引导，把boot分区下的配置文件全部写入为默认的状态，但无济于事。只好临时把一些服务器资源，如CGI文件和一些服务配置文件临时通过ext2fsd拷下来，部署在之前那个凌动i686的土豆服务器上。而ext2fsd也不知道是出了什么问题，挂载TF卡上的根目录镜像之后就不读盘了，我只好保存文件重启电脑。重启完毕，之前拷贝好的数据也没了。</p>
+<p>最终还是把TF卡直接挂载到服务器上，才得以把一些有用的内容部署。博客的Hexo目录我也是放在之前的树莓派上，后面用win10自带的sftp下载下来。而站点的API，我花费了两个小时的时间，把内网穿透、服务、SSL、Apache2的CGI给配置好，勉强能够正常运作了。全部搞完，已经是周一的凌晨两点。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/2.webp" alt="把锅推给波波沙的屑"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/3.webp" alt="搬运博客文件中……"></p>
+<p>等到放寒假再去把树莓派修复吧。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/4.webp" alt="迫害"></p>
+<hr>
+<p>貌似是1月26号左右，我收到了来自<a href="https://www.foreverblog.cn/">十年之约</a>的邮件。我在1月中旬申请加入，今天终于有了回应。</p>
+<p>看样子本站要枯燥地更新十年了。</p>
+<hr>
+<p>1月28日，第三节晚自习，班上把学生手册都发还回来了，里面有班主任<del>老大哥</del>的评语。而给我的评语是这样：</p>
+<blockquote>
+<p>君可有十五？怎思八十事。八十有天命，十五正少年。</p>
+</blockquote>
+<p>我看着这二十个字楞了几秒，才悟出他的意思。</p>
+<p>新话翻译：好好读书。</p>
+<h1 id="看番"><a href="#看番" class="headerlink" title="看番"></a>看番</h1><p>在一月中旬的时候重新刷了一遍<a href="https://b23.tv/ss1816">《AIR》</a>，之前是在疫情期间看的，可惜我那时候是一边码字一边看番，没看出什么细节来。唯一忘不掉的就是女主神尾观铃的主题曲《夏影》。这次二刷，看完感觉心里挺憋屈的，就差没哭出来了。而其他还有诸如<a href="https://b23.tv/ss36174">《工作细胞 第二季》</a>和<a href="https://b23.tv/ss36177">《工作细胞BLACK》</a>等，以及在补的经典老番<a href="https://b23.tv/ss191">《请问您今天要来点兔子吗》</a>，想看，但抽不出时间。</p>
+<p>只能等寒假空闲的时候了。</p>
+<h1 id="看书"><a href="#看书" class="headerlink" title="看书"></a>看书</h1><p>也就只在看恩格斯的《家庭、私有制和国家的起源》，可惜只看完序言部分。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/5.webp" alt="到现在手头上所有的两本马恩的书籍"></p>
+<p>终有一天，国家机器会被时代所淘汰，但这不是短期之内的事情。我生在这片土地上，自然也爱这片土地。但我也包容其他各类人种。对于国内的民粹主义而言，国际主义就是卖国贼。我曾经看到过微博上高呼“打倒马列废青”口号的反智言论。只能说，国际主义不在乎所谓种族、民族和国籍，他们也会反抗法西斯侵略扩张，也会热爱自己所处的一方土地。这种情怀，是那帮嚷嚷着“打倒XX废青”的人们不会懂的。至于这本书，等到有时间再接着看下去吧。</p>
+<h1 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h1><p>我确信我为自己的寒假时光准备得很充足。</p>
+<p>我们的校领导也是这么认为的，所以给我们的假期打折了。</p>
+<p>本来是二月四号放假，但还是在私下不留证据地通知了上课上到二月八号才放假的消息，放假放到正月初八。<span class="heimu" title="你知道的太多了">无所谓，听老大哥的话就好，我爱老大哥。</span></p>
+<p><del>我们某德真是太厉害了！为我们某得靴子安排了个充实的寒假！连氪金的钱都为我们省下来了！我爱某德！（甲亢）</del></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/1aa35a5/6.webp" alt="我们某德真是太厉害了！"></p>
+<p>January 31, 2021.</p>
+]]></content>
+      <categories>
+        <category>日常</category>
+      </categories>
+      <tags>
+        <tag>近况</tag>
       </tags>
   </entry>
   <entry>
