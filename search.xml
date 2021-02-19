@@ -219,6 +219,31 @@
       </tags>
   </entry>
   <entry>
+    <title>Nmap的基本使用：主机发现</title>
+    <url>/p/2021/523f63fa.html</url>
+    <content><![CDATA[<h1 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h1><p>CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。</p>
+<p>如<code>192.168.0.1/24</code>等同于在<code>192.168.0.1</code>到<code>192.168.0.255</code>之间的所有IP地址。</p>
+<h1 id="Nmap主机发现"><a href="#Nmap主机发现" class="headerlink" title="Nmap主机发现"></a>Nmap主机发现</h1><p>通过<code>nmap -sP [CIDR]</code>对该网络中所有主机进行Ping扫描，以探测主机存活性。</p>
+<p>扫描过程中使用TCP、SYN扫描，ICMP探测主机存活。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sP</span> <span class="number">192.168</span>.<span class="number">0.1</span>/<span class="number">24</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sP 192.168.0.1&#x2F;24</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-09 21:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.1</span><br><span class="line">Host is up (0.0019s latency).</span><br><span class="line">MAC Address: 34:71:46:AE:41:A7 (Huawei Device)</span><br><span class="line">Nmap scan report for 192.168.0.103</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: 18:BC:5A:E0:DA:AA (Zhejiang Tmall Technology)</span><br><span class="line">Nmap scan report for 192.168.0.104</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: B8:24:F0:00:88:15 (Soyo Technology Development)</span><br><span class="line">Nmap scan report for 192.168.0.105</span><br><span class="line">Host is up (0.11s latency).</span><br><span class="line">MAC Address: 34:EA:34:EE:4D:7C (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.113</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line">MAC Address: 1C:CC:D6:88:27:98 (Xiaomi Communications)</span><br><span class="line">Nmap scan report for 192.168.0.116</span><br><span class="line">Host is up (0.49s latency).</span><br><span class="line">MAC Address: 34:EA:34:D5:E9:3F (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.132</span><br><span class="line">Host is up (0.084s latency).</span><br><span class="line">MAC Address: AA:FB:CD:5B:44:C3 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.147</span><br><span class="line">Host is up (0.12s latency).</span><br><span class="line">MAC Address: 9C:A5:C0:53:02:56 (vivo Mobile Communication)</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Nmap scan report for 192.168.0.250</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: E4:F3:F5:7B:2A:1E (Shenzhen Mercury Communication Technologies)</span><br><span class="line">Nmap scan report for 192.168.0.251</span><br><span class="line">Host is up (0.085s latency).</span><br><span class="line">MAC Address: 8E:F2:28:0A:71:66 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.109</span><br><span class="line">Host is up.</span><br><span class="line">Nmap scan report for 192.168.0.118</span><br><span class="line">Host is up.</span><br><span class="line">Nmap done: 256 IP addresses (13 hosts up) scanned in 69.44 seconds</span><br></pre></td></tr></table></figure>
+<p>输出结果第一行是<code>Nmap scan report for [IP]</code>，第二行表示此机器在线，第三行是MAC地址和设备生产厂家。</p>
+<p>使用命令<code>nmap -sn [CIDR]</code>也可以达到相同效果。</p>
+<h1 id="结果输出"><a href="#结果输出" class="headerlink" title="结果输出"></a>结果输出</h1><ul>
+<li><code>-oN [文件名]</code>：将结果保存为普通文本；</li>
+<li><code>-oX [文件名]</code>：将结果保存为外部XML；</li>
+</ul>
+<p>具体参考<code>nmap -h</code>输出的OUTPUT条目。 </p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>Nmap</tag>
+        <tag>网络安全</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Linux设置固定IP地址</title>
     <url>/p/2020/9ef67df1.html</url>
     <content><![CDATA[<p>Linux设置固定IP地址</p>
@@ -252,31 +277,6 @@
         <tag>GNU/Linux</tag>
         <tag>运维</tag>
         <tag>网络架构</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Nmap的基本使用：主机发现</title>
-    <url>/p/2021/523f63fa.html</url>
-    <content><![CDATA[<h1 id="CIDR"><a href="#CIDR" class="headerlink" title="CIDR"></a>CIDR</h1><p>CIDR(Classless Inter-Domain Roating)，无类别域间路由。通过其可以快速表示一个网络。</p>
-<p>如<code>192.168.0.1/24</code>等同于在<code>192.168.0.1</code>到<code>192.168.0.255</code>之间的所有IP地址。</p>
-<h1 id="Nmap主机发现"><a href="#Nmap主机发现" class="headerlink" title="Nmap主机发现"></a>Nmap主机发现</h1><p>通过<code>nmap -sP [CIDR]</code>对该网络中所有主机进行Ping扫描，以探测主机存活性。</p>
-<p>扫描过程中使用TCP、SYN扫描，ICMP探测主机存活。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">nmap <span class="literal">-sP</span> <span class="number">192.168</span>.<span class="number">0.1</span>/<span class="number">24</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PS C:\Users\bkryofu&gt; nmap -sP 192.168.0.1&#x2F;24</span><br><span class="line">Starting Nmap 7.91 ( https:&#x2F;&#x2F;nmap.org ) at 2021-02-09 21:36 ?D1ú±ê×?ê±??</span><br><span class="line">Nmap scan report for 192.168.0.1</span><br><span class="line">Host is up (0.0019s latency).</span><br><span class="line">MAC Address: 34:71:46:AE:41:A7 (Huawei Device)</span><br><span class="line">Nmap scan report for 192.168.0.103</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: 18:BC:5A:E0:DA:AA (Zhejiang Tmall Technology)</span><br><span class="line">Nmap scan report for 192.168.0.104</span><br><span class="line">Host is up (0.58s latency).</span><br><span class="line">MAC Address: B8:24:F0:00:88:15 (Soyo Technology Development)</span><br><span class="line">Nmap scan report for 192.168.0.105</span><br><span class="line">Host is up (0.11s latency).</span><br><span class="line">MAC Address: 34:EA:34:EE:4D:7C (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.113</span><br><span class="line">Host is up (0.38s latency).</span><br><span class="line">MAC Address: 1C:CC:D6:88:27:98 (Xiaomi Communications)</span><br><span class="line">Nmap scan report for 192.168.0.116</span><br><span class="line">Host is up (0.49s latency).</span><br><span class="line">MAC Address: 34:EA:34:D5:E9:3F (HangZhou Gubei Electronics Technology)</span><br><span class="line">Nmap scan report for 192.168.0.132</span><br><span class="line">Host is up (0.084s latency).</span><br><span class="line">MAC Address: AA:FB:CD:5B:44:C3 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.147</span><br><span class="line">Host is up (0.12s latency).</span><br><span class="line">MAC Address: 9C:A5:C0:53:02:56 (vivo Mobile Communication)</span><br><span class="line">Nmap scan report for 192.168.0.204</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: 00:1A:A9:91:E1:01 (Fujian Star-net Communication)</span><br><span class="line">Nmap scan report for 192.168.0.250</span><br><span class="line">Host is up (0.00s latency).</span><br><span class="line">MAC Address: E4:F3:F5:7B:2A:1E (Shenzhen Mercury Communication Technologies)</span><br><span class="line">Nmap scan report for 192.168.0.251</span><br><span class="line">Host is up (0.085s latency).</span><br><span class="line">MAC Address: 8E:F2:28:0A:71:66 (Unknown)</span><br><span class="line">Nmap scan report for 192.168.0.109</span><br><span class="line">Host is up.</span><br><span class="line">Nmap scan report for 192.168.0.118</span><br><span class="line">Host is up.</span><br><span class="line">Nmap done: 256 IP addresses (13 hosts up) scanned in 69.44 seconds</span><br></pre></td></tr></table></figure>
-<p>输出结果第一行是<code>Nmap scan report for [IP]</code>，第二行表示此机器在线，第三行是MAC地址和设备生产厂家。</p>
-<p>使用命令<code>nmap -sn [CIDR]</code>也可以达到相同效果。</p>
-<h1 id="结果输出"><a href="#结果输出" class="headerlink" title="结果输出"></a>结果输出</h1><ul>
-<li><code>-oN [文件名]</code>：将结果保存为普通文本；</li>
-<li><code>-oX [文件名]</code>：将结果保存为外部XML；</li>
-</ul>
-<p>具体参考<code>nmap -h</code>输出的OUTPUT条目。 </p>
-]]></content>
-      <categories>
-        <category>笔记</category>
-      </categories>
-      <tags>
-        <tag>Nmap</tag>
-        <tag>网络安全</tag>
       </tags>
   </entry>
   <entry>
@@ -671,6 +671,86 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
+    <title>不科学地理解C/C++里的指针</title>
+    <url>/p/2020/c1f99cd3.html</url>
+    <content><![CDATA[<h6 id="仅个人理解，如有错误，感谢指正"><a href="#仅个人理解，如有错误，感谢指正" class="headerlink" title="仅个人理解，如有错误，感谢指正"></a>仅个人理解，如有错误，感谢指正</h6><h1 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h1><p>RAM</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="http://5b0988e595225.cdn.sohucs.com/images/20180122/d2e10420a2c34210a000d69f8e684cc0.jpeg" alt="R.A.M"></p>
+<p>不对，不是她，而是这个。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://tse4-mm.cn.bing.net/th/id/OIP.PtJg0y4BHeaDqxRShlKKmAHaFj?pid=Api&amp;rs=1" alt="内存条"></p>
+<p>RAM，<strong>随机</strong>存取存储器，也就是我们平常所说的<strong>内存条</strong>的那个内存（以下全部简称内存）。它的作用是存储程序运行中产生的变量。</p>
+<p>之所以要专门设计出内存条来存储数据，而非通过硬盘，是因为<strong>硬盘实在是太慢了</strong>。CPU运算速度快，但缓存储存量极小。硬盘容量大，但速度慢。运行程序需要较大的储存容量和较快的速度，于是内存就诞生了。</p>
+<p><strong>每个变量都会分配到一个内存地址，数组则是首个元素的内存地址</strong>。在现代的操作系统中大多都可以把部分内存中的数据分配到硬盘，所以不用担心RAM可用容量不足了。</p>
+<h1 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h1><p><strong>指针变量</strong>，简称指针，<strong>指向内存地址的变量</strong>。举个例子：快捷方式。快捷方式指向文件所在的位置，指针指向变量在内存中的位置。</p>
+<h2 id="声明指针"><a href="#声明指针" class="headerlink" title="声明指针"></a>声明指针</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 233;&#x2F;&#x2F;这声明了一个简单的整型变量</span><br></pre></td></tr></table></figure>
+<p>假设此时，a在内存中的地址是666，那么<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; &amp;a;</span><br><span class="line">&#x2F;&#x2F;这声明了一个指针型变量，指向的是整形变量a的地址并为它赋值a的地址。</span><br></pre></td></tr></table></figure><br>也就是说，<code>*p</code>为<code>a</code>的值233，<code>p</code>为<code>a</code>的地址666。</p>
+<p><strong>就好比快捷方式的位置在你的桌面上，快捷方式指向的是某个程序，你双击快捷方式就运行了这个程序。</strong></p>
+<p><strong>注意</strong>，虽然指针变量的声明与普通变量的声明极其相似，但千万不要声明之后就丢下不管了。不然程序会<strong>当场暴毙</strong>。如果实在要声明一个没有赋值的指针变量，你可以这样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; NULL;</span><br></pre></td></tr></table></figure></p>
+<p><strong>NULL是一个空指针常量。</strong></p>
+<h1 id="内存四区"><a href="#内存四区" class="headerlink" title="内存四区"></a>内存四区</h1><p>前面提到，内存存储程序运行中产生的变量。那么，一个C/C++编译的程序所占用的内存分为以下四类：<strong>栈区</strong>、<strong>堆区</strong>、<strong>全局区</strong>、<strong>代码区</strong>。</p>
+<h3 id="1-栈区"><a href="#1-栈区" class="headerlink" title="1. 栈区"></a>1. 栈区</h3><p>由编译器自动分配，专门存放局部变量。在函数执行完成内存会自动释放。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;<span class="comment">//局部变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-堆区"><a href="#2-堆区" class="headerlink" title="2. 堆区"></a>2. 堆区</h3><p>由程序员手动分配(<code>malloc函数</code>)、释放(<code>free函数</code>)。当进程结束，也会被操作系统回收。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">4</span>);<span class="comment">//为指针p指向的内存地址向后分配4个字节</span></span><br><span class="line">    <span class="comment">//这里要将(void *)转换成(int *)</span></span><br><span class="line">    *p = <span class="number">233</span>;<span class="comment">//为指针变量p所指向的内存地址赋值4</span></span><br><span class="line">    <span class="comment">//此时*运算符是解引用运算符，而之前的(int *)是声明这是个指针变量</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p指针变量的值：%d \t p指针变量指向的地址%d&quot;</span>,*p,p);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行结果：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p指针变量的值：233    p指针变量指向的地址8524730</span><br></pre></td></tr></table></figure><br>p指针变量指向的内存地址随机。</p>
+<h3 id="3-数据区"><a href="#3-数据区" class="headerlink" title="3. 数据区"></a>3. 数据区</h3><p>往下分还可以分：</p>
+<ol>
+<li>常量区：存放常量（多为字符串常量）</li>
+<li>全局区：存放全局变量和静态变量<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> global = <span class="number">233</span>;<span class="comment">//全局变量</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> c = <span class="number">666</span>;<span class="comment">//加入const关键字声明静态变量  </span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;global=%d \t c=%d&quot;</span>,global,c);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>C++中则是常量和全局变量、静态变量都占用于数据区，没有区分开。</p>
+<h3 id="4-代码区"><a href="#4-代码区" class="headerlink" title="4.代码区"></a>4.代码区</h3><p>存放函数体等，基本上不怎么用到。</p>
+<hr>
+<p>相信介绍到这里，指针比较基本的概念你应该学废了（笑）。似乎也不是很难的样子。</p>
+<h4 id="lt-lt-To-Be-Continued-如果你催我就更"><a href="#lt-lt-To-Be-Continued-如果你催我就更" class="headerlink" title="&lt;&lt;=To Be Continued /|/  如果你催我就更"></a>&lt;&lt;=To Be Continued /|/  <del>如果你催我就更</del></h4>]]></content>
+      <categories>
+        <category>芝士就是力量</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>指针</tag>
+        <tag>经验分享</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>一次配置Emlog</title>
+    <url>/p/2020/77a00aad.html</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
+<p>环境:</p>
+<blockquote>
+<p>OS: debian 10 i386架构</p>
+</blockquote>
+<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
+<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
+<p>以管理员账户登录:<code>mysql -u root -p</code></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
+<p>退出,登录这个新帐户.</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
+<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
+<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
+
+<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
+<p>顺利的话,你就配置成功了.博客可以显示了.</p>
+<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
+<p>(我用的是PHP 7.4)</p>
+<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
+<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+        <category>闲的蛋疼</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>运维</tag>
+        <tag>Emlog</tag>
+        <tag>PHP</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Windows Terminal使用体验</title>
     <url>/p/2020/cfe2793b.html</url>
     <content><![CDATA[<p>Windows Terminal早就不是什么新奇的东西了，在Microsoft Store直接可以找到。有很多新特性。替代Windows原生的Command Prompt再合适不过。我从年初开始，使用至今。</p>
@@ -717,86 +797,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>一次配置Emlog</title>
-    <url>/p/2020/77a00aad.html</url>
-    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>这个Emlog博客是为同学羿君搭建的.之所以使用Emlog而非Hexo之类的静态博客引擎或者Wordpress/Typecho这样同类型的动态博客引擎,是因为从他家开SSH过来专门写个博客很麻烦,且很早就听说过Emlog的大名.不过,对于配置博客的新人,不建议用Emlog作为博客引擎,建议使用Hexo或者Wordpress,Typecho.用的人多,支持也就更多.</p>
-<p>环境:</p>
-<blockquote>
-<p>OS: debian 10 i386架构</p>
-</blockquote>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装:"></a>安装:</h1><h2 id="配置环境"><a href="#配置环境" class="headerlink" title="配置环境"></a>配置环境</h2><p>可以参考<a href="/2020/08/10/如何在Debian10上部署LAMP架构/">如何在Debian10上部署LAMP架构</a>.数据库最好使用MariaDB,官方MySQL很麻烦.</p>
-<p>在配置完LAMP环境后,一定要先创建一个数据库.这里是先额外创建一个用户再生成数据库.</p>
-<p>以管理员账户登录:<code>mysql -u root -p</code></p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE USER YIJUN</span><br><span class="line">    -&gt; IDENTIFIED BY PASSWORD &quot;qibandewangguanshishabi&quot;;</span><br><span class="line">Query OK, 0 rows affected (0.233 sec)</span><br></pre></td></tr></table></figure>
-<p>退出,登录这个新帐户.</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; CREATE DATABASE BLOG;</span><br><span class="line">Query OK, 0 rows affected (0.12 sec)</span><br></pre></td></tr></table></figure>
-<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>到<a href="http://www.emlog.net">Emlog官网</a>下载Emlog 6.0.0<span class="heimu" title="你知道的太多了">因为Emlog 5.3.1不支持PHP7.3以上版本</span>,解压,把src下的文件移动到网站根目录.debian默认是<code>/var/www</code>.</p>
-<p>访问<code>你的服务器的IP/install.php</code>,一般来说会出现安装界面.</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://img-blog.csdnimg.cn/20190831154710152.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzQxNjg0NjIx,size_16,color_FFFFFF,t_70" alt="安装界面"></p>
-<font color="gray">这里引用 CSDN@兮动人 的图,因为我早就装好了.</font>
-
-<p><span class="heimu" title="你知道的太多了">数据库在本地,地址不变; 数据库用户名填之前创建的用户; 数据库密码填数据库用户的密码; 数据表前缀默认; 管理员设置自己瞎几把填就完了.</span></p>
-<p>顺利的话,你就配置成功了.博客可以显示了.</p>
-<h1 id="踩坑"><a href="#踩坑" class="headerlink" title="踩坑"></a>踩坑</h1><h2 id="Q1-服务器空间不支持MySQL数据库"><a href="#Q1-服务器空间不支持MySQL数据库" class="headerlink" title="Q1:服务器空间不支持MySQL数据库"></a>Q1:服务器空间不支持MySQL数据库</h2><p>A: 我们在前面是有配置MariaDB的, 所以只能是PHP的问题. <span class="heimu" title="你知道的太多了">debian下的PHP是不是被阉割了?</span>运行命令:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install php7.4-mysql</span><br></pre></td></tr></table></figure>
-<p>(我用的是PHP 7.4)</p>
-<h2 id="Q2-Apache直接为你输出了PHP源码"><a href="#Q2-Apache直接为你输出了PHP源码" class="headerlink" title="Q2:Apache直接为你输出了PHP源码"></a>Q2:Apache直接为你输出了PHP源码</h2><p>A: 参考<a href="https://www.jianshu.com/p/f087eb854f49">这里</a></p>
-<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>个人体验感觉很不好,如果甲方能接受的话就算了,不能接受的话,就给他换个typecho算了.</p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-        <category>闲的蛋疼</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>运维</tag>
-        <tag>Emlog</tag>
-        <tag>PHP</tag>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>不科学地理解C/C++里的指针</title>
-    <url>/p/2020/c1f99cd3.html</url>
-    <content><![CDATA[<h6 id="仅个人理解，如有错误，感谢指正"><a href="#仅个人理解，如有错误，感谢指正" class="headerlink" title="仅个人理解，如有错误，感谢指正"></a>仅个人理解，如有错误，感谢指正</h6><h1 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h1><p>RAM</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="http://5b0988e595225.cdn.sohucs.com/images/20180122/d2e10420a2c34210a000d69f8e684cc0.jpeg" alt="R.A.M"></p>
-<p>不对，不是她，而是这个。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://tse4-mm.cn.bing.net/th/id/OIP.PtJg0y4BHeaDqxRShlKKmAHaFj?pid=Api&amp;rs=1" alt="内存条"></p>
-<p>RAM，<strong>随机</strong>存取存储器，也就是我们平常所说的<strong>内存条</strong>的那个内存（以下全部简称内存）。它的作用是存储程序运行中产生的变量。</p>
-<p>之所以要专门设计出内存条来存储数据，而非通过硬盘，是因为<strong>硬盘实在是太慢了</strong>。CPU运算速度快，但缓存储存量极小。硬盘容量大，但速度慢。运行程序需要较大的储存容量和较快的速度，于是内存就诞生了。</p>
-<p><strong>每个变量都会分配到一个内存地址，数组则是首个元素的内存地址</strong>。在现代的操作系统中大多都可以把部分内存中的数据分配到硬盘，所以不用担心RAM可用容量不足了。</p>
-<h1 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h1><p><strong>指针变量</strong>，简称指针，<strong>指向内存地址的变量</strong>。举个例子：快捷方式。快捷方式指向文件所在的位置，指针指向变量在内存中的位置。</p>
-<h2 id="声明指针"><a href="#声明指针" class="headerlink" title="声明指针"></a>声明指针</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int a &#x3D; 233;&#x2F;&#x2F;这声明了一个简单的整型变量</span><br></pre></td></tr></table></figure>
-<p>假设此时，a在内存中的地址是666，那么<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; &amp;a;</span><br><span class="line">&#x2F;&#x2F;这声明了一个指针型变量，指向的是整形变量a的地址并为它赋值a的地址。</span><br></pre></td></tr></table></figure><br>也就是说，<code>*p</code>为<code>a</code>的值233，<code>p</code>为<code>a</code>的地址666。</p>
-<p><strong>就好比快捷方式的位置在你的桌面上，快捷方式指向的是某个程序，你双击快捷方式就运行了这个程序。</strong></p>
-<p><strong>注意</strong>，虽然指针变量的声明与普通变量的声明极其相似，但千万不要声明之后就丢下不管了。不然程序会<strong>当场暴毙</strong>。如果实在要声明一个没有赋值的指针变量，你可以这样：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int *p &#x3D; NULL;</span><br></pre></td></tr></table></figure></p>
-<p><strong>NULL是一个空指针常量。</strong></p>
-<h1 id="内存四区"><a href="#内存四区" class="headerlink" title="内存四区"></a>内存四区</h1><p>前面提到，内存存储程序运行中产生的变量。那么，一个C/C++编译的程序所占用的内存分为以下四类：<strong>栈区</strong>、<strong>堆区</strong>、<strong>全局区</strong>、<strong>代码区</strong>。</p>
-<h3 id="1-栈区"><a href="#1-栈区" class="headerlink" title="1. 栈区"></a>1. 栈区</h3><p>由编译器自动分配，专门存放局部变量。在函数执行完成内存会自动释放。<br><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0</span>;<span class="comment">//局部变量</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="2-堆区"><a href="#2-堆区" class="headerlink" title="2. 堆区"></a>2. 堆区</h3><p>由程序员手动分配(<code>malloc函数</code>)、释放(<code>free函数</code>)。当进程结束，也会被操作系统回收。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = (<span class="keyword">int</span> *)<span class="built_in">malloc</span>(<span class="number">4</span>);<span class="comment">//为指针p指向的内存地址向后分配4个字节</span></span><br><span class="line">    <span class="comment">//这里要将(void *)转换成(int *)</span></span><br><span class="line">    *p = <span class="number">233</span>;<span class="comment">//为指针变量p所指向的内存地址赋值4</span></span><br><span class="line">    <span class="comment">//此时*运算符是解引用运算符，而之前的(int *)是声明这是个指针变量</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;p指针变量的值：%d \t p指针变量指向的地址%d&quot;</span>,*p,p);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>执行结果：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p指针变量的值：233    p指针变量指向的地址8524730</span><br></pre></td></tr></table></figure><br>p指针变量指向的内存地址随机。</p>
-<h3 id="3-数据区"><a href="#3-数据区" class="headerlink" title="3. 数据区"></a>3. 数据区</h3><p>往下分还可以分：</p>
-<ol>
-<li>常量区：存放常量（多为字符串常量）</li>
-<li>全局区：存放全局变量和静态变量<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> global = <span class="number">233</span>;<span class="comment">//全局变量</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> c = <span class="number">666</span>;<span class="comment">//加入const关键字声明静态变量  </span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;global=%d \t c=%d&quot;</span>,global,c);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<p>C++中则是常量和全局变量、静态变量都占用于数据区，没有区分开。</p>
-<h3 id="4-代码区"><a href="#4-代码区" class="headerlink" title="4.代码区"></a>4.代码区</h3><p>存放函数体等，基本上不怎么用到。</p>
-<hr>
-<p>相信介绍到这里，指针比较基本的概念你应该学废了（笑）。似乎也不是很难的样子。</p>
-<h4 id="lt-lt-To-Be-Continued-如果你催我就更"><a href="#lt-lt-To-Be-Continued-如果你催我就更" class="headerlink" title="&lt;&lt;=To Be Continued /|/  如果你催我就更"></a>&lt;&lt;=To Be Continued /|/  <del>如果你催我就更</del></h4>]]></content>
-      <categories>
-        <category>芝士就是力量</category>
-      </categories>
-      <tags>
-        <tag>C/C++</tag>
-        <tag>指针</tag>
-        <tag>经验分享</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>主板烧了</title>
     <url>/p/2020/112daf67.html</url>
     <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>只是给台式机清灰+换一个散热器。 </p>
@@ -820,6 +820,215 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>日常</tag>
         <tag>苦逼</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>二进制的移位运算</title>
+    <url>/p/2021/13d7db48.html</url>
+    <content><![CDATA[<h1 id="废话"><a href="#废话" class="headerlink" title="废话"></a><del>废话</del></h1><p>最近有试着用C语言输出自己土豆服务器上NAS的占用情况。环境还是Debian 10。</p>
+<p>通过调用<code>statfs.h</code>头文件获取文件系统信息。</p>
+<p>我的代码(nasstat2.c)：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">//套公式换算</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = (((totalSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span>);</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = (((freeSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span> );</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %0.0f%&quot;</span>,totalGSize,p);</span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>在输出<code>totalGSize</code>（GB单位的挂载点总容量）和<code>p</code>（剩余容量百分比）前，需要对单位进行换算。<del>我选择套公式。</del></p>
+<p>我也参考了其他前辈的的方法，改良后是这样(nasstat3.c)：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">				<span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = totalSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = freeSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %f%\n&quot;</span>, totalGSize, p);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>二者输出的结果几乎没有区别。</p>
+<p><del>输出<code>p</code>时只保留了整数……</del></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/1.webp" alt="结果"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/2.webp" alt="不省略的结果"></p>
+<hr>
+<p>虽然说二进制移位运算这个很容易理解，但我还是没有很好地运用呢，就干脆温习一下吧。</p>
+<h1 id="终于到了正文"><a href="#终于到了正文" class="headerlink" title="终于到了正文"></a><del>终于到了</del>正文</h1><p>二进制的位运算中，<code>与</code>、<code>或</code>、<code>异或</code>和<code>取反</code>都和逻辑运算没有多大的区别。</p>
+<p>而移位运算也不难理解。</p>
+<p>移位运算分为<code>左移</code>和<code>右移</code>，对应的运算符分别是<code>&lt;&lt;</code>和<code>&gt;&gt;</code>。</p>
+<ul>
+<li><code>左移</code>：各二进制位向左移若干位，高位丢弃，低位补0。<span class="heimu" title="你知道的太多了">二进制左移x位后面就加x个0再去掉前面的0</span>；</li>
+<li><code>右移</code>：各二进位全部右移若干位，对无符号数，高位补0，有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移）<span class="heimu" title="你知道的太多了">通常右移x位就在前面加x位0（正数加0，复数加1）并去掉后面x位</span>。</li>
+</ul>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="左移"><a href="#左移" class="headerlink" title="左移"></a>左移</h3><p>0011 0111 &lt;&lt; 2 = 1101 1100</p>
+<div style="background-color: #00000077">
+
+<font  size="6">
+<font color="red"><del>00</del></font><font color="aqua">11 0111</font> << 2
+
+= <font color="#FF000077"><del>00</del></font> <font color="aqua"> 1101 11<font color="yellow">00</font>
+</font> 
+
+= 1101 1100
+
+</font> 
+
+</div>
+
+
+
+<h3 id="右移"><a href="#右移" class="headerlink" title="右移"></a>右移</h3><p>0011 0111 &gt;&gt; 2 = 0000 1101</p>
+<div style="background-color: #00000077">
+
+<font  size="6">
+<font color="aqua">0011 01<font color="red"><del>11</del></font> </font> >> 2
+
+= <font color="yellow">00</font><font color="aqua">00 1101<font color="#FF000077"> <del>11</del></font>
+</font> 
+
+= 0000 1101
+
+</font> 
+
+</div>
+
+<hr>
+<p>到这里就很好理解了。</p>
+<script type="math/tex; mode=display">\because \left ( 1 \right ) _{10} << 1  = \left ( 1 \right ) _{2} << 1 = \left (10 \right )_{2} = \left ( 2 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 2 \right ) _{10} << 1  = \left ( 10 \right ) _{2} << 1  = \left (100 \right )_{2} = \left ( 4 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 4 \right ) _{10} <<  1 = \left ( 100 \right ) _{2} << 1  = \left (1000 \right )_{2} = \left ( 8 \right  ) _{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a << 1 = a \times 2</script><script type="math/tex; mode=display">\because \left( 128 \right)_{10} >> 1 = (1000 0000)_{2} >> 1 = (1000000)_{2} = (64)_{10}</script><script type="math/tex; mode=display">\left ( 64 \right )_{10} >> 1  = \left ( 1000000 \right ) _{2} >> 1  = \left (100000 \right )_{2} = \left (32\right )_{10}</script><script type="math/tex; mode=display">\left ( 32 \right )_{10} >> 1  = \left ( 100000 \right ) _{2} >> 1  = \left (10000 \right )_{2} = \left (16\right )_{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a >> 1 = \frac{a}{2}</script><p><strong>左移一个二进制位等同于该数化为十进制后乘以2，右移一个二进制位相当于该数化为十进制后除以2。</strong></p>
+<h1 id="末尾"><a href="#末尾" class="headerlink" title="末尾"></a>末尾</h1><p>那么前面通过右移30个二进制位将字节换算为GB的方法就没有那么难理解了。</p>
+<script type="math/tex; mode=display">\because 1 KB = 1B \times 1024</script><script type="math/tex; mode=display">1MB = 1 KB \times  1024 = 1B \times  1024^{2}</script><script type="math/tex; mode=display">1GB = 1MB \times  1024 = 1KB \times 1024^{2} = 1B \times 1024^{3} = 1B \times 1073741824</script><script type="math/tex; mode=display">\therefore 1GB = 1073741824B</script><script type="math/tex; mode=display">\because (1073741824 B)_{10} = (1 \times 10^{30})_{2}</script><script type="math/tex; mode=display">\therefore (1 \times 10^{30})_{2} >> 30 = (1)_{2} = 1GB</script><p>（完，又水了一篇）</p>
+]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>C/C++</tag>
+        <tag>数据结构和算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于我用手机更新hexo博客这件事情</title>
+    <url>/p/2021/437b4571.html</url>
+    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>不知是哪位勇士把学校端了，我们的寒假得以续命几天。</p>
+<p>只是阴差阳错地把自己的笔记本给拆了，风扇叶片清灰的时候折了。<del>经测试，噪音巨大。</del></p>
+<p>不过最近的话要给它升级CPU，所以我就没把它拼回去，风扇也重新买了一个。大概等到5号的时候就能装回去了。</p>
+<p>在此之前，如果要更新博客，只能使用另一种设备了。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/1.webp" alt="┐(‘～`；\)┌"></p>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><p>其实使用手机写博客的大概方法还是在建站初从某个技术交流群里的叫作<a href="https://wmzwsa.xyz">WMZ</a>的小老弟那里得到的。原理很简单，在Android上面搭建一个Linux的环境，再安装node.js和hexo。</p>
+<h2 id="需要用到的东西"><a href="#需要用到的东西" class="headerlink" title="需要用到的东西"></a>需要用到的东西</h2><p>软件商店：</p>
+<ul>
+<li>Google Play Store</li>
+<li>飞机或者梯子 （懂的都懂）</li>
+</ul>
+<p>当然，在国内某些第三方平台也可以找到，但费时费力。</p>
+<p>环境：</p>
+<ul>
+<li>Termux（可在Google Play Store中下载安装）</li>
+</ul>
+<p>编辑器（可选）：</p>
+<ul>
+<li>Markor（可在Google Play Store中下载安装）</li>
+</ul>
+<h2 id="配置apt源"><a href="#配置apt源" class="headerlink" title="配置apt源"></a>配置apt源</h2><p>在第一次启动时，Termux需要安装基本组件。此时没有对<code>/storage/emulated/0</code>的访问权限。可在应用程序设置中赋予其储存空间权限，也可以通过执行命令<code>termux-setup-storage</code>获取。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/2.webp" alt="rt."></p>
+<p>Termux使用的是dpkg包管理器。但和原生debian相比，配置Termux的包管理要相对麻烦。</p>
+<p>这里使用的是<a href="https://mirrors.tuna.tsinghua.edu.cn">清华</a>的镜像站，<a href="https://mirrors.tuna.tsinghua.edu.cn/help/termux/">帮助文档在此处</a>。</p>
+<h2 id="博客环境"><a href="#博客环境" class="headerlink" title="博客环境"></a>博客环境</h2><p>hexo需要node.js才能运行。我们也需要git将博客静态页上传。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pkg install nodejs-lts git -y</span><br></pre></td></tr></table></figure>
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">~ $ node -v</span><br><span class="line">v12.18.3</span><br></pre></td></tr></table></figure>
+<p>现在就可以安装hexo了。为提高速度，我们也需要配置国内的淘宝npm源，再安装hexo。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span><br><span class="line">npm i -g express</span><br><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+<p>测试：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">~ $ hexo version</span><br><span class="line">hexo-cli: 4.2.0</span><br><span class="line">os: Linux 3.18.66-perf-g398a6a2ffc46 android arm64</span><br><span class="line">node: 12.18.3</span><br><span class="line">v8: 7.8.279.23-node.39</span><br><span class="line">uv: 1.38.0</span><br><span class="line">zlib: 1.2.11</span><br><span class="line">brotli: 1.0.7</span><br><span class="line">ares: 1.16.1</span><br><span class="line">modules: 72</span><br><span class="line">nghttp2: 1.41.0</span><br><span class="line">napi: 6</span><br><span class="line">llhttp: 2.0.4</span><br><span class="line">http_parser: 2.9.3</span><br><span class="line">openssl: 1.1.1h</span><br><span class="line">cldr: 37.0</span><br><span class="line">icu: 67.1</span><br><span class="line">tz: 2019c</span><br><span class="line">unicode: 13.0</span><br></pre></td></tr></table></figure>
+<h2 id="博客"><a href="#博客" class="headerlink" title="博客"></a>博客</h2><p>通过某种手段（sftp/samba/dropbox/百度网盘）将之前的博客数据转移到手机上。</p>
+<p>进入博客目录，使用命令<code>hexo s</code>测试。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...&#x2F;0&#x2F;Minus-K $ hexo s</span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO</span><br><span class="line">  &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">      #####  #    # ##### ##### ###### #####  ###### #      #   #</span><br><span class="line">      #    # #    #   #     #   #      #    # #      #       # #</span><br><span class="line">      #####  #    #   #     #   #####  #    # #####  #        #</span><br><span class="line">      #    # #    #   #     #   #      #####  #      #        #</span><br><span class="line">      #    # #    #   #     #   #      #   #  #      #        #</span><br><span class="line">      #####   ####    #     #   ###### #    # #      ######   #</span><br><span class="line"></span><br><span class="line">                            3.5.1</span><br><span class="line">  &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">INFO  Start processing</span><br><span class="line">INFO  Generate link [437b4571] for post [source&#x2F;_posts&#x2F;关于我用手机更新hexo博客这件事情.md][ 关于我用手机更新hexo博客这件事情 ]</span><br><span class="line">INFO  Generated: categories [日常宅技术] for post [source&#x2F;_posts&#x2F;关于我用手机更新hexo博客这件事情.md][ 关于我用手机更新hexo博客这件事情 ]</span><br><span class="line">&#x2F;storage&#x2F;emulated&#x2F;0&#x2F;Minus-K&#x2F;source&#x2F;_data&#x2F;bangumis.json</span><br><span class="line">INFO  75 bangumis have been loaded</span><br><span class="line">INFO  Generating Baidu urls for last 3 posts</span><br><span class="line">INFO  Posts urls generated in baidu_urls.txt</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;437b4571.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;1aa35a5.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;d74d746c.html</span><br><span class="line">INFO  Hexo is running at http:&#x2F;&#x2F;localhost:4000 . Press Ctrl+C to stop.</span><br><span class="line">&#x2F;storage&#x2F;emulated&#x2F;0&#x2F;Minus-K&#x2F;source&#x2F;_data&#x2F;bangumis.json</span><br><span class="line">INFO  75 bangumis have been loaded</span><br><span class="line">INFO  Generating Baidu urls for last 3 posts</span><br><span class="line">INFO  Posts urls generated in baidu_urls.txt</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;437b4571.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;1aa35a5.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;d74d746c.html</span><br></pre></td></tr></table></figure>
+<p>此时访问<code>127.0.0.1:4000</code>，若正常显示博客页面，那么就说明你可以开始撰写文章了。</p>
+<p>我之前使用github pagse托管而通过ssh上传静态页面，因为是临时使用所以在博客<code>_config.yml</code>中将ssh换为https上传。</p>
+<h2 id="撰写文章"><a href="#撰写文章" class="headerlink" title="撰写文章"></a>撰写文章</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/3.webp" alt="hexo new post"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/4.webp" alt="使用markor编辑"></p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><p><a href="https://www.jianshu.com/p/1a426b889bad">npm淘宝镜像 - 斐鸽传书 - 简书</a></p>
+</li>
+<li><p><a href="https://www.jianshu.com/p/4c3d679bb4d9">手机快速使用Termux写Hexo博客 - 0684abd2934e - 简书</a></p>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>Termux</tag>
+        <tag>手机</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Certbot自动申请Let&#39;s Encrypt的SSL证书</title>
+    <url>/p/2021/d74d746c.html</url>
+    <content><![CDATA[<h1 id="关于证书签发机构"><a href="#关于证书签发机构" class="headerlink" title="关于证书签发机构"></a>关于证书签发机构</h1><p><a href="https://letsencrypt.org">Let’s Encrypt</a></p>
+<p>一个公益性质的免费SSL证书签发的机构，目前由Linux Foundation托管。</p>
+<p>Let’s Encrypt的证书可通过Certbot申请，有效期是90天，可以通过Certbot自动续期。</p>
+<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h2 id="环境："><a href="#环境：" class="headerlink" title="环境："></a>环境：</h2><ul>
+<li>OS: Debian 10 Buster i686</li>
+<li>WebServer: Apache 2.4.38</li>
+</ul>
+<h2 id="安装Certbot"><a href="#安装Certbot" class="headerlink" title="安装Certbot"></a>安装Certbot</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install certbot</span><br></pre></td></tr></table></figure>
+<h2 id="申请证书"><a href="#申请证书" class="headerlink" title="申请证书"></a>申请证书</h2><div class="note warning modern"><p>此操作需要root权限</p>
+</div>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo certbot certonly</span><br></pre></td></tr></table></figure>
+<p>等待片刻……</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Saving debug log to &#x2F;var&#x2F;log&#x2F;letsencrypt&#x2F;letsencrypt.log</span><br><span class="line"></span><br><span class="line">How would you like to authenticate with the ACME CA?</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">1: Spin up a temporary webserver (standalone)</span><br><span class="line">2: Place files in webroot directory (webroot)</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
+<p>这里进行网站的身份验证，简单来说就是检查你要开通SSL的网站是否归你。</p>
+<ol>
+<li><p>启用一个临时的Web服务器；</p>
+</li>
+<li><p>将文件放在网站根目录中。</p>
+</li>
+</ol>
+<p>由于我的Web服务部署在本地，所以我选2。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel): 2</span><br><span class="line">Plugins selected: Authenticator webroot, Installer None</span><br><span class="line">Please enter in your domain name(s) (comma and&#x2F;or space separated)  (Enter &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
+<p>在这里输入你的域名，这里以<code>www.ussr.gov</code>为例。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please enter in your domain name(s) (comma and&#x2F;or space separated)  (Enter &#39;c&#39; to cancel): www.ussr.gov</span><br><span class="line">Obtaining a new certificate</span><br><span class="line">Performing the following challenges:</span><br><span class="line">http-01 challenge for www.ussr.gov</span><br><span class="line">Input the webroot for www.ussr.gov: (Enter &#39;c&#39; to cancel): </span><br></pre></td></tr></table></figure>
+<p>在这里输入网站的根目录。Apache2的默认网站根目录是<code>/var/www/html</code>。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Waiting for verification...</span><br></pre></td></tr></table></figure>
+<p>然后就会提示这样的信息，稍等片刻就能返回结果。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Waiting for verification...</span><br><span class="line">Cleaning up challenges</span><br><span class="line"></span><br><span class="line">IMPORTANT NOTES:</span><br><span class="line"> - Congratulations! Your certificate and chain have been saved at:</span><br><span class="line">   &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;fullchain.pem</span><br><span class="line">   Your key file has been saved at:</span><br><span class="line">   &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;privkey.pem</span><br><span class="line">   Your cert will expire on 2018-01-26. To obtain a new or tweaked</span><br><span class="line">   version of this certificate in the future, simply run certbot</span><br><span class="line">   again. To non-interactively renew *all* of your certificates, run</span><br><span class="line">   &quot;certbot renew&quot;</span><br><span class="line"> - If you like Certbot, please consider supporting our work by:</span><br><span class="line"></span><br><span class="line">   Donating to ISRG &#x2F; Let&#39;s Encrypt:   https:&#x2F;&#x2F;letsencrypt.org&#x2F;donate</span><br><span class="line">   Donating to EFF:                    https:&#x2F;&#x2F;eff.org&#x2F;donate-le</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>如果有这样的提示，那么就说明证书办成功了。</p>
+<p>记住这两个路径：</p>
+<ul>
+<li>chain: /etc/letsencrypt/live/www.ussr.gov/fullchain.pem</li>
+<li>key: /etc/letsencrypt/live/www.ussr.gov/privkey.pem</li>
+</ul>
+<h1 id="配置服务"><a href="#配置服务" class="headerlink" title="配置服务"></a>配置服务</h1><div class="note info modern"><p>如果你使用的是nginx，可以参考<a href="https://segmentfault.com/a/1190000020168073">nginx添加ssl证书升级为https（免费证书）</a></p>
+<p>可以直接参考第二部分的内容，因为你已经拿到证书了。</p>
+<p>以下的内容的环境是Debian特色apache2，其他OS下面的大同小异。</p>
+</div>
+<p>首先，我们要启用Apache2的SSL子站点配置文件。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/apache2</span><br><span class="line">ln -s sites-available/default-ssl.conf sites-enabled/000-default-ssl.conf</span><br></pre></td></tr></table></figure>
+<p>然后修改<code>sites-enabled</code>下面的<code>000-default-ssl.conf</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 以下内容省略源配置文件中的注释</span><br><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">        &lt;VirtualHost _default_:443&gt;</span><br><span class="line">                ServerAdmin stalin@ussr.gov</span><br><span class="line"></span><br><span class="line">                DocumentRoot &#x2F;var&#x2F;www&#x2F;html</span><br><span class="line"></span><br><span class="line">                ErrorLog $&#123;APACHE_LOG_DIR&#125;&#x2F;error.log</span><br><span class="line">                CustomLog $&#123;APACHE_LOG_DIR&#125;&#x2F;access.log combined</span><br><span class="line"></span><br><span class="line">				# SSLEngine必须启用</span><br><span class="line">                SSLEngine on</span><br><span class="line"></span><br><span class="line">				# 下面是需要修改的内容</span><br><span class="line">				# </span><br><span class="line">				# SSLCertificateFile 证书文件（&#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;fullchain.pem）</span><br><span class="line">				# SSLCertificateKeyFile 私钥文件 （&#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;privkey.pem）</span><br><span class="line">                SSLCertificateFile    &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;fullchain.pem</span><br><span class="line">                SSLCertificateKeyFile    &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;privkey.pem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                &lt;FilesMatch &quot;\.(cgi|shtml|phtml|php)$&quot;&gt;</span><br><span class="line">                                SSLOptions +StdEnvVars</span><br><span class="line">                &lt;&#x2F;FilesMatch&gt;</span><br><span class="line">                &lt;Directory &#x2F;usr&#x2F;lib&#x2F;cgi-bin&gt;</span><br><span class="line">                                #Header set Access-Control-Allow-Methods &quot;www.wssr.gov&quot;</span><br><span class="line">                                SSLOptions +StdEnvVars</span><br><span class="line">                &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br><span class="line"></span><br><span class="line"># vim: syntax&#x3D;apache ts&#x3D;4 sw&#x3D;4 sts&#x3D;4 sr noet</span><br></pre></td></tr></table></figure>
+<p>修改完，启用Apache2的SSL模块。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo a2enmode ssl</span><br><span class="line">sudo systemctl restart apache2</span><br></pre></td></tr></table></figure>
+<p>顺利的话，是可以通过https访问网站的。</p>
+<p>（完）</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
+<li><a href="https://blog.csdn.net/u010820857/article/details/89226799">ubuntu apache2 配置安装ssl证书,https - CSDN博客</a></li>
+<li><a href="https://www.jianshu.com/p/6ea81a7b768f">使用 certbot 自动化生成 https 证书 - 简书</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>运维</tag>
+        <tag>站长</tag>
+        <tag>SSL</tag>
+        <tag>Certbot</tag>
+        <tag>Let&#39;s Encrypt</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>叶的自述</title>
+    <url>/p/2020/84968ea5.html</url>
+    <content><![CDATA[<h1 id="叶的自述"><a href="#叶的自述" class="headerlink" title="叶的自述"></a>叶的自述</h1><p>风轻轻地拂过，<br>将我带下树梢。</p>
+<p>我舞动于空中，<br>一点点，一点点，<br>缓缓降落。</p>
+<p>她端着书，<br>站在窗前。<br>她见了我，<br>我见了她。</p>
+<p>我笑了，她也笑了。<br>她向往我舞动于空，欢快自由。<br>我羡慕她路途漫漫，来日方长。</p>
+<p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/fce4e77b68d38ac7.jpg" alt="秋"></p>
+]]></content>
+      <tags>
+        <tag>随笔</tag>
+        <tag>诗&amp;远方</tag>
+        <tag>中二文</tag>
       </tags>
   </entry>
   <entry>
@@ -897,212 +1106,32 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>叶的自述</title>
-    <url>/p/2020/84968ea5.html</url>
-    <content><![CDATA[<h1 id="叶的自述"><a href="#叶的自述" class="headerlink" title="叶的自述"></a>叶的自述</h1><p>风轻轻地拂过，<br>将我带下树梢。</p>
-<p>我舞动于空中，<br>一点点，一点点，<br>缓缓降落。</p>
-<p>她端着书，<br>站在窗前。<br>她见了我，<br>我见了她。</p>
-<p>我笑了，她也笑了。<br>她向往我舞动于空，欢快自由。<br>我羡慕她路途漫漫，来日方长。</p>
-<p><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/fce4e77b68d38ac7.jpg" alt="秋"></p>
-]]></content>
-      <tags>
-        <tag>随笔</tag>
-        <tag>诗&amp;远方</tag>
-        <tag>中二文</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>二进制的移位运算</title>
-    <url>/p/2021/13d7db48.html</url>
-    <content><![CDATA[<h1 id="废话"><a href="#废话" class="headerlink" title="废话"></a><del>废话</del></h1><p>最近有试着用C语言输出自己土豆服务器上NAS的占用情况。环境还是Debian 10。</p>
-<p>通过调用<code>statfs.h</code>头文件获取文件系统信息。</p>
-<p>我的代码(nasstat2.c)：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">//套公式换算</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = (((totalSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span>);</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = (((freeSize / <span class="number">1024</span> ) / <span class="number">1024</span> ) / <span class="number">1024</span> );</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %0.0f%&quot;</span>,totalGSize,p);</span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>在输出<code>totalGSize</code>（GB单位的挂载点总容量）和<code>p</code>（剩余容量百分比）前，需要对单位进行换算。<del>我选择套公式。</del></p>
-<p>我也参考了其他前辈的的方法，改良后是这样(nasstat3.c)：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/statfs.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">statfs</span> <span class="title">nas</span>;</span></span><br><span class="line">        <span class="keyword">if</span>(statfs(<span class="string">&quot;/home/nas&quot;</span>,&amp;nas) == <span class="number">-1</span>)&#123;</span><br><span class="line">				<span class="built_in">printf</span>(<span class="string">&quot;Bad FileSystem\n&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalBlocks = nas.f_bsize;</span><br><span class="line">                <span class="comment">//(Bytes)</span></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> totalSize = totalBlocks * nas.f_blocks;</span><br><span class="line">                <span class="comment">//(GiB)</span></span><br><span class="line">                <span class="keyword">size_t</span> totalGSize = totalSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">long</span> freeSize = nas.f_bfree*totalBlocks;</span><br><span class="line">                <span class="keyword">size_t</span> freeGSize = freeSize &gt;&gt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">double</span> p = ((<span class="keyword">double</span>)freeGSize / (<span class="keyword">double</span>)totalGSize) * <span class="number">100.0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                </span><br><span class="line">                <span class="built_in">printf</span>(<span class="string">&quot;NAS   %dG %f%\n&quot;</span>, totalGSize, p);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">int</span> blankblock = (<span class="keyword">int</span>)((p / <span class="number">100.0</span>) * <span class="number">16.0</span>);</span><br><span class="line">                <span class="keyword">int</span> sharpblock = <span class="number">16</span> - blankblock;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; sharpblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27;|&#x27;</span>);</span><br><span class="line">                <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; blankblock;i++)<span class="built_in">putchar</span>(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line"></span><br><span class="line">                <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>二者输出的结果几乎没有区别。</p>
-<p><del>输出<code>p</code>时只保留了整数……</del></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/1.webp" alt="结果"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/13d7db48/2.webp" alt="不省略的结果"></p>
+    <title>和绝望，和睦相处</title>
+    <url>/p/2020/d020fa4a.html</url>
+    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
+
+<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
+<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
+<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
+<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
+<p>希望总会在漫长的等待中终将被耗尽。</p>
+<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
+<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
+<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
+<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
+<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
+<p>等待着她们的，仍是绝望。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
+<p>图片转自原作者つくみず 的推特</p>
 <hr>
-<p>虽然说二进制移位运算这个很容易理解，但我还是没有很好地运用呢，就干脆温习一下吧。</p>
-<h1 id="终于到了正文"><a href="#终于到了正文" class="headerlink" title="终于到了正文"></a><del>终于到了</del>正文</h1><p>二进制的位运算中，<code>与</code>、<code>或</code>、<code>异或</code>和<code>取反</code>都和逻辑运算没有多大的区别。</p>
-<p>而移位运算也不难理解。</p>
-<p>移位运算分为<code>左移</code>和<code>右移</code>，对应的运算符分别是<code>&lt;&lt;</code>和<code>&gt;&gt;</code>。</p>
-<ul>
-<li><code>左移</code>：各二进制位向左移若干位，高位丢弃，低位补0。<span class="heimu" title="你知道的太多了">二进制左移x位后面就加x个0再去掉前面的0</span>；</li>
-<li><code>右移</code>：各二进位全部右移若干位，对无符号数，高位补0，有符号数，各编译器处理方法不一样，有的补符号位（算术右移），有的补0（逻辑右移）<span class="heimu" title="你知道的太多了">通常右移x位就在前面加x位0（正数加0，复数加1）并去掉后面x位</span>。</li>
-</ul>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="左移"><a href="#左移" class="headerlink" title="左移"></a>左移</h3><p>0011 0111 &lt;&lt; 2 = 1101 1100</p>
-<div style="background-color: #00000077">
-
-<font  size="6">
-<font color="red"><del>00</del></font><font color="aqua">11 0111</font> << 2
-
-= <font color="#FF000077"><del>00</del></font> <font color="aqua"> 1101 11<font color="yellow">00</font>
-</font> 
-
-= 1101 1100
-
-</font> 
-
-</div>
-
-
-
-<h3 id="右移"><a href="#右移" class="headerlink" title="右移"></a>右移</h3><p>0011 0111 &gt;&gt; 2 = 0000 1101</p>
-<div style="background-color: #00000077">
-
-<font  size="6">
-<font color="aqua">0011 01<font color="red"><del>11</del></font> </font> >> 2
-
-= <font color="yellow">00</font><font color="aqua">00 1101<font color="#FF000077"> <del>11</del></font>
-</font> 
-
-= 0000 1101
-
-</font> 
-
-</div>
-
-<hr>
-<p>到这里就很好理解了。</p>
-<script type="math/tex; mode=display">\because \left ( 1 \right ) _{10} << 1  = \left ( 1 \right ) _{2} << 1 = \left (10 \right )_{2} = \left ( 2 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 2 \right ) _{10} << 1  = \left ( 10 \right ) _{2} << 1  = \left (100 \right )_{2} = \left ( 4 \right  ) _{10}</script><script type="math/tex; mode=display">\left ( 4 \right ) _{10} <<  1 = \left ( 100 \right ) _{2} << 1  = \left (1000 \right )_{2} = \left ( 8 \right  ) _{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a << 1 = a \times 2</script><script type="math/tex; mode=display">\because \left( 128 \right)_{10} >> 1 = (1000 0000)_{2} >> 1 = (1000000)_{2} = (64)_{10}</script><script type="math/tex; mode=display">\left ( 64 \right )_{10} >> 1  = \left ( 1000000 \right ) _{2} >> 1  = \left (100000 \right )_{2} = \left (32\right )_{10}</script><script type="math/tex; mode=display">\left ( 32 \right )_{10} >> 1  = \left ( 100000 \right ) _{2} >> 1  = \left (10000 \right )_{2} = \left (16\right )_{10}</script><script type="math/tex; mode=display">\dots</script><script type="math/tex; mode=display">\therefore  a >> 1 = \frac{a}{2}</script><p><strong>左移一个二进制位等同于该数化为十进制后乘以2，右移一个二进制位相当于该数化为十进制后除以2。</strong></p>
-<h1 id="末尾"><a href="#末尾" class="headerlink" title="末尾"></a>末尾</h1><p>那么前面通过右移30个二进制位将字节换算为GB的方法就没有那么难理解了。</p>
-<script type="math/tex; mode=display">\because 1 KB = 1B \times 1024</script><script type="math/tex; mode=display">1MB = 1 KB \times  1024 = 1B \times  1024^{2}</script><script type="math/tex; mode=display">1GB = 1MB \times  1024 = 1KB \times 1024^{2} = 1B \times 1024^{3} = 1B \times 1073741824</script><script type="math/tex; mode=display">\therefore 1GB = 1073741824B</script><script type="math/tex; mode=display">\because (1073741824 B)_{10} = (1 \times 10^{30})_{2}</script><script type="math/tex; mode=display">\therefore (1 \times 10^{30})_{2} >> 30 = (1)_{2} = 1GB</script><p>（完，又水了一篇）</p>
+<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
 ]]></content>
       <categories>
-        <category>笔记</category>
+        <category>看番</category>
       </categories>
       <tags>
-        <tag>C/C++</tag>
-        <tag>数据结构和算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>使用Certbot自动申请Let&#39;s Encrypt的SSL证书</title>
-    <url>/p/2021/d74d746c.html</url>
-    <content><![CDATA[<h1 id="关于证书签发机构"><a href="#关于证书签发机构" class="headerlink" title="关于证书签发机构"></a>关于证书签发机构</h1><p><a href="https://letsencrypt.org">Let’s Encrypt</a></p>
-<p>一个公益性质的免费SSL证书签发的机构，目前由Linux Foundation托管。</p>
-<p>Let’s Encrypt的证书可通过Certbot申请，有效期是90天，可以通过Certbot自动续期。</p>
-<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><h2 id="环境："><a href="#环境：" class="headerlink" title="环境："></a>环境：</h2><ul>
-<li>OS: Debian 10 Buster i686</li>
-<li>WebServer: Apache 2.4.38</li>
-</ul>
-<h2 id="安装Certbot"><a href="#安装Certbot" class="headerlink" title="安装Certbot"></a>安装Certbot</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install certbot</span><br></pre></td></tr></table></figure>
-<h2 id="申请证书"><a href="#申请证书" class="headerlink" title="申请证书"></a>申请证书</h2><div class="note warning modern"><p>此操作需要root权限</p>
-</div>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo certbot certonly</span><br></pre></td></tr></table></figure>
-<p>等待片刻……</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Saving debug log to &#x2F;var&#x2F;log&#x2F;letsencrypt&#x2F;letsencrypt.log</span><br><span class="line"></span><br><span class="line">How would you like to authenticate with the ACME CA?</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">1: Spin up a temporary webserver (standalone)</span><br><span class="line">2: Place files in webroot directory (webroot)</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
-<p>这里进行网站的身份验证，简单来说就是检查你要开通SSL的网站是否归你。</p>
-<ol>
-<li><p>启用一个临时的Web服务器；</p>
-</li>
-<li><p>将文件放在网站根目录中。</p>
-</li>
-</ol>
-<p>由于我的Web服务部署在本地，所以我选2。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Select the appropriate number [1-2] then [enter] (press &#39;c&#39; to cancel): 2</span><br><span class="line">Plugins selected: Authenticator webroot, Installer None</span><br><span class="line">Please enter in your domain name(s) (comma and&#x2F;or space separated)  (Enter &#39;c&#39; to cancel):</span><br></pre></td></tr></table></figure>
-<p>在这里输入你的域名，这里以<code>www.ussr.gov</code>为例。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Please enter in your domain name(s) (comma and&#x2F;or space separated)  (Enter &#39;c&#39; to cancel): www.ussr.gov</span><br><span class="line">Obtaining a new certificate</span><br><span class="line">Performing the following challenges:</span><br><span class="line">http-01 challenge for www.ussr.gov</span><br><span class="line">Input the webroot for www.ussr.gov: (Enter &#39;c&#39; to cancel): </span><br></pre></td></tr></table></figure>
-<p>在这里输入网站的根目录。Apache2的默认网站根目录是<code>/var/www/html</code>。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Waiting for verification...</span><br></pre></td></tr></table></figure>
-<p>然后就会提示这样的信息，稍等片刻就能返回结果。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Waiting for verification...</span><br><span class="line">Cleaning up challenges</span><br><span class="line"></span><br><span class="line">IMPORTANT NOTES:</span><br><span class="line"> - Congratulations! Your certificate and chain have been saved at:</span><br><span class="line">   &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;fullchain.pem</span><br><span class="line">   Your key file has been saved at:</span><br><span class="line">   &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;privkey.pem</span><br><span class="line">   Your cert will expire on 2018-01-26. To obtain a new or tweaked</span><br><span class="line">   version of this certificate in the future, simply run certbot</span><br><span class="line">   again. To non-interactively renew *all* of your certificates, run</span><br><span class="line">   &quot;certbot renew&quot;</span><br><span class="line"> - If you like Certbot, please consider supporting our work by:</span><br><span class="line"></span><br><span class="line">   Donating to ISRG &#x2F; Let&#39;s Encrypt:   https:&#x2F;&#x2F;letsencrypt.org&#x2F;donate</span><br><span class="line">   Donating to EFF:                    https:&#x2F;&#x2F;eff.org&#x2F;donate-le</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>如果有这样的提示，那么就说明证书办成功了。</p>
-<p>记住这两个路径：</p>
-<ul>
-<li>chain: /etc/letsencrypt/live/www.ussr.gov/fullchain.pem</li>
-<li>key: /etc/letsencrypt/live/www.ussr.gov/privkey.pem</li>
-</ul>
-<h1 id="配置服务"><a href="#配置服务" class="headerlink" title="配置服务"></a>配置服务</h1><div class="note info modern"><p>如果你使用的是nginx，可以参考<a href="https://segmentfault.com/a/1190000020168073">nginx添加ssl证书升级为https（免费证书）</a></p>
-<p>可以直接参考第二部分的内容，因为你已经拿到证书了。</p>
-<p>以下的内容的环境是Debian特色apache2，其他OS下面的大同小异。</p>
-</div>
-<p>首先，我们要启用Apache2的SSL子站点配置文件。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/apache2</span><br><span class="line">ln -s sites-available/default-ssl.conf sites-enabled/000-default-ssl.conf</span><br></pre></td></tr></table></figure>
-<p>然后修改<code>sites-enabled</code>下面的<code>000-default-ssl.conf</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 以下内容省略源配置文件中的注释</span><br><span class="line">&lt;IfModule mod_ssl.c&gt;</span><br><span class="line">        &lt;VirtualHost _default_:443&gt;</span><br><span class="line">                ServerAdmin stalin@ussr.gov</span><br><span class="line"></span><br><span class="line">                DocumentRoot &#x2F;var&#x2F;www&#x2F;html</span><br><span class="line"></span><br><span class="line">                ErrorLog $&#123;APACHE_LOG_DIR&#125;&#x2F;error.log</span><br><span class="line">                CustomLog $&#123;APACHE_LOG_DIR&#125;&#x2F;access.log combined</span><br><span class="line"></span><br><span class="line">				# SSLEngine必须启用</span><br><span class="line">                SSLEngine on</span><br><span class="line"></span><br><span class="line">				# 下面是需要修改的内容</span><br><span class="line">				# </span><br><span class="line">				# SSLCertificateFile 证书文件（&#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;fullchain.pem）</span><br><span class="line">				# SSLCertificateKeyFile 私钥文件 （&#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;privkey.pem）</span><br><span class="line">                SSLCertificateFile    &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;fullchain.pem</span><br><span class="line">                SSLCertificateKeyFile    &#x2F;etc&#x2F;letsencrypt&#x2F;live&#x2F;www.ussr.gov&#x2F;privkey.pem</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                &lt;FilesMatch &quot;\.(cgi|shtml|phtml|php)$&quot;&gt;</span><br><span class="line">                                SSLOptions +StdEnvVars</span><br><span class="line">                &lt;&#x2F;FilesMatch&gt;</span><br><span class="line">                &lt;Directory &#x2F;usr&#x2F;lib&#x2F;cgi-bin&gt;</span><br><span class="line">                                #Header set Access-Control-Allow-Methods &quot;www.wssr.gov&quot;</span><br><span class="line">                                SSLOptions +StdEnvVars</span><br><span class="line">                &lt;&#x2F;Directory&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &lt;&#x2F;VirtualHost&gt;</span><br><span class="line">&lt;&#x2F;IfModule&gt;</span><br><span class="line"></span><br><span class="line"># vim: syntax&#x3D;apache ts&#x3D;4 sw&#x3D;4 sts&#x3D;4 sr noet</span><br></pre></td></tr></table></figure>
-<p>修改完，启用Apache2的SSL模块。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo a2enmode ssl</span><br><span class="line">sudo systemctl restart apache2</span><br></pre></td></tr></table></figure>
-<p>顺利的话，是可以通过https访问网站的。</p>
-<p>（完）</p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><a href="https://blog.csdn.net/u010820857/article/details/89226799">ubuntu apache2 配置安装ssl证书,https - CSDN博客</a></li>
-<li><a href="https://www.jianshu.com/p/6ea81a7b768f">使用 certbot 自动化生成 https 证书 - 简书</a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>运维</tag>
-        <tag>站长</tag>
-        <tag>SSL</tag>
-        <tag>Certbot</tag>
-        <tag>Let&#39;s Encrypt</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>关于我用手机更新hexo博客这件事情</title>
-    <url>/p/2021/437b4571.html</url>
-    <content><![CDATA[<h1 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h1><p>不知是哪位勇士把学校端了，我们的寒假得以续命几天。</p>
-<p>只是阴差阳错地把自己的笔记本给拆了，风扇叶片清灰的时候折了。<del>经测试，噪音巨大。</del></p>
-<p>不过最近的话要给它升级CPU，所以我就没把它拼回去，风扇也重新买了一个。大概等到5号的时候就能装回去了。</p>
-<p>在此之前，如果要更新博客，只能使用另一种设备了。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/1.webp" alt="┐(‘～`；\)┌"></p>
-<h1 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h1><p>其实使用手机写博客的大概方法还是在建站初从某个技术交流群里的叫作<a href="https://wmzwsa.xyz">WMZ</a>的小老弟那里得到的。原理很简单，在Android上面搭建一个Linux的环境，再安装node.js和hexo。</p>
-<h2 id="需要用到的东西"><a href="#需要用到的东西" class="headerlink" title="需要用到的东西"></a>需要用到的东西</h2><p>软件商店：</p>
-<ul>
-<li>Google Play Store</li>
-<li>飞机或者梯子 （懂的都懂）</li>
-</ul>
-<p>当然，在国内某些第三方平台也可以找到，但费时费力。</p>
-<p>环境：</p>
-<ul>
-<li>Termux（可在Google Play Store中下载安装）</li>
-</ul>
-<p>编辑器（可选）：</p>
-<ul>
-<li>Markor（可在Google Play Store中下载安装）</li>
-</ul>
-<h2 id="配置apt源"><a href="#配置apt源" class="headerlink" title="配置apt源"></a>配置apt源</h2><p>在第一次启动时，Termux需要安装基本组件。此时没有对<code>/storage/emulated/0</code>的访问权限。可在应用程序设置中赋予其储存空间权限，也可以通过执行命令<code>termux-setup-storage</code>获取。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/2.webp" alt="rt."></p>
-<p>Termux使用的是dpkg包管理器。但和原生debian相比，配置Termux的包管理要相对麻烦。</p>
-<p>这里使用的是<a href="https://mirrors.tuna.tsinghua.edu.cn">清华</a>的镜像站，<a href="https://mirrors.tuna.tsinghua.edu.cn/help/termux/">帮助文档在此处</a>。</p>
-<h2 id="博客环境"><a href="#博客环境" class="headerlink" title="博客环境"></a>博客环境</h2><p>hexo需要node.js才能运行。我们也需要git将博客静态页上传。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pkg install nodejs-lts git -y</span><br></pre></td></tr></table></figure>
-<p>测试：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">~ $ node -v</span><br><span class="line">v12.18.3</span><br></pre></td></tr></table></figure>
-<p>现在就可以安装hexo了。为提高速度，我们也需要配置国内的淘宝npm源，再安装hexo。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span><br><span class="line">npm i -g express</span><br><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
-<p>测试：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">~ $ hexo version</span><br><span class="line">hexo-cli: 4.2.0</span><br><span class="line">os: Linux 3.18.66-perf-g398a6a2ffc46 android arm64</span><br><span class="line">node: 12.18.3</span><br><span class="line">v8: 7.8.279.23-node.39</span><br><span class="line">uv: 1.38.0</span><br><span class="line">zlib: 1.2.11</span><br><span class="line">brotli: 1.0.7</span><br><span class="line">ares: 1.16.1</span><br><span class="line">modules: 72</span><br><span class="line">nghttp2: 1.41.0</span><br><span class="line">napi: 6</span><br><span class="line">llhttp: 2.0.4</span><br><span class="line">http_parser: 2.9.3</span><br><span class="line">openssl: 1.1.1h</span><br><span class="line">cldr: 37.0</span><br><span class="line">icu: 67.1</span><br><span class="line">tz: 2019c</span><br><span class="line">unicode: 13.0</span><br></pre></td></tr></table></figure>
-<h2 id="博客"><a href="#博客" class="headerlink" title="博客"></a>博客</h2><p>通过某种手段（sftp/samba/dropbox/百度网盘）将之前的博客数据转移到手机上。</p>
-<p>进入博客目录，使用命令<code>hexo s</code>测试。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">...&#x2F;0&#x2F;Minus-K $ hexo s</span><br><span class="line">INFO  Validating config</span><br><span class="line">INFO</span><br><span class="line">  &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">      #####  #    # ##### ##### ###### #####  ###### #      #   #</span><br><span class="line">      #    # #    #   #     #   #      #    # #      #       # #</span><br><span class="line">      #####  #    #   #     #   #####  #    # #####  #        #</span><br><span class="line">      #    # #    #   #     #   #      #####  #      #        #</span><br><span class="line">      #    # #    #   #     #   #      #   #  #      #        #</span><br><span class="line">      #####   ####    #     #   ###### #    # #      ######   #</span><br><span class="line"></span><br><span class="line">                            3.5.1</span><br><span class="line">  &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;</span><br><span class="line">INFO  Start processing</span><br><span class="line">INFO  Generate link [437b4571] for post [source&#x2F;_posts&#x2F;关于我用手机更新hexo博客这件事情.md][ 关于我用手机更新hexo博客这件事情 ]</span><br><span class="line">INFO  Generated: categories [日常宅技术] for post [source&#x2F;_posts&#x2F;关于我用手机更新hexo博客这件事情.md][ 关于我用手机更新hexo博客这件事情 ]</span><br><span class="line">&#x2F;storage&#x2F;emulated&#x2F;0&#x2F;Minus-K&#x2F;source&#x2F;_data&#x2F;bangumis.json</span><br><span class="line">INFO  75 bangumis have been loaded</span><br><span class="line">INFO  Generating Baidu urls for last 3 posts</span><br><span class="line">INFO  Posts urls generated in baidu_urls.txt</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;437b4571.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;1aa35a5.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;d74d746c.html</span><br><span class="line">INFO  Hexo is running at http:&#x2F;&#x2F;localhost:4000 . Press Ctrl+C to stop.</span><br><span class="line">&#x2F;storage&#x2F;emulated&#x2F;0&#x2F;Minus-K&#x2F;source&#x2F;_data&#x2F;bangumis.json</span><br><span class="line">INFO  75 bangumis have been loaded</span><br><span class="line">INFO  Generating Baidu urls for last 3 posts</span><br><span class="line">INFO  Posts urls generated in baidu_urls.txt</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;437b4571.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;1aa35a5.html</span><br><span class="line">https:&#x2F;&#x2F;www.kawashiros.club&#x2F;p&#x2F;2021&#x2F;d74d746c.html</span><br></pre></td></tr></table></figure>
-<p>此时访问<code>127.0.0.1:4000</code>，若正常显示博客页面，那么就说明你可以开始撰写文章了。</p>
-<p>我之前使用github pagse托管而通过ssh上传静态页面，因为是临时使用所以在博客<code>_config.yml</code>中将ssh换为https上传。</p>
-<h2 id="撰写文章"><a href="#撰写文章" class="headerlink" title="撰写文章"></a>撰写文章</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/3.webp" alt="hexo new post"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/437b4571/4.webp" alt="使用markor编辑"></p>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
-<li><p><a href="https://www.jianshu.com/p/1a426b889bad">npm淘宝镜像 - 斐鸽传书 - 简书</a></p>
-</li>
-<li><p><a href="https://www.jianshu.com/p/4c3d679bb4d9">手机快速使用Termux写Hexo博客 - 0684abd2934e - 简书</a></p>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>Termux</tag>
-        <tag>手机</tag>
-        <tag>hexo</tag>
+        <tag>少女终末旅行</tag>
+        <tag>ACGN</tag>
       </tags>
   </entry>
   <entry>
@@ -1170,42 +1199,6 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>和绝望，和睦相处</title>
-    <url>/p/2020/d020fa4a.html</url>
-    <content><![CDATA[<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=298 height=52 src="//music.163.com/outchain/player?type=2&id=524148934&auto=1&height=32"></iframe>
-
-<p>两名少女乘着履带摩托车，迷失于废墟中。</p>
-<p>她们的目标是最顶层。听祖父说，那里有充足的资源，可以活下去。</p>
-<p>因为战争，祖父让她们踏上了末日的旅行，而他自己却留了下来，生死不明。也许，让这两条生命留存下来便是他的使命，他的希望。</p>
-<p>这趟漫长旅行，充满了未知，也充满了绝望。</p>
-<p>希望总会在漫长的等待中终将被耗尽。</p>
-<p>“千酱”，金发的少女散漫地问着：”我们这么走下去，到底会有什么呢？”</p>
-<p>远处的街灯闪烁着光芒，带来一点点的温馨。</p>
-<p>“说不定往上走了就不缺食物了，还有很多人快乐地生活着。”驾驶履带车的黑发少女轻声回应。</p>
-<p>金发少女仰起头，望向星空。天上时不时划过几颗流星。</p>
-<p>战争是否还在继续，上层的世界究竟怎样，路途还有多远这些问题，她们不知道。她们已是这个世界上为数不多存活着的人类。</p>
-<p>等待着她们的，仍是绝望。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/7b89e5528d000e85.jpg" alt=""></p>
-<p>图片转自原作者つくみず 的推特</p>
-<hr>
-<p><a href="https://www.bilibili.com/bangumi/play/ss6463/" style="color:#ff6ac9"><br>    <div class="card"><a target="_blank" rel="noopener" href="https://www.bilibili.com/bangumi/play/ss6463/"><div style="float:left;width:80px;height:80px"><a href="https://www.bilibili.com/bangumi/play/ss6463/" data-fancybox="group" data-caption="" class="fancybox"><img data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" style="width:90px;padding:5px" class="loading" src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/09/b1aaf51f624df09e.jpeg" data-ll-status="loading"></a>&lt;/div&gt;<span><h3 style="padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff6ac9" class="title">少女终末旅行</h3></span><span style="text-indent:2em"><p style="text-indent:2em"><span style="text-indent:1em;font-size:14px">已完结</span> <span style="text-indent:2em;color:gold;font-size:14px">9.8</span>&lt;/p&gt;&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;<br>&lt;/a&gt;</p>
-]]></content>
-      <categories>
-        <category>看番</category>
-      </categories>
-      <tags>
-        <tag>少女终末旅行</tag>
-        <tag>ACGN</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>本站已支持HTTPS</title>
-    <url>/p/2020/e838770c.html</url>
-    <content><![CDATA[<p>本站已支持HTTPS，从友链进入会自动转到HTTPS协议；</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://42works.net/wp-content/uploads/2018/07/https-migration.png" alt="http2https"></p>
-]]></content>
-  </entry>
-  <entry>
     <title>树莓派搭建简易NAS</title>
     <url>/p/2020/444bfcb2.html</url>
     <content><![CDATA[<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/c3db57119e19103b.jpg" alt="树莓派"></p>
@@ -1264,81 +1257,6 @@ sys.setrecursionlimit(5000)
         <tag>树莓派</tag>
         <tag>SAMBA</tag>
         <tag>NAS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>树莓派通过I2C总线连接LCD1602并部署一个小项目</title>
-    <url>/p/2020/63390599.html</url>
-    <content><![CDATA[<p>树莓派通过I2C总线连接LCD1602并部署一个小项目</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/e8e8d3c01ccb6f90.jpg" alt="开箱前"></p>
-<h1 id="Step-1-连接电路"><a href="#Step-1-连接电路" class="headerlink" title="Step 1. 连接电路"></a>Step 1. 连接电路</h1><p><span class="heimu" title="你知道的太多了">啊，物理……</span></p>
-<p>I2C接口需要连接树莓派的SDA与SCL功能引脚。根据<a href="https://shumeipai.nxez.com/">树莓派实验室</a>给出的树莓派40Pin GPIO引脚对照表可以看出，有这个功能的引脚共有两对：SDA.1与SDL.1（即3号引脚和5号引脚），SDA.0与SCL.0（27号引脚与28号引脚）</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://shumeipai.nxez.com/wp-content/uploads/2015/03/rpi-pins-40-0.png" alt="引脚对照"></p>
-<p>使用面包板将二者相连<span class="heimu" title="你知道的太多了">，因为我没有母对母的杜邦线了</span></p>
-<p><font color = "#333333">LCD1602 GND 接 树莓派 GND</font>（这里用6号引脚）</p>
-<p><font color = "red">LCD1602 VCC 接 树莓派 5V</font>（这里用4号引脚）</p>
-<p><font color = "yellow">LCD1602 SCL 接 树莓派 SCL.0</font>（这里用28号引脚）</p>
-<p><font color = "gray">LCD1602 SDA 接 树莓派 SDA.0</font>（这里用27号引脚）</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/7fb5f5e57afcee26.jpg" alt="接线"></p>
-<p><span class="heimu" title="你知道的太多了">这里我埋下了一个巨大的坑</span></p>
-<h1 id="Step-2-部署"><a href="#Step-2-部署" class="headerlink" title="Step 2. 部署"></a>Step 2. 部署</h1><p>先把环境搭好</p>
-<p>Python3 smbus库</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install python-smbus</span><br></pre></td></tr></table></figure>
-<p>I2C工具，用于检测连接</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install i2c-tools</span><br></pre></td></tr></table></figure>
-<p>两个都装好后，进raspi-config</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo raspi-config</span><br></pre></td></tr></table></figure>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/0603d860b296674d.jpg" alt="1"></p>
-<p>进入<code>Interfacing Options</code></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/bb3ea28f737b48f4.jpg" alt="2"></p>
-<p>进<code>I2C</code></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/6843fcdadbdfd063.jpg" alt="选‘是’就行"></p>
-<p>重启一下，再运行<code>sudo i2cdetect -y 1</code>。如果正常，会在第七纵列显示有27。</p>
-<p>但我这个偏偏不正常</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/715784783905431c.jpg" alt="空的……"></p>
-<h1 id="Fix"><a href="#Fix" class="headerlink" title="Fix"></a>Fix</h1><p>解决的方法很简单，我把SDA和SDL接在了第3和第5引脚。至于为什么27、28引脚不行，那就属于玄学领域的范畴了。</p>
-<p>为了这个，我还把外壳自带的风扇拆下来了。因为风扇的线短且两个母口连在一起的，不可分开。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/123581ea8c009ec7.jpg" alt="再见，圣光不再照耀树莓派"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/10/24/BEI7xe.jpg" alt="OwO"><br>再次启动，它就正常了。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/0eb429934b6dbab6.jpg" alt="就这"></p>
-<p>现在，可以开始写程序了。</p>
-<h1 id="Step-3-驱动程序"><a href="#Step-3-驱动程序" class="headerlink" title="Step 3.驱动程序"></a>Step 3.驱动程序</h1><p>这里就直接使用树莓派实验室所给的代码测试。（我自己改了一点）</p>
-<div class="note warning modern"><p>版权归代码原作者所有，但原作者我不知道是谁，是开源的就对了，我没有说这个代码的版权归网站平台</p>
-</div>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> smbus</span><br><span class="line">BUS = smbus.SMBus(<span class="number">1</span>)</span><br><span class="line">LCD_ADDR = <span class="number">0x27</span></span><br><span class="line">BLEN = <span class="number">1</span> <span class="comment">#turn on/off background light</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">turn_light</span>(<span class="params">key</span>):</span></span><br><span class="line">    <span class="keyword">global</span> BLEN</span><br><span class="line">    BLEN = key</span><br><span class="line">    <span class="keyword">if</span> key ==<span class="number">1</span> :</span><br><span class="line">        BUS.write_byte(LCD_ADDR ,<span class="number">0x08</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        BUS.write_byte(LCD_ADDR ,<span class="number">0x00</span>)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write_word</span>(<span class="params">addr, data</span>):</span></span><br><span class="line">    <span class="keyword">global</span> BLEN</span><br><span class="line">    temp = data</span><br><span class="line">    <span class="keyword">if</span> BLEN == <span class="number">1</span>:</span><br><span class="line">        temp |= <span class="number">0x08</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        temp &amp;= <span class="number">0xF7</span></span><br><span class="line">    BUS.write_byte(addr ,temp)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send_command</span>(<span class="params">comm</span>):</span></span><br><span class="line">    <span class="comment"># Send bit7-4 firstly</span></span><br><span class="line">    buf = comm &amp; <span class="number">0xF0</span></span><br><span class="line">    buf |= <span class="number">0x04</span>               <span class="comment"># RS = 0, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">     </span><br><span class="line">    <span class="comment"># Send bit3-0 secondly</span></span><br><span class="line">    buf = (comm &amp; <span class="number">0x0F</span>) &lt;&lt; <span class="number">4</span></span><br><span class="line">    buf |= <span class="number">0x04</span>               <span class="comment"># RS = 0, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send_data</span>(<span class="params">data</span>):</span></span><br><span class="line">    <span class="comment"># Send bit7-4 firstly</span></span><br><span class="line">    buf = data &amp; <span class="number">0xF0</span></span><br><span class="line">    buf |= <span class="number">0x05</span>               <span class="comment"># RS = 1, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">     </span><br><span class="line">    <span class="comment"># Send bit3-0 secondly</span></span><br><span class="line">    buf = (data &amp; <span class="number">0x0F</span>) &lt;&lt; <span class="number">4</span></span><br><span class="line">    buf |= <span class="number">0x05</span>               <span class="comment"># RS = 1, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">init_lcd</span>():</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        send_command(<span class="number">0x33</span>) <span class="comment"># Must initialize to 8-line mode at first</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x32</span>) <span class="comment"># Then initialize to 4-line mode</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x28</span>) <span class="comment"># 2 Lines &amp; 5*7 dots</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x0C</span>) <span class="comment"># Enable display without cursor</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x01</span>) <span class="comment"># Clear Screen</span></span><br><span class="line">        BUS.write_byte(LCD_ADDR ,<span class="number">0x08</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">clear_lcd</span>():</span></span><br><span class="line">    send_command(<span class="number">0x01</span>) <span class="comment"># Clear Screen</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_lcd</span>(<span class="params">x, y, str</span>):</span></span><br><span class="line">    <span class="keyword">if</span> x &lt; <span class="number">0</span>:</span><br><span class="line">        x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> x &gt; <span class="number">15</span>:</span><br><span class="line">        x = <span class="number">15</span></span><br><span class="line">    <span class="keyword">if</span> y &lt;<span class="number">0</span>:</span><br><span class="line">        y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> y &gt; <span class="number">1</span>:</span><br><span class="line">        y = <span class="number">1</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Move cursor</span></span><br><span class="line">    addr = <span class="number">0x80</span> + <span class="number">0x40</span> * y + x</span><br><span class="line">    send_command(addr)</span><br><span class="line">     </span><br><span class="line">    <span class="keyword">for</span> chr <span class="keyword">in</span> str:</span><br><span class="line">        send_data(ord(chr))</span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    init_lcd()</span><br><span class="line">    <span class="comment">#print_lcd(0, 0, &#x27;Hello, world!&#x27;)</span></span><br><span class="line">    print_lcd(<span class="number">0</span>, <span class="number">0</span>, <span class="string">&#x27;It Works!HelloWorld!&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/6df877004a4e0213.jpg" alt="真·斜视"></p>
-<p>可以显示，但对比度过低，我就用螺丝刀拧液晶模块后面的变阻器，调整到最佳的对比度。</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/bbb66144ef82a9c6.jpg" alt="没显示全……"></p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/10/24/BEIo8O.jpg" alt="- -"></p>
-<h1 id="EX-Stage"><a href="#EX-Stage" class="headerlink" title="EX Stage"></a>EX Stage</h1><p>在以上代码的基础上，我改了<font color="red">亿</font>点。毕竟，买个液晶模块回来，不是拿来看HelloWorld的(手动狗头)。</p>
-
-
-<iframe class="bilibili" src="//player.bilibili.com/player.html?aid=585050510&bvid=BV1rz4y1o7W6&cid=250733066&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-
-
-<div class="note default modern"><p>都看到这里了，投个币再走吧 (QwQ)</p>
-</div>
-<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>做到这里，就到了1024程序员节了。各位不管是前端后端全栈运维，还是像本人一样的个人开发者，亦或是图吧、卡吧的大佬，都请早点睡，不要肝游戏肝代码<span class="heimu" title="你知道的太多了">肝教案</span>了~</p>
-<p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/10/24/BEonRU.md.jpg" alt="肝帝.jpg"></p>
-<p>偶然想起，一年前的1024，鹅厂把QQ4Linux的坟挖了，推出了全新的QQ4Linux<span class="heimu" title="你知道的太多了">2009版</span>。现在好像还在更新的样子<span class="heimu" title="你知道的太多了">，但早已比不过deepin-wine那个简易的容器里畅快玩耍的WineQQ</span>。（笑）</p>
-<p>今天搞出的这个LCD1602显示状态的项目，相信各位都可以像我一样在网上随便抄抄改改就可以简单地跑起来，所以代码我就不提供了。唯一不爽的是天气API没几个免费的，如果有知道的，希望在评论区指出，谢谢了。</p>
-<p>o(<em>￣︶￣</em>)o</p>
-<hr>
-<h1 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h1><p><a href="https://shumeipai.nxez.com/2020/06/17/raspberry-pi-drives-lcd1602-screen-through-i2c.html">树莓派通过 I2C 驱动 LCD1602 液晶屏<br> - 树莓派实验室</a></p>
-<p><a href="https://blog.csdn.net/jh1513/article/details/90581827">树莓派通过I2C驱动LCD1602显示屏 - CSDN博客</a></p>
-<p><a href="https://www.cnblogs.com/hui088/p/4732034.html">单片机显示原理(LCD1602) - 阿忠ZHONG - 博客园</a></p>
-]]></content>
-      <categories>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>野生技术协会</tag>
-        <tag>树莓派</tag>
-        <tag>LCD1602</tag>
-        <tag>开箱上手</tag>
-        <tag>Python</tag>
-        <tag>I2C</tag>
-        <tag>1024程序员节</tag>
       </tags>
   </entry>
   <entry>
@@ -1444,37 +1362,78 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
-    <url>/p/2020/9e01b7f0.html</url>
-    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
-<p>在阅读本文之前，建议先阅读《1984》原著。</p>
+    <title>树莓派通过I2C总线连接LCD1602并部署一个小项目</title>
+    <url>/p/2020/63390599.html</url>
+    <content><![CDATA[<p>树莓派通过I2C总线连接LCD1602并部署一个小项目</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/e8e8d3c01ccb6f90.jpg" alt="开箱前"></p>
+<h1 id="Step-1-连接电路"><a href="#Step-1-连接电路" class="headerlink" title="Step 1. 连接电路"></a>Step 1. 连接电路</h1><p><span class="heimu" title="你知道的太多了">啊，物理……</span></p>
+<p>I2C接口需要连接树莓派的SDA与SCL功能引脚。根据<a href="https://shumeipai.nxez.com/">树莓派实验室</a>给出的树莓派40Pin GPIO引脚对照表可以看出，有这个功能的引脚共有两对：SDA.1与SDL.1（即3号引脚和5号引脚），SDA.0与SCL.0（27号引脚与28号引脚）</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://shumeipai.nxez.com/wp-content/uploads/2015/03/rpi-pins-40-0.png" alt="引脚对照"></p>
+<p>使用面包板将二者相连<span class="heimu" title="你知道的太多了">，因为我没有母对母的杜邦线了</span></p>
+<p><font color = "#333333">LCD1602 GND 接 树莓派 GND</font>（这里用6号引脚）</p>
+<p><font color = "red">LCD1602 VCC 接 树莓派 5V</font>（这里用4号引脚）</p>
+<p><font color = "yellow">LCD1602 SCL 接 树莓派 SCL.0</font>（这里用28号引脚）</p>
+<p><font color = "gray">LCD1602 SDA 接 树莓派 SDA.0</font>（这里用27号引脚）</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/7fb5f5e57afcee26.jpg" alt="接线"></p>
+<p><span class="heimu" title="你知道的太多了">这里我埋下了一个巨大的坑</span></p>
+<h1 id="Step-2-部署"><a href="#Step-2-部署" class="headerlink" title="Step 2. 部署"></a>Step 2. 部署</h1><p>先把环境搭好</p>
+<p>Python3 smbus库</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install python-smbus</span><br></pre></td></tr></table></figure>
+<p>I2C工具，用于检测连接</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt install i2c-tools</span><br></pre></td></tr></table></figure>
+<p>两个都装好后，进raspi-config</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo raspi-config</span><br></pre></td></tr></table></figure>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/0603d860b296674d.jpg" alt="1"></p>
+<p>进入<code>Interfacing Options</code></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/bb3ea28f737b48f4.jpg" alt="2"></p>
+<p>进<code>I2C</code></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/6843fcdadbdfd063.jpg" alt="选‘是’就行"></p>
+<p>重启一下，再运行<code>sudo i2cdetect -y 1</code>。如果正常，会在第七纵列显示有27。</p>
+<p>但我这个偏偏不正常</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/715784783905431c.jpg" alt="空的……"></p>
+<h1 id="Fix"><a href="#Fix" class="headerlink" title="Fix"></a>Fix</h1><p>解决的方法很简单，我把SDA和SDL接在了第3和第5引脚。至于为什么27、28引脚不行，那就属于玄学领域的范畴了。</p>
+<p>为了这个，我还把外壳自带的风扇拆下来了。因为风扇的线短且两个母口连在一起的，不可分开。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/123581ea8c009ec7.jpg" alt="再见，圣光不再照耀树莓派"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/10/24/BEI7xe.jpg" alt="OwO"><br>再次启动，它就正常了。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/0eb429934b6dbab6.jpg" alt="就这"></p>
+<p>现在，可以开始写程序了。</p>
+<h1 id="Step-3-驱动程序"><a href="#Step-3-驱动程序" class="headerlink" title="Step 3.驱动程序"></a>Step 3.驱动程序</h1><p>这里就直接使用树莓派实验室所给的代码测试。（我自己改了一点）</p>
+<div class="note warning modern"><p>版权归代码原作者所有，但原作者我不知道是谁，是开源的就对了，我没有说这个代码的版权归网站平台</p>
 </div>
-<div class="note info modern"><p>电幕之下，请高呼：</p>
-<font size=14>我爱老大哥！</font>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> smbus</span><br><span class="line">BUS = smbus.SMBus(<span class="number">1</span>)</span><br><span class="line">LCD_ADDR = <span class="number">0x27</span></span><br><span class="line">BLEN = <span class="number">1</span> <span class="comment">#turn on/off background light</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">turn_light</span>(<span class="params">key</span>):</span></span><br><span class="line">    <span class="keyword">global</span> BLEN</span><br><span class="line">    BLEN = key</span><br><span class="line">    <span class="keyword">if</span> key ==<span class="number">1</span> :</span><br><span class="line">        BUS.write_byte(LCD_ADDR ,<span class="number">0x08</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        BUS.write_byte(LCD_ADDR ,<span class="number">0x00</span>)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write_word</span>(<span class="params">addr, data</span>):</span></span><br><span class="line">    <span class="keyword">global</span> BLEN</span><br><span class="line">    temp = data</span><br><span class="line">    <span class="keyword">if</span> BLEN == <span class="number">1</span>:</span><br><span class="line">        temp |= <span class="number">0x08</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        temp &amp;= <span class="number">0xF7</span></span><br><span class="line">    BUS.write_byte(addr ,temp)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send_command</span>(<span class="params">comm</span>):</span></span><br><span class="line">    <span class="comment"># Send bit7-4 firstly</span></span><br><span class="line">    buf = comm &amp; <span class="number">0xF0</span></span><br><span class="line">    buf |= <span class="number">0x04</span>               <span class="comment"># RS = 0, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">     </span><br><span class="line">    <span class="comment"># Send bit3-0 secondly</span></span><br><span class="line">    buf = (comm &amp; <span class="number">0x0F</span>) &lt;&lt; <span class="number">4</span></span><br><span class="line">    buf |= <span class="number">0x04</span>               <span class="comment"># RS = 0, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">send_data</span>(<span class="params">data</span>):</span></span><br><span class="line">    <span class="comment"># Send bit7-4 firstly</span></span><br><span class="line">    buf = data &amp; <span class="number">0xF0</span></span><br><span class="line">    buf |= <span class="number">0x05</span>               <span class="comment"># RS = 1, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">     </span><br><span class="line">    <span class="comment"># Send bit3-0 secondly</span></span><br><span class="line">    buf = (data &amp; <span class="number">0x0F</span>) &lt;&lt; <span class="number">4</span></span><br><span class="line">    buf |= <span class="number">0x05</span>               <span class="comment"># RS = 1, RW = 0, EN = 1</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line">    time.sleep(<span class="number">0.002</span>)</span><br><span class="line">    buf &amp;= <span class="number">0xFB</span>               <span class="comment"># Make EN = 0</span></span><br><span class="line">    write_word(LCD_ADDR ,buf)</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">init_lcd</span>():</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        send_command(<span class="number">0x33</span>) <span class="comment"># Must initialize to 8-line mode at first</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x32</span>) <span class="comment"># Then initialize to 4-line mode</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x28</span>) <span class="comment"># 2 Lines &amp; 5*7 dots</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x0C</span>) <span class="comment"># Enable display without cursor</span></span><br><span class="line">        time.sleep(<span class="number">0.005</span>)</span><br><span class="line">        send_command(<span class="number">0x01</span>) <span class="comment"># Clear Screen</span></span><br><span class="line">        BUS.write_byte(LCD_ADDR ,<span class="number">0x08</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">clear_lcd</span>():</span></span><br><span class="line">    send_command(<span class="number">0x01</span>) <span class="comment"># Clear Screen</span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_lcd</span>(<span class="params">x, y, str</span>):</span></span><br><span class="line">    <span class="keyword">if</span> x &lt; <span class="number">0</span>:</span><br><span class="line">        x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> x &gt; <span class="number">15</span>:</span><br><span class="line">        x = <span class="number">15</span></span><br><span class="line">    <span class="keyword">if</span> y &lt;<span class="number">0</span>:</span><br><span class="line">        y = <span class="number">0</span></span><br><span class="line">    <span class="keyword">if</span> y &gt; <span class="number">1</span>:</span><br><span class="line">        y = <span class="number">1</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Move cursor</span></span><br><span class="line">    addr = <span class="number">0x80</span> + <span class="number">0x40</span> * y + x</span><br><span class="line">    send_command(addr)</span><br><span class="line">     </span><br><span class="line">    <span class="keyword">for</span> chr <span class="keyword">in</span> str:</span><br><span class="line">        send_data(ord(chr))</span><br><span class="line"> </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    init_lcd()</span><br><span class="line">    <span class="comment">#print_lcd(0, 0, &#x27;Hello, world!&#x27;)</span></span><br><span class="line">    print_lcd(<span class="number">0</span>, <span class="number">0</span>, <span class="string">&#x27;It Works!HelloWorld!&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/6df877004a4e0213.jpg" alt="真·斜视"></p>
+<p>可以显示，但对比度过低，我就用螺丝刀拧液晶模块后面的变阻器，调整到最佳的对比度。</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://ftp.bmp.ovh/imgs/2020/10/bbb66144ef82a9c6.jpg" alt="没显示全……"></p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/10/24/BEIo8O.jpg" alt="- -"></p>
+<h1 id="EX-Stage"><a href="#EX-Stage" class="headerlink" title="EX Stage"></a>EX Stage</h1><p>在以上代码的基础上，我改了<font color="red">亿</font>点。毕竟，买个液晶模块回来，不是拿来看HelloWorld的(手动狗头)。</p>
+
+
+<iframe class="bilibili" src="//player.bilibili.com/player.html?aid=585050510&bvid=BV1rz4y1o7W6&cid=250733066&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+
+
+<div class="note default modern"><p>都看到这里了，投个币再走吧 (QwQ)</p>
 </div>
-<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
-<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
-<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
-<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
-<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
-<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
-<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
-<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
-<p>愚蠢像智慧一样必要，也同样难以学到。</p>
-<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
-<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
-<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
-<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
-<p>……</p>
+<h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>做到这里，就到了1024程序员节了。各位不管是前端后端全栈运维，还是像本人一样的个人开发者，亦或是图吧、卡吧的大佬，都请早点睡，不要肝游戏肝代码<span class="heimu" title="你知道的太多了">肝教案</span>了~</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/10/24/BEonRU.md.jpg" alt="肝帝.jpg"></p>
+<p>偶然想起，一年前的1024，鹅厂把QQ4Linux的坟挖了，推出了全新的QQ4Linux<span class="heimu" title="你知道的太多了">2009版</span>。现在好像还在更新的样子<span class="heimu" title="你知道的太多了">，但早已比不过deepin-wine那个简易的容器里畅快玩耍的WineQQ</span>。（笑）</p>
+<p>今天搞出的这个LCD1602显示状态的项目，相信各位都可以像我一样在网上随便抄抄改改就可以简单地跑起来，所以代码我就不提供了。唯一不爽的是天气API没几个免费的，如果有知道的，希望在评论区指出，谢谢了。</p>
+<p>o(<em>￣︶￣</em>)o</p>
+<hr>
+<h1 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h1><p><a href="https://shumeipai.nxez.com/2020/06/17/raspberry-pi-drives-lcd1602-screen-through-i2c.html">树莓派通过 I2C 驱动 LCD1602 液晶屏<br> - 树莓派实验室</a></p>
+<p><a href="https://blog.csdn.net/jh1513/article/details/90581827">树莓派通过I2C驱动LCD1602显示屏 - CSDN博客</a></p>
+<p><a href="https://www.cnblogs.com/hui088/p/4732034.html">单片机显示原理(LCD1602) - 阿忠ZHONG - 博客园</a></p>
 ]]></content>
       <categories>
-        <category>随笔</category>
-        <category>感想</category>
+        <category>日常宅技术</category>
       </categories>
       <tags>
-        <tag>《一九八四》</tag>
-        <tag>品书</tag>
+        <tag>野生技术协会</tag>
+        <tag>树莓派</tag>
+        <tag>LCD1602</tag>
+        <tag>开箱上手</tag>
+        <tag>Python</tag>
+        <tag>I2C</tag>
+        <tag>1024程序员节</tag>
       </tags>
   </entry>
   <entry>
@@ -1549,6 +1508,34 @@ sys.setrecursionlimit(5000)
         <tag>前端</tag>
         <tag>AJAX</tag>
         <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自己在家搭服的坑</title>
+    <url>/p/2020/e9e33d10.html</url>
+    <content><![CDATA[<blockquote>
+<p>由于多种外部因素干涉，最近服务器不太稳定，经常宕机。望各位谅解</p>
+</blockquote>
+<p>在家搭建服务器，是Geeks所热衷的。对于我来说，在家搭建服务器与直接租VPS的区别在于，VPS会提前帮你做好大多数工作，更适合搭建开发时间紧张的网站；而自己在家用自己的硬件搭建服务器，费时，费力，但是它可以给你带来安装操作系统时的期待、构建网站时的兴奋与网站上线的成就，给予你一系列精神上的满足感。</p>
+<p>虽说如此，但自己在家搭建服务器仍是非常费精力的。以下为我个人总结出来的经验。</p>
+<h2 id="1-一定要计划任务重启"><a href="#1-一定要计划任务重启" class="headerlink" title="1.一定要计划任务重启"></a>1.一定要计划任务重启</h2><p>也许你会问，服务器不就是要一直开着吗？的确，服务器作为服务端，必须随时在线。但是，你的服务器必须要释放堆栈，否则会内存泄漏。计划重启是最简单的方法，建议挑选在访问人数少的时候计划重启。当然，如果你的服务器配置高，或者使用真正的服务器主板，可以忽略这一条。</p>
+<h2 id="2-网速"><a href="#2-网速" class="headerlink" title="2.网速"></a>2.网速</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVxvq.png" alt="一般情况下PING测试"></p>
+<p>要搞对外开放的服务器，良好的网速是绕不开的。我的服务器在我房间里，还算良好，没有噪声。但我的房间里没有LAN口，所以，我只能通过路由器的无线网络桥接的方式，链接客厅的主路由器。正常情况下，房间里的从路由器ping网关的延迟是小于10ms的，但倘若主路由器错乱一下，延迟一下子就从小于10ms升至大于两秒。</p>
+<p>网上有一种叫电力猫的装置，可以把一端网口的数字信号转化为模拟信号，输出到家里市电，再由另一端的机器把模拟信号转成数字信号。</p>
+<p>这个装置虽然挽救了没有网口的房间，但由于其通过市电传输，其稳定性是会受到类似空调之类的大功率电器影响的，而且网速不敢恭维，所以我没有采用这类方法。我还是和之前一样采用无线网络桥接的方式，但在服务器上多加了个无线网卡。</p>
+<h2 id="3-电力供应"><a href="#3-电力供应" class="headerlink" title="3.电力供应"></a>3.电力供应</h2><p>这个是最棘手的。</p>
+<p>我的服务器是一台工控机，功耗比较低，也勉强能做Web服务器。但不可避的是停电。</p>
+<p>这个我还没有对策，反正又不会经常停电，怕啥？解决方法慢慢想就是了。</p>
+<h2 id="4-人为"><a href="#4-人为" class="headerlink" title="4.人为"></a>4.人为</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVv2n.png" alt="CykaBlyat"></p>
+<h6 id="本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。"><a href="#本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。" class="headerlink" title="本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 http://creativecommons.org/licenses/by/4.0/ 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。"></a>本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 <a href="http://creativecommons.org/licenses/by/4.0/">http://creativecommons.org/licenses/by/4.0/</a> 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。</h6>]]></content>
+      <categories>
+        <category>日常宅技术</category>
+      </categories>
+      <tags>
+        <tag>运维</tag>
+        <tag>经验分享</tag>
+        <tag>Web</tag>
+        <tag>踩坑</tag>
       </tags>
   </entry>
   <entry>
@@ -1906,49 +1893,11 @@ sys.setrecursionlimit(5000)
       </tags>
   </entry>
   <entry>
-    <title>自己在家搭服的坑</title>
-    <url>/p/2020/e9e33d10.html</url>
-    <content><![CDATA[<blockquote>
-<p>由于多种外部因素干涉，最近服务器不太稳定，经常宕机。望各位谅解</p>
-</blockquote>
-<p>在家搭建服务器，是Geeks所热衷的。对于我来说，在家搭建服务器与直接租VPS的区别在于，VPS会提前帮你做好大多数工作，更适合搭建开发时间紧张的网站；而自己在家用自己的硬件搭建服务器，费时，费力，但是它可以给你带来安装操作系统时的期待、构建网站时的兴奋与网站上线的成就，给予你一系列精神上的满足感。</p>
-<p>虽说如此，但自己在家搭建服务器仍是非常费精力的。以下为我个人总结出来的经验。</p>
-<h2 id="1-一定要计划任务重启"><a href="#1-一定要计划任务重启" class="headerlink" title="1.一定要计划任务重启"></a>1.一定要计划任务重启</h2><p>也许你会问，服务器不就是要一直开着吗？的确，服务器作为服务端，必须随时在线。但是，你的服务器必须要释放堆栈，否则会内存泄漏。计划重启是最简单的方法，建议挑选在访问人数少的时候计划重启。当然，如果你的服务器配置高，或者使用真正的服务器主板，可以忽略这一条。</p>
-<h2 id="2-网速"><a href="#2-网速" class="headerlink" title="2.网速"></a>2.网速</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVxvq.png" alt="一般情况下PING测试"></p>
-<p>要搞对外开放的服务器，良好的网速是绕不开的。我的服务器在我房间里，还算良好，没有噪声。但我的房间里没有LAN口，所以，我只能通过路由器的无线网络桥接的方式，链接客厅的主路由器。正常情况下，房间里的从路由器ping网关的延迟是小于10ms的，但倘若主路由器错乱一下，延迟一下子就从小于10ms升至大于两秒。</p>
-<p>网上有一种叫电力猫的装置，可以把一端网口的数字信号转化为模拟信号，输出到家里市电，再由另一端的机器把模拟信号转成数字信号。</p>
-<p>这个装置虽然挽救了没有网口的房间，但由于其通过市电传输，其稳定性是会受到类似空调之类的大功率电器影响的，而且网速不敢恭维，所以我没有采用这类方法。我还是和之前一样采用无线网络桥接的方式，但在服务器上多加了个无线网卡。</p>
-<h2 id="3-电力供应"><a href="#3-电力供应" class="headerlink" title="3.电力供应"></a>3.电力供应</h2><p>这个是最棘手的。</p>
-<p>我的服务器是一台工控机，功耗比较低，也勉强能做Web服务器。但不可避的是停电。</p>
-<p>这个我还没有对策，反正又不会经常停电，怕啥？解决方法慢慢想就是了。</p>
-<h2 id="4-人为"><a href="#4-人为" class="headerlink" title="4.人为"></a>4.人为</h2><p><img src= "/resources/loading.gif" data-lazy-src="https://s1.ax1x.com/2020/08/22/dUVv2n.png" alt="CykaBlyat"></p>
-<h6 id="本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。"><a href="#本作品采用知识共享-署名-4-0-国际-许可协议进行许可。要查看该许可协议，可访问-http-creativecommons-org-licenses-by-4-0-或者写信到-Creative-Commons-PO-Box-1866-Mountain-View-CA-94042-USA。" class="headerlink" title="本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 http://creativecommons.org/licenses/by/4.0/ 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。"></a>本作品采用知识共享 署名 4.0 国际 许可协议进行许可。要查看该许可协议，可访问 <a href="http://creativecommons.org/licenses/by/4.0/">http://creativecommons.org/licenses/by/4.0/</a> 或者写信到 Creative Commons, PO Box 1866, Mountain View, CA 94042, USA。</h6>]]></content>
-      <categories>
-        <category>日常宅技术</category>
-      </categories>
-      <tags>
-        <tag>运维</tag>
-        <tag>经验分享</tag>
-        <tag>Web</tag>
-        <tag>踩坑</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>近况·秋游</title>
-    <url>/p/2020/aedb0196.html</url>
-    <content><![CDATA[<p>嗯……与其说是秋游，不如说是冬游。地点是庐山西海。<span class="heimu" title="你知道的太多了">我本以为去的地方是庐山……</span></p>
-<p>这就是我们最后一次秋游了，196天之后，各自有各自的路要走，便多拍了许多照片。</p>
-<div class="justified-gallery"><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/12.webp" alt="包车上"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/23.webp" alt="景区下发的资料，里面是题目……没有人做便是"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/01.webp" alt="我和他们是同一小组的说，只不过我是阿卡林death！又因为我的身边充满了阿卡林力场，我们组长也没有存在感了~ \\Akariiin/"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/34.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/02.webp" alt="坐船"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/45.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/55.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/56.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/57.webp" alt="蹭得累"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/58.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/03.webp" alt="浪平，云密"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/04.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/05.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/06.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/07.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/08.webp" alt="你以为咱在登庐山吗？不，我们在岛上"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/09.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/10.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/11.webp" alt="看到这锦鲤池了吗？此乃吉地也！把手机丢下去就会有河神送你一部新的了！(x)"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/13.webp" alt="不用看了，我把手机投下去之后河神没有上来。"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/14.webp" alt="山间"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/15.webp" alt="咱魔法系老师，挺帅的（^^;;"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/16.webp" alt="山间的树"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/17.webp" alt="啊♂幻想乡？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/19.webp" alt="Boy♂Next♂Door"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/18.webp" alt="孤独.webp"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/20.webp" alt="此乃吉鸟也！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/21.webp" alt="山上养了孔雀"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/22.webp" alt="数小儿对线类人猿"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/24.webp" alt="o(*≧▽≦)ツ┏━┓ 好孩子不要学系列"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/25.webp" alt="松鼠"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/26.webp" alt="天鹅"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/27.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/28.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/29.webp" alt="杂技表演"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/30.webp" alt="天皇说了什么？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/31.webp" alt="绿坝在哪里绿坝在哪里这里有人吐脏字快把他河蟹勒！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/32.webp" alt="东亚的建筑风格"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/33.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/35.webp" alt="龙桥"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/36.webp" alt="据说晚上来这里超好看"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/37.webp" alt="“哦？是你小砸？”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/38.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/39.webp" alt="临岸一小亭"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/40.webp" alt="水波粼粼"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/41.webp" alt="澄澈"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/42.webp" alt="银杏"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/43.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/44.webp" alt="『幻视』警笛头"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/47.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/48.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/46.webp" alt="“摇啊摇，摇啊摇，摇到外婆桥”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/49.webp" alt="嗯，外婆桥的确很“摇”（吊桥）"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/50.webp" alt="这帮屑在桥上卡其脱离太，害得老夫拍照不稳"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/51.webp" alt="眼 光 呆 滞"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/52.webp" alt="年级组长"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/53.webp" alt=""></p>
-          </div>
-<h1 id="年少，未完待续"><a href="#年少，未完待续" class="headerlink" title="年少，未完待续"></a>年少，未完待续</h1>]]></content>
-      <categories>
-        <category>日常</category>
-        <category>摄影</category>
-      </categories>
-      <tags>
-        <tag>秋游</tag>
-        <tag>相册</tag>
-      </tags>
+    <title>本站已支持HTTPS</title>
+    <url>/p/2020/e838770c.html</url>
+    <content><![CDATA[<p>本站已支持HTTPS，从友链进入会自动转到HTTPS协议；</p>
+<p><img src= "/resources/loading.gif" data-lazy-src="https://42works.net/wp-content/uploads/2018/07/https-migration.png" alt="http2https"></p>
+]]></content>
   </entry>
   <entry>
     <title>记一次失败部署树莓派双屏桌面</title>
@@ -1992,6 +1941,40 @@ sys.setrecursionlimit(5000)
         <tag>树莓派</tag>
         <tag>桌面</tag>
         <tag>失败案例</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>自由就是说二加二等于四的自由，若此成立，其他同理</title>
+    <url>/p/2020/9e01b7f0.html</url>
+    <content><![CDATA[<div class="note warning modern"><p>这是第二次编辑后的版本。准确来说，后面很多内容被删了。</p>
+<p>在阅读本文之前，建议先阅读《1984》原著。</p>
+</div>
+<div class="note info modern"><p>电幕之下，请高呼：</p>
+<font size=14>我爱老大哥！</font>
+</div>
+<h1 id="四月里的一天，时钟敲了十三下"><a href="#四月里的一天，时钟敲了十三下" class="headerlink" title="四月里的一天，时钟敲了十三下"></a>四月里的一天，时钟敲了十三下</h1><p>一切的开端只是因为：一个中年男子拥有了自我。</p>
+<p>大洋国这个共产主义国家，每天都在和欧亚国打仗，大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>政府机构分为四个部门：和平部，友爱部，真理部和富裕部。老大哥是大洋国的领导者，也是大洋国的精神象征。老大哥所说过的话都是真理。所有社会成员只需要听老大哥的话，不能有自我，否则就会因为思想罪而“人间蒸发”。自然，大洋国没有法律，因为思想罪是其他一切罪行的根源。</p>
+<p>在英格兰社会主义党（英社）的领导下，社会划分为三个阶级：<code>核心党员</code>、<code>外围党员</code>和<code>无产阶级</code>。在伦敦这座城市，街区破烂，巡逻队的直升机盘旋于空，给人施加无形的压力……更可怕的，便是思想警察和仁爱部。</p>
+<p>伦敦的所有电幕上时时刻刻挂着老大哥的头像，同时也在监听着一切。电幕每天都在播报富裕部的“丰收”，每天和平部都有俘获东亚国的敌人。没错，大洋国一直都在和<font color="red">东亚国</font>打仗。电幕是无法关掉的，最多也只能调小音量。人们都使用一种极其精简的语言——新语。而新语将一切“反动”的词全部删去了。</p>
+<p>温斯顿·史密斯工作于真理部，工作是<del>篡改编造</del>修整历史。身为<code>外围党员</code>的他，貌似早就把这一切都看透了。这个虚伪的社会，这个充斥着谎言的真理部，这个挂在一切电幕上的老大哥像……他便开始写起了日记。</p>
+<h1 id="愚民和牲口都是自由的"><a href="#愚民和牲口都是自由的" class="headerlink" title="愚民和牲口都是自由的"></a>愚民和牲口都是自由的</h1><p>你愿意活在“1984”吗？</p>
+<p>试图想象一下，在你吃饭、睡觉、工作、学习，甚至是在你排泄、性爱时，你的身后都有一个“老大哥”盯着；你没有思索的权利，写日记都要担心被逮捕；你每隔一段时间都必须参加异化人类，血腥恐怖的仇恨仪式；无产者每天都会有几个人死于（可能来自自己政府的）导弹的轰炸……</p>
+<p>在大洋国，真正自由的也就只有愚民和牲口罢了。两者有一个共同的特点，那就是：都坚信老大哥说的都是对的，且都甘愿被别人牵着鼻子走。这两类，都没有思想，自然而然，他们都是“自由”的。也正因为他们没有思想，就只能当奴役于上层的工具人。</p>
+<p>愚蠢像智慧一样必要，也同样难以学到。</p>
+<p>“战争即和平，自由即奴役，无知即力量”，这句自相矛盾的话，之所以会在那个世界广为流传，张贴宣传语各处，正是因为这句话出自“老大哥”之口，是英社的党纲。</p>
+<p>在如此畸形的社会环境下，人们都有了双重思想，即同时接受两种相违背信念的行为。</p>
+<p>“自由”还是自由吗？不，“自由”是奴役。所谓自由，就是可以说二加二等于四的自由。</p>
+<p>到头来，大洋国究竟是在和哪个国家打仗呢？大洋国一直都在和<font color="red">欧亚国</font>打仗。</p>
+<p>……</p>
+]]></content>
+      <categories>
+        <category>随笔</category>
+        <category>感想</category>
+      </categories>
+      <tags>
+        <tag>《一九八四》</tag>
+        <tag>品书</tag>
       </tags>
   </entry>
   <entry>
@@ -2165,6 +2148,23 @@ sys.setrecursionlimit(5000)
       <tags>
         <tag>微小说</tag>
         <tag>科幻</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>近况·秋游</title>
+    <url>/p/2020/aedb0196.html</url>
+    <content><![CDATA[<p>嗯……与其说是秋游，不如说是冬游。地点是庐山西海。<span class="heimu" title="你知道的太多了">我本以为去的地方是庐山……</span></p>
+<p>这就是我们最后一次秋游了，196天之后，各自有各自的路要走，便多拍了许多照片。</p>
+<div class="justified-gallery"><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/12.webp" alt="包车上"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/23.webp" alt="景区下发的资料，里面是题目……没有人做便是"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/01.webp" alt="我和他们是同一小组的说，只不过我是阿卡林death！又因为我的身边充满了阿卡林力场，我们组长也没有存在感了~ \\Akariiin/"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/34.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/02.webp" alt="坐船"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/45.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/55.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/56.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/57.webp" alt="蹭得累"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/58.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/03.webp" alt="浪平，云密"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/04.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/05.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/06.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/07.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/08.webp" alt="你以为咱在登庐山吗？不，我们在岛上"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/09.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/10.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/11.webp" alt="看到这锦鲤池了吗？此乃吉地也！把手机丢下去就会有河神送你一部新的了！(x)"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/13.webp" alt="不用看了，我把手机投下去之后河神没有上来。"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/14.webp" alt="山间"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/15.webp" alt="咱魔法系老师，挺帅的（^^;;"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/16.webp" alt="山间的树"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/17.webp" alt="啊♂幻想乡？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/19.webp" alt="Boy♂Next♂Door"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/18.webp" alt="孤独.webp"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/20.webp" alt="此乃吉鸟也！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/21.webp" alt="山上养了孔雀"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/22.webp" alt="数小儿对线类人猿"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/24.webp" alt="o(*≧▽≦)ツ┏━┓ 好孩子不要学系列"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/25.webp" alt="松鼠"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/26.webp" alt="天鹅"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/27.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/28.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/29.webp" alt="杂技表演"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/30.webp" alt="天皇说了什么？"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/31.webp" alt="绿坝在哪里绿坝在哪里这里有人吐脏字快把他河蟹勒！"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/32.webp" alt="东亚的建筑风格"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/33.webp" alt=""></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/35.webp" alt="龙桥"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/36.webp" alt="据说晚上来这里超好看"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/37.webp" alt="“哦？是你小砸？”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/38.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/39.webp" alt="临岸一小亭"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/40.webp" alt="水波粼粼"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/41.webp" alt="澄澈"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/42.webp" alt="银杏"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/43.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/44.webp" alt="『幻视』警笛头"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/47.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/48.webp" alt=""><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/46.webp" alt="“摇啊摇，摇啊摇，摇到外婆桥”"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/49.webp" alt="嗯，外婆桥的确很“摇”（吊桥）"></p><p><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/50.webp" alt="这帮屑在桥上卡其脱离太，害得老夫拍照不稳"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/51.webp" alt="眼 光 呆 滞"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/52.webp" alt="年级组长"><br><img src= "/resources/loading.gif" data-lazy-src="https://kawashiro_ryofu.gitee.io/blogimagerc/postrc/aedb0196/53.webp" alt=""></p>
+          </div>
+<h1 id="年少，未完待续"><a href="#年少，未完待续" class="headerlink" title="年少，未完待续"></a>年少，未完待续</h1>]]></content>
+      <categories>
+        <category>日常</category>
+        <category>摄影</category>
+      </categories>
+      <tags>
+        <tag>秋游</tag>
+        <tag>相册</tag>
       </tags>
   </entry>
   <entry>
