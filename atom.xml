@@ -6,7 +6,7 @@
   <link href="https://www.kawashiros.club/atom.xml" rel="self"/>
   
   <link href="https://www.kawashiros.club/"/>
-  <updated>2021-02-21T12:10:31.958Z</updated>
+  <updated>2021-02-21T12:17:18.702Z</updated>
   <id>https://www.kawashiros.club/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Butterfly主题硬核魔改Waline</title>
+    <title>硬核魔改Waline</title>
     <link href="https://www.kawashiros.club/p/2021/1ff52d48.html"/>
     <id>https://www.kawashiros.club/p/2021/1ff52d48.html</id>
     <published>2021-02-18T15:29:00.000Z</published>
-    <updated>2021-02-21T12:10:31.958Z</updated>
+    <updated>2021-02-21T12:17:18.702Z</updated>
     
     <content type="html"><![CDATA[<div class="note warning modern"><p>该魔改方法需要有一定的编程基础。魔改有风险。</p></div><div class="note info modern"><p>测试于hexo-theme-butterfly v3.6.2，其他Hexo主题或博客系统未知，不保证完全可用。请根据自身情况进行魔改。</p></div><h1 id="Waline-tweaks"><a href="#Waline-tweaks" class="headerlink" title="Waline-tweaks"></a>Waline-tweaks</h1><p>Waline评论系统前端的美化脚本，效果见评论区。</p><p><a href="https://github.com/kawashiro-ryofu/waline-tweaks">Github</a></p><h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p>在Github将<code>waline-tweaks.js</code>拷贝/下载/克隆至本地，然后编辑<code>waline-tweaks.js</code>，根据注释修改变量。最后在外部引用该脚本。</p><div class="note warning modern"><p>注意：需要jQuery支持</p></div><h1 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h1><p>见评论区。</p>]]></content>
     
